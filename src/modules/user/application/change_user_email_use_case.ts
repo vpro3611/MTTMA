@@ -1,0 +1,28 @@
+import {UserRepository} from "../domain/ports/user_repo_interface.js";
+import {Email} from "../domain/email.js";
+import {UserResponseDto} from "../DTO/user_response_dto.js";
+
+
+export class ChangeUserEmailUseCase {
+    constructor(private userRepository: UserRepository){}
+
+    async execute(userId: string, newEmail: string) {
+        const exists = await this.userRepository.findById(userId);
+        if (!exists) throw new Error("User not found");
+
+        const newEmailVerified = Email.create(newEmail);
+
+        exists.changeEmail(newEmailVerified);
+
+        await this.userRepository.save(exists);
+
+        const returnUser: UserResponseDto = {
+            id: exists.id,
+            email: exists.getEmail(),
+            status: exists.getStatus(),
+            created_at: exists.getCreatedAt(),
+        }
+        return returnUser;
+    }
+}
+
