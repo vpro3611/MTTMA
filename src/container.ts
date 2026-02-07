@@ -1,10 +1,10 @@
 import {UserRepositoryPG} from "./modules/user/repository_realization/user_repository_pg.js";
 import {pool} from "./db/pg_pool.js";
-import {HasherBcrypt} from "@/modules/user/infrastructure/hasher_bcrypt.js";
-import {PasswordHasher} from "@/modules/user/application/ports/password_hasher_interface.js";
-import {ChangePasswordUseCase} from "@/modules/user/application/change_pass_use_case.js";
-import {ChangeUserEmailUseCase} from "@/modules/user/application/change_user_email_use_case.js";
-import {RegisterUseCase} from "@/modules/user/application/register_use_case.js";
+import {HasherBcrypt} from "../src/modules/user/infrastructure/hasher_bcrypt.js";
+import {PasswordHasher} from "../src/modules/user/application/ports/password_hasher_interface.js";
+import {ChangePasswordUseCase} from "../src/modules/user/application/change_pass_use_case.js";
+import {ChangeUserEmailUseCase} from "../src/modules/user/application/change_user_email_use_case.js";
+import {RegisterUseCase} from "../src/modules/user/application/register_use_case.js";
 
 export function assembleContainer() {
     // repositories
