@@ -4,6 +4,7 @@ import {Password} from "../domain/password.js";
 import {PasswordHasher} from "./ports/password_hasher_interface.js";
 import {UserResponseDto} from "../DTO/user_response_dto.js";
 import {Email} from "../domain/email.js";
+import {UserAlreadyExistsError} from "../errors/user_repository_errors.js";
 
 
 export class RegisterUseCase {
@@ -15,7 +16,7 @@ export class RegisterUseCase {
         const emailVerified = Email.create(email);
 
         const existingUser = await this.userRepository.findByEmail(emailVerified);
-        if (existingUser) throw new Error("User with this email already exists");
+        if (existingUser) throw new UserAlreadyExistsError();
 
         const verifiedPassword = Password.validatePlain(plainPass);
         const passwordHash = await this.hasher.hash(verifiedPassword);

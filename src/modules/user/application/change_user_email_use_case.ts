@@ -1,6 +1,7 @@
 import {UserRepository} from "../domain/ports/user_repo_interface.js";
 import {Email} from "../domain/email.js";
 import {UserResponseDto} from "../DTO/user_response_dto.js";
+import {UserNotFound} from "../errors/user_repository_errors.js";
 
 
 export class ChangeUserEmailUseCase {
@@ -8,7 +9,7 @@ export class ChangeUserEmailUseCase {
 
     async execute(userId: string, newEmail: string) {
         const exists = await this.userRepository.findById(userId);
-        if (!exists) throw new Error("User not found");
+        if (!exists) throw new UserNotFound();
 
         const newEmailVerified = Email.create(newEmail);
 

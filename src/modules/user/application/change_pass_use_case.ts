@@ -2,6 +2,8 @@ import {UserRepository} from "../domain/ports/user_repo_interface.js";
 import {Password} from "../domain/password.js";
 import {PasswordHasher} from "./ports/password_hasher_interface.js";
 import {UserResponseDto} from "../DTO/user_response_dto.js";
+import {UserNotFound} from "../errors/user_repository_errors.js";
+import {InvalidPasswordError} from "../errors/password_domain_errors.js";
 
 export class ChangePasswordUseCase {
     constructor(private userRepository: UserRepository,
@@ -10,11 +12,11 @@ export class ChangePasswordUseCase {
 
     async execute(userId: string, oldPlain: string, newPlain: string) {
         const exists = await this.userRepository.findById(userId);
-        if (!exists) throw new Error("User not found");
+        if (!exists) throw new UserNotFound();
 
         const isValid = await this.hasher.compare(oldPlain, exists.getPasswordHash());
 
-        if (!isValid) throw new Error("Invalid current password");
+        if (!isValid) throw new InvalidPasswordError();
 
         const validPass = Password.validatePlain(newPlain);
         const newHash = await this.hasher.hash(validPass);
