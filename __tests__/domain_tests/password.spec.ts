@@ -1,4 +1,9 @@
 import { Password } from "../../src/modules/user/domain/password.js";
+import {
+    PasswordDoesNotContainDigitError,
+    PasswordDoesNotContainSpecialSymbolError, PasswordDoesNotContainUppercaseLetterError,
+    TooLongPasswordError, TooShortPasswordError
+} from "../../src/modules/user/errors/password_domain_errors.js";
 
 describe('Password (domain)', () => {
 
@@ -13,25 +18,25 @@ describe('Password (domain)', () => {
         it('should throw error if password is too short', () => {
             expect(() => {
                 Password.validatePlain('Ab1!');
-            }).toThrow('Password must be at least 10 characters long');
+            }).toThrow(TooShortPasswordError);
         });
 
         it('should throw error if password has no uppercase letter', () => {
             expect(() => {
                 Password.validatePlain('password1!');
-            }).toThrow('Password must contain at least one uppercase letter');
+            }).toThrow(PasswordDoesNotContainUppercaseLetterError);
         });
 
         it('should throw error if password has no digit', () => {
             expect(() => {
                 Password.validatePlain('Password!sdsada');
-            }).toThrow('Password must contain at least one digit');
+            }).toThrow(PasswordDoesNotContainDigitError);
         });
 
         it('should throw error if password has no special character', () => {
             expect(() => {
                 Password.validatePlain('Password1adadad');
-            }).toThrow('Password must contain at least one special character');
+            }).toThrow(PasswordDoesNotContainSpecialSymbolError);
         });
 
         it('should throw error if password is too long', () => {
@@ -40,7 +45,7 @@ describe('Password (domain)', () => {
 
             expect(() => {
                 Password.validatePlain(longPassword);
-            }).toThrow('Password must be at most 255 characters long');
+            }).toThrow(TooLongPasswordError);
         });
 
     });

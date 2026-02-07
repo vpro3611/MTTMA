@@ -4,6 +4,7 @@ import { PasswordHasher } from "../../src/modules/user/application/ports/passwor
 import { User } from "../../src/modules/user/domain/user_domain.js";
 import { Email } from "../../src/modules/user/domain/email.js";
 import { Password } from "../../src/modules/user/domain/password.js";
+import {UserAlreadyExistsError} from "../../src/modules/user/errors/user_repository_errors.js";
 
 describe('RegisterUseCase', () => {
 
@@ -53,7 +54,7 @@ describe('RegisterUseCase', () => {
 
         await expect(
             useCase.execute('test@example.com', 'StrongPass1!')
-        ).rejects.toThrow('User with this email already exists');
+        ).rejects.toThrow(UserAlreadyExistsError);
 
         expect(hasher.hash).not.toHaveBeenCalled();
         expect(userRepository.save).not.toHaveBeenCalled();

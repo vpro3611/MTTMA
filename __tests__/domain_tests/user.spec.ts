@@ -1,6 +1,7 @@
 import {User} from "../../src/modules/user/domain/user_domain.js";
 import {Email} from "../../src/modules/user/domain/email.js";
 import {Password} from "../../src/modules/user/domain/password.js";
+import {UserIsBannedError} from "../../src/modules/user/errors/user_domain_error.js";
 
 describe('User (domain)', () => {
 
@@ -60,7 +61,7 @@ describe('User (domain)', () => {
 
         expect(() => {
             user.changeEmail(newEmail);
-        }).toThrow('User is banned');
+        }).toThrow(UserIsBannedError);
     });
 
     /**
@@ -80,7 +81,7 @@ describe('User (domain)', () => {
 
         expect(() => {
             user.changePassword(newPassword);
-        }).toThrow('User is banned');
+        }).toThrow(UserIsBannedError);
     });
 
     /**

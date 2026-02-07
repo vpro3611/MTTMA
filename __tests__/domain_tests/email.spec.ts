@@ -1,4 +1,5 @@
 import { Email } from "../../src/modules/user/domain/email.js";
+import {InvalidEmailError, TooLongEmail, TooShortEmail} from "../../src/modules/user/errors/email_domain_errors.js";
 
 describe('Email (domain)', () => {
 
@@ -11,7 +12,7 @@ describe('Email (domain)', () => {
     it('should throw error if email is too short', () => {
         expect(() => {
             Email.create('a@b');
-        }).toThrow('Email must be at least 5 characters long');
+        }).toThrow(TooShortEmail);
     });
 
     it('should throw error if email is too long', () => {
@@ -20,19 +21,19 @@ describe('Email (domain)', () => {
 
         expect(() => {
             Email.create(longEmail);
-        }).toThrow('Email must be at most 255 characters long');
+        }).toThrow(TooLongEmail);
     });
 
     it('should throw error if email format is invalid (no @)', () => {
         expect(() => {
             Email.create('invalid-email.com');
-        }).toThrow('Invalid email format');
+        }).toThrow(InvalidEmailError);
     });
 
     it('should throw error if email format is invalid (no domain)', () => {
         expect(() => {
             Email.create('test@');
-        }).toThrow('Invalid email format');
+        }).toThrow(InvalidEmailError);
     });
 
     it('should consider two emails with same value equal', () => {

@@ -3,6 +3,7 @@ import { UserRepository } from "../../src/modules/user/domain/ports/user_repo_in
 import { User } from "../../src/modules/user/domain/user_domain.js";
 import { Email } from "../../src/modules/user/domain/email.js";
 import { Password } from "../../src/modules/user/domain/password.js";
+import {UserNotFound} from "../../src/modules/user/errors/user_repository_errors.js";
 
 describe('ChangeUserEmailUseCase', () => {
 
@@ -52,7 +53,7 @@ describe('ChangeUserEmailUseCase', () => {
 
         await expect(
             useCase.execute('missing-id', 'new@example.com')
-        ).rejects.toThrow('User not found');
+        ).rejects.toThrow(UserNotFound);
 
         expect(userRepository.save).not.toHaveBeenCalled();
     });
