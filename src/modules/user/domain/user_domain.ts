@@ -1,5 +1,6 @@
 import {Password} from "./password.js";
 import {Email} from "./email.js";
+import {UserIsBannedError} from "../errors/user_domain_error.js";
 
 
 export class User {
@@ -8,12 +9,12 @@ export class User {
         private email: Email,
         private password: Password,
         private status: "active" | "banned" | "suspended",
-        private created_at: Date
+        private created_at: Date,
     ) {}
 
     private checkUserStatus = (userStatus: string) => {
         if (userStatus === "banned") {
-            throw new Error("User is banned")
+            throw new UserIsBannedError();
         }
     }
 

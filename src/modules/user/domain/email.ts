@@ -1,3 +1,4 @@
+import {InvalidEmailError, TooLongEmail, TooShortEmail} from "../errors/email_domain_errors.js";
 
 
 export class Email {
@@ -6,12 +7,12 @@ export class Email {
     static create(raw: string) {
         const normalized = raw.toLowerCase().trim();
 
-        if (normalized.length < 5) throw new Error("Email must be at least 5 characters long")
-        if (normalized.length > 255) throw new Error("Email must be at most 255 characters long")
+        if (normalized.length < 5) throw new TooShortEmail(5);
+        if (normalized.length > 255) throw new TooLongEmail(255);
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-        if (!emailRegex.test(normalized)) throw new Error("Invalid email format")
+        if (!emailRegex.test(normalized)) throw new InvalidEmailError();
 
         return new Email(normalized);
     }
