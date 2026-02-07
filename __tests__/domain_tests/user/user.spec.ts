@@ -1,7 +1,7 @@
-import {User} from "../../src/modules/user/domain/user_domain.js";
-import {Email} from "../../src/modules/user/domain/email.js";
-import {Password} from "../../src/modules/user/domain/password.js";
-import {UserIsBannedError} from "../../src/modules/user/errors/user_domain_error.js";
+import {User} from "../../../src/modules/user/domain/user_domain.js";
+import {Email} from "../../../src/modules/user/domain/email.js";
+import {Password} from "../../../src/modules/user/domain/password.js";
+import {UserIsBannedError} from "../../../src/modules/user/errors/user_domain_error.js";
 
 describe('User (domain)', () => {
 

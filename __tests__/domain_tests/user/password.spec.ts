@@ -1,9 +1,9 @@
-import { Password } from "../../src/modules/user/domain/password.js";
+import { Password } from "../../../src/modules/user/domain/password.js";
 import {
     PasswordDoesNotContainDigitError,
     PasswordDoesNotContainSpecialSymbolError, PasswordDoesNotContainUppercaseLetterError,
     TooLongPasswordError, TooShortPasswordError
-} from "../../src/modules/user/errors/password_domain_errors.js";
+} from "../../../src/modules/user/errors/password_domain_errors.js";
 
 describe('Password (domain)', () => {
 

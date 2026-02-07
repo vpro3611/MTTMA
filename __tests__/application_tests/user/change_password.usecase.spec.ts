@@ -1,12 +1,12 @@
-import { ChangePasswordUseCase } from "../../src/modules/user/application/change_pass_use_case.js";
-import { UserRepository } from "../../src/modules/user/domain/ports/user_repo_interface.js";
-import { PasswordHasher } from "../../src/modules/user/application/ports/password_hasher_interface.js";
-import { User } from "../../src/modules/user/domain/user_domain.js";
-import { Email } from "../../src/modules/user/domain/email.js";
-import { Password } from "../../src/modules/user/domain/password.js";
-import {UserNotFound} from "../../src/modules/user/errors/user_repository_errors.js";
-import {InvalidPasswordError} from "../../src/modules/user/errors/password_domain_errors.js";
-import {UserIsBannedError} from "../../src/modules/user/errors/user_domain_error.js";
+import { ChangePasswordUseCase } from "../../../src/modules/user/application/change_pass_use_case.js";
+import { UserRepository } from "../../../src/modules/user/domain/ports/user_repo_interface.js";
+import { PasswordHasher } from "../../../src/modules/user/application/ports/password_hasher_interface.js";
+import { User } from "../../../src/modules/user/domain/user_domain.js";
+import { Email } from "../../../src/modules/user/domain/email.js";
+import { Password } from "../../../src/modules/user/domain/password.js";
+import {UserNotFound} from "../../../src/modules/user/errors/user_repository_errors.js";
+import {InvalidPasswordError} from "../../../src/modules/user/errors/password_domain_errors.js";
+import {UserIsBannedError} from "../../../src/modules/user/errors/user_domain_error.js";
 
 describe('ChangePasswordUseCase', () => {
 

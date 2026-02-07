@@ -1,9 +1,9 @@
-import { ChangeUserEmailUseCase } from "../../src/modules/user/application/change_user_email_use_case.js";
-import { UserRepository } from "../../src/modules/user/domain/ports/user_repo_interface.js";
-import { User } from "../../src/modules/user/domain/user_domain.js";
-import { Email } from "../../src/modules/user/domain/email.js";
-import { Password } from "../../src/modules/user/domain/password.js";
-import {UserNotFound} from "../../src/modules/user/errors/user_repository_errors.js";
+import { ChangeUserEmailUseCase } from "../../../src/modules/user/application/change_user_email_use_case.js";
+import { UserRepository } from "../../../src/modules/user/domain/ports/user_repo_interface.js";
+import { User } from "../../../src/modules/user/domain/user_domain.js";
+import { Email } from "../../../src/modules/user/domain/email.js";
+import { Password } from "../../../src/modules/user/domain/password.js";
+import {UserNotFound} from "../../../src/modules/user/errors/user_repository_errors.js";
 
 describe('ChangeUserEmailUseCase', () => {
 
