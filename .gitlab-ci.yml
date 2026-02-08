@@ -13,10 +13,10 @@ test:
     - name: postgres:16-alpine
       alias: db
   variables:
-    POSTGRES_DB: testdb
-    POSTGRES_USER: postgres
-    POSTGRES_PASSWORD: postgres
-    DATABASE_URL: postgres://postgres:postgres@db:5432/testdb
+    POSTGRES_DB: proj_database
+    POSTGRES_USER: vpro3611
+    POSTGRES_PASSWORD: new_pass
+    DATABASE_URL: postgres://vpro3611:new_pass@db:5432/testdb
   script:
     - apk add --no-cache postgresql-client
     - until pg_isready -h db -U postgres; do sleep 1; done
