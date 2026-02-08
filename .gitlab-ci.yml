@@ -22,7 +22,7 @@ test:
     - until pg_isready -h db -U postgres; do sleep 1; done
     - npm ci
     - npm run build
-    - npm test
+    - npm run test:ci
   rules:
     - if: '$CI_COMMIT_BRANCH'
 
