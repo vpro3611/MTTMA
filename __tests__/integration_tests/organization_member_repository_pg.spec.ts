@@ -1,4 +1,4 @@
-import { pool } from "../../src/db/pg_pool.js";
+import { Pool } from "pg";
 import { OrganizationMemberRepositoryPG } from "../../src/modules/organization_members/organization_members_repository_realization/organization_member_repository.js";
 import { OrganizationMember } from "../../src/modules/organization_members/domain/organization_member_domain.js";
 import {
@@ -6,37 +6,43 @@ import {
     OrganizationMemberNotFoundError,
     OrganizationMemberPersistenceError,
 } from "../../src/modules/organization_members/errors/organization_members_repo_errors.js";
-import {
-    OrganizationNotFoundError,
-} from "../../src/modules/organization_members/errors/organization_members_repo_errors.js";
-import {
-    UserNotFoundError,
-} from "../../src/modules/organization_members/errors/organization_members_repo_errors.js";
 
 describe('OrganizationMemberRepositoryPG (integration)', () => {
 
     let repo: OrganizationMemberRepositoryPG;
+    let poolT: Pool;
 
-    const orgId = crypto.randomUUID();
-    const userId = crypto.randomUUID();
+    let orgId: string;
+    let userId: string;
 
     beforeAll(async () => {
         if (process.env.NODE_ENV !== 'test') {
             throw new Error('Must run in test environment');
         }
 
-        repo = new OrganizationMemberRepositoryPG(pool);
+        poolT = new Pool({
+            connectionString: process.env.TEST_DATABASE_URL
+        });
 
-        // prerequisites
-        await pool.query(
+        repo = new OrganizationMemberRepositoryPG(poolT);
+    });
+
+    beforeEach(async () => {
+        await poolT.query('BEGIN');
+
+        orgId = crypto.randomUUID();
+        userId = crypto.randomUUID();
+
+        // prerequisites внутри транзакции
+        await poolT.query(
             `INSERT INTO organizations (id, name, created_at)
-       VALUES ($1, $2, NOW())`,
+             VALUES ($1, $2, NOW())`,
             [orgId, 'test org']
         );
 
-        await pool.query(
+        await poolT.query(
             `INSERT INTO users (id, email, password_hash, status, created_at)
-       VALUES ($1, $2, $3, $4, NOW())`,
+             VALUES ($1, $2, $3, $4, NOW())`,
             [
                 userId,
                 'member@test.com',
@@ -47,14 +53,11 @@ describe('OrganizationMemberRepositoryPG (integration)', () => {
     });
 
     afterEach(async () => {
-        await pool.query('TRUNCATE TABLE organization_members');
+        await poolT.query('ROLLBACK');
     });
 
     afterAll(async () => {
-        await pool.query('TRUNCATE TABLE organization_members CASCADE');
-        await pool.query('TRUNCATE TABLE organizations CASCADE');
-        await pool.query('TRUNCATE TABLE users CASCADE');
-        await pool.end();
+        await poolT.end();
     });
 
     /**
@@ -91,7 +94,7 @@ describe('OrganizationMemberRepositoryPG (integration)', () => {
         );
     });
 
-    it('should throw OrganizationNotFoundError if org does not exist', async () => {
+    it('should throw OrganizationMemberPersistenceError if org does not exist', async () => {
         const member = OrganizationMember.hire(
             crypto.randomUUID(),
             userId,
@@ -105,7 +108,7 @@ describe('OrganizationMemberRepositoryPG (integration)', () => {
         );
     });
 
-    it('should throw UserNotFoundError if user does not exist', async () => {
+    it('should throw OrganizationMemberPersistenceError if user does not exist', async () => {
         const member = OrganizationMember.hire(
             orgId,
             crypto.randomUUID(),

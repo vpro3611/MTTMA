@@ -1,9 +1,8 @@
-import {pool} from "../../src/db/pg_pool.js";
-import {Pool} from "pg";
-import {UserRepositoryPG} from "../../src/modules/user/repository_realization/user_repository_pg.js";
-import {User} from "../../src/modules/user/domain/user_domain.js";
-import {Email} from "../../src/modules/user/domain/email.js";
-import {Password} from "../../src/modules/user/domain/password.js";
+import { Pool } from "pg";
+import { UserRepositoryPG } from "../../src/modules/user/repository_realization/user_repository_pg.js";
+import { User } from "../../src/modules/user/domain/user_domain.js";
+import { Email } from "../../src/modules/user/domain/email.js";
+import { Password } from "../../src/modules/user/domain/password.js";
 
 describe('UserRepositoryPG (integration)', () => {
 
@@ -15,25 +14,26 @@ describe('UserRepositoryPG (integration)', () => {
             throw new Error('Must be in test environment');
         }
 
-        poolT = pool;
+        // ⬇️ отдельный pool только для тестов
+        poolT = new Pool({
+            connectionString: process.env.TEST_DATABASE_URL
+        });
 
         repo = new UserRepositoryPG(poolT);
     });
 
+    beforeEach(async () => {
+        await poolT.query('BEGIN');
+    });
+
     afterEach(async () => {
-        // важно: порядок из-за FK
-        await poolT.query('TRUNCATE TABLE users CASCADE');
+        await poolT.query('ROLLBACK');
     });
 
     afterAll(async () => {
         await poolT.end();
     });
 
-    /**
-     * CASE 1
-     * save → findById
-     * Базовый happy-path репозитория
-     */
     it('should save user and retrieve it by id', async () => {
         const user = new User(
             crypto.randomUUID(),
@@ -53,19 +53,11 @@ describe('UserRepositoryPG (integration)', () => {
         expect(result!.getStatus()).toBe('active');
     });
 
-    /**
-     * CASE 2
-     * findById → null если пользователя нет
-     */
     it('should return null when user is not found by id', async () => {
         const result = await repo.findById(crypto.randomUUID());
         expect(result).toBeNull();
     });
 
-    /**
-     * CASE 3
-     * save → findByEmail
-     */
     it('should find user by email', async () => {
         const user = new User(
             crypto.randomUUID(),
@@ -85,10 +77,6 @@ describe('UserRepositoryPG (integration)', () => {
         expect(result!.id).toBe(user.id);
     });
 
-    /**
-     * CASE 4
-     * findByEmail → null если email отсутствует
-     */
     it('should return null when user is not found by email', async () => {
         const result = await repo.findByEmail(
             Email.create('absent@example.com')
@@ -97,11 +85,6 @@ describe('UserRepositoryPG (integration)', () => {
         expect(result).toBeNull();
     });
 
-    /**
-     * CASE 5
-     * save делает UPDATE при конфликте по id
-     * (upsert semantics)
-     */
     it('should update existing user on save (upsert by id)', async () => {
         const id = crypto.randomUUID();
 
@@ -131,11 +114,6 @@ describe('UserRepositoryPG (integration)', () => {
         expect(result!.getStatus()).toBe('banned');
     });
 
-    /**
-     * CASE 6
-     * email UNIQUE constraint
-     * Репозиторий не должен молча перезаписывать другого пользователя
-     */
     it('should fail when saving user with duplicate email', async () => {
         const user1 = new User(
             crypto.randomUUID(),

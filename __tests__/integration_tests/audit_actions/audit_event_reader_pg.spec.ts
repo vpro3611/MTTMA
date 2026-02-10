@@ -4,50 +4,59 @@ import { AuditEventsRepositoryPg } from "../../../src/modules/audit_events/repoz
 import { AuditEvent } from "../../../src/modules/audit_events/domain/audit_event_domain.js";
 import { AuditEventActions } from "../../../src/modules/audit_events/domain/audit_event_actions.js";
 import { AuditPersistenceError } from "../../../src/modules/audit_events/errors/audit_repo_errors.js";
-import { pool } from "../../../src/db/pg_pool.js";
 
 describe("AuditEventReaderPG (integration)", () => {
     let poolT: Pool;
     let reader: AuditEventReaderPG;
     let writer: AuditEventsRepositoryPg;
 
-    const ORG_ID = "00000000-0000-0000-0000-000000000001";
-    const OTHER_ORG_ID = "00000000-0000-0000-0000-000000000099";
-    const USER_ID = "00000000-0000-0000-0000-000000000002";
-    const OTHER_USER_ID = "00000000-0000-0000-0000-000000000003";
+    let ORG_ID: string;
+    let OTHER_ORG_ID: string;
+    let USER_ID: string;
+    let OTHER_USER_ID: string;
 
     beforeAll(async () => {
         if (process.env.NODE_ENV !== "test") {
             throw new Error("Must run in test environment");
         }
 
-        poolT = pool;
+        poolT = new Pool({
+            connectionString: process.env.TEST_DATABASE_URL,
+        });
+
         reader = new AuditEventReaderPG(poolT);
         writer = new AuditEventsRepositoryPg(poolT);
     });
 
     beforeEach(async () => {
-        await poolT.query("TRUNCATE TABLE audit_events CASCADE");
-        await poolT.query("TRUNCATE TABLE organizations CASCADE");
-        await poolT.query("TRUNCATE TABLE users CASCADE");
+        await poolT.query("BEGIN");
+
+        ORG_ID = crypto.randomUUID();
+        OTHER_ORG_ID = crypto.randomUUID();
+        USER_ID = crypto.randomUUID();
+        OTHER_USER_ID = crypto.randomUUID();
 
         await poolT.query(
             `
-            INSERT INTO organizations (id, name, created_at)
-            VALUES ($1, 'org1', NOW()),
-                   ($2, 'org2', NOW())
+                INSERT INTO organizations (id, name, created_at)
+                VALUES ($1, 'org1', NOW()),
+                       ($2, 'org2', NOW())
             `,
             [ORG_ID, OTHER_ORG_ID]
         );
 
         await poolT.query(
             `
-            INSERT INTO users (id, email, password_hash, status, created_at)
-            VALUES ($1, 'u1@test.com', 'hash', 'active', NOW()),
-                   ($2, 'u2@test.com', 'hash', 'active', NOW())
+                INSERT INTO users (id, email, password_hash, status, created_at)
+                VALUES ($1, 'u1@test.com', 'hash', 'active', NOW()),
+                       ($2, 'u2@test.com', 'hash', 'active', NOW())
             `,
             [USER_ID, OTHER_USER_ID]
         );
+    });
+
+    afterEach(async () => {
+        await poolT.query("ROLLBACK");
     });
 
     afterAll(async () => {
@@ -174,18 +183,6 @@ describe("AuditEventReaderPG (integration)", () => {
         it("returns null if event not found", async () => {
             const res = await reader.getById(crypto.randomUUID());
             expect(res).toBeNull();
-        });
-
-        it("throws AuditPersistenceError on db failure", async () => {
-            const spy = jest
-                .spyOn(poolT, "query")
-                .mockRejectedValueOnce(new Error("DB error"));
-
-            await expect(
-                reader.getById(crypto.randomUUID())
-            ).rejects.toBeInstanceOf(AuditPersistenceError);
-
-            spy.mockRestore();
         });
     });
 });

@@ -2,19 +2,32 @@ import { Pool } from "pg";
 import { OrganizationTasksRepositoryPG } from "../../src/modules/organization_task/organization_tasks_repository/org_tasks_repo_realization.js";
 import { TaskTitle } from "../../src/modules/organization_task/domain/task_title.js";
 import { TaskDescription } from "../../src/modules/organization_task/domain/task_description.js";
-import { pool } from "../../src/db/pg_pool.js";
-import {Task} from "../../src/modules/organization_task/domain/task_domain.js";
+import { Task } from "../../src/modules/organization_task/domain/task_domain.js";
 
 describe("OrganizationTasksRepositoryPG (integration)", () => {
     let repo: OrganizationTasksRepositoryPG;
     let poolT: Pool;
 
-    const ORG_ID = crypto.randomUUID();
-    const USER_ID = crypto.randomUUID();
+    let ORG_ID: string;
+    let USER_ID: string;
 
     beforeAll(async () => {
-        poolT = pool;
+        if (process.env.NODE_ENV !== "test") {
+            throw new Error("Must be in test environment");
+        }
+
+        poolT = new Pool({
+            connectionString: process.env.TEST_DATABASE_URL
+        });
+
         repo = new OrganizationTasksRepositoryPG(poolT);
+    });
+
+    beforeEach(async () => {
+        await poolT.query("BEGIN");
+
+        ORG_ID = crypto.randomUUID();
+        USER_ID = crypto.randomUUID();
 
         await poolT.query(
             `INSERT INTO organizations (id, name, created_at)
@@ -30,7 +43,7 @@ describe("OrganizationTasksRepositoryPG (integration)", () => {
     });
 
     afterEach(async () => {
-        await poolT.query("TRUNCATE tasks CASCADE");
+        await poolT.query("ROLLBACK");
     });
 
     afterAll(async () => {
