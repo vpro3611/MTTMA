@@ -6,6 +6,7 @@ import {
     OrganizationMemberInsufficientPermissionsError
 } from "../../organization_members/errors/organization_members_domain_error.js";
 import {AuditEventReader} from "../domain/ports/audit_event_reader_interface.js";
+import {OrganizationMember} from "../../organization_members/domain/organization_member_domain.js";
 
 
 export class GetOrganizationAuditUseCase {
@@ -13,15 +14,24 @@ export class GetOrganizationAuditUseCase {
                 private readonly orgMemberRepo: OrganizationMembersRepository,
     ) {}
 
-    execute = async (actorId: string, organizationId: string) => {
-        const actor = await this.orgMemberRepo.findById(actorId, organizationId);
-        if (!actor) {
+    private async actorExists(actorId: string, orgId: string): Promise<OrganizationMember> {
+        const existing = await this.orgMemberRepo.findById(actorId, orgId);
+        if (!existing) {
             throw new ActorNotAMemberError();
         }
+        return existing;
+    }
 
-        if (actor.getRole() === "MEMBER") {
-            throw new OrganizationMemberInsufficientPermissionsError()
+    private checkActorRole(actorRole: string) {
+        if (actorRole === "MEMBER") {
+            throw new OrganizationMemberInsufficientPermissionsError();
         }
+    }
+
+    execute = async (actorId: string, organizationId: string) => {
+        const actor = await this.actorExists(actorId, organizationId);
+
+        this.checkActorRole(actor.getRole());
 
         return await this.auditEventReader.getById(organizationId);
     }

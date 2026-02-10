@@ -1,5 +1,5 @@
 import {OrganizationMembersRepository} from "../domain/ports/organization_memebers_repo_interface.js";
-import {OrgMemRole} from "../domain/organization_member_domain.js";
+import {OrganizationMember, OrgMemRole} from "../domain/organization_member_domain.js";
 import {
     ActorNotAMemberError, CannotPerformActionOnYourselfError,
     InvalidOrganizationMemberRoleError,
@@ -17,16 +17,33 @@ export class ChangeOrgMemberRoleUseCase {
         throw new InvalidOrganizationMemberRoleError()
     }
 
+    private checkForSelfAssign(actorUserId: string, targetUserId: string) {
+        if (actorUserId === targetUserId) throw new CannotPerformActionOnYourselfError();
+    }
+
+    private async actorExists(actorId: string, orgId: string): Promise<OrganizationMember> {
+        const existing = await this.orgMemberRepo.findById(actorId, orgId) ;
+        if (!existing) {
+            throw new ActorNotAMemberError();
+        }
+        return existing;
+    }
+
+    private async targetExists(targetId: string, orgId: string): Promise<OrganizationMember> {
+        const existing = await this.orgMemberRepo.findById(targetId, orgId) ;
+        if (!existing) {
+            throw new TargetNotAMemberError();
+        }
+        return existing;
+    }
 
     execute = async (actorUserId: string, targetUserId: string, orgId: string, targetRole: string) => {
-        if (actorUserId === targetUserId) throw new CannotPerformActionOnYourselfError();
+        this.checkForSelfAssign(actorUserId, targetUserId);
         const targetRoleParsed = this.parseRole(targetRole);
 
-        const actorMember = await this.orgMemberRepo.findById(actorUserId, orgId);
-        if (!actorMember) throw new ActorNotAMemberError()
+        const actorMember = await this.actorExists(actorUserId, orgId);
 
-        const targetMember = await this.orgMemberRepo.findById(targetUserId, orgId);
-        if (!targetMember) throw new TargetNotAMemberError()
+        const targetMember = await this.targetExists(targetUserId, orgId);
 
         targetMember.changeRole(actorMember.getRole(), targetRoleParsed);
 

@@ -4,25 +4,38 @@ import {
     CannotPerformActionOnYourselfError,
     TargetNotAMemberError
 } from "../errors/organization_members_domain_error.js";
+import {OrganizationMember} from "../domain/organization_member_domain.js";
 
 
 export class FireOrgMemberUseCase {
     constructor(private readonly orgMemberRepo: OrganizationMembersRepository) {}
 
-    execute = async (actorUserId: string, organizationId: string, targetUserId: string) => {
-        if (actorUserId === targetUserId) {
-            throw new CannotPerformActionOnYourselfError();
-        }
+    private checkSelfAssign(actorUserId: string, targetUserId: string) {
+        if (actorUserId === targetUserId) throw new CannotPerformActionOnYourselfError();
+    }
 
-        const actorMember = await this.orgMemberRepo.findById(actorUserId, organizationId);
-        if (!actorMember) {
+    private async actorExists(actorId: string, orgId: string): Promise<OrganizationMember> {
+        const existing = await this.orgMemberRepo.findById(actorId, orgId) ;
+        if (!existing) {
             throw new ActorNotAMemberError();
         }
+        return existing;
+    }
 
-        const targetMember = await this.orgMemberRepo.findById(targetUserId, organizationId);
-        if (!targetMember) {
+    private async targetExists(targetId: string, orgId: string): Promise<OrganizationMember> {
+        const existing = await this.orgMemberRepo.findById(targetId, orgId) ;
+        if (!existing) {
             throw new TargetNotAMemberError();
         }
+        return existing;
+    }
+
+    execute = async (actorUserId: string, organizationId: string, targetUserId: string) => {
+        this.checkSelfAssign(actorUserId, targetUserId);
+
+        const actorMember = await this.actorExists(actorUserId, organizationId);
+
+        const targetMember = await this.targetExists(targetUserId, organizationId);
 
         targetMember.assertCanBeFiredBy(actorMember.getRole());
 

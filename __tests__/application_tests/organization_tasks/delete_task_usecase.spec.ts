@@ -63,8 +63,11 @@ describe("DeleteTaskUseCase (application)", () => {
 
         taskRepo.delete.mockResolvedValue({ id: TASK_ID });
 
-        await expect(useCase.execute(baseDto))
-            .resolves.toEqual({ id: TASK_ID });
+        await expect(
+            useCase.execute(baseDto)
+        ).resolves.toMatchObject({ id: TASK_ID });
+
+        expect(taskRepo.delete).toHaveBeenCalledWith(TASK_ID, ORG_ID);
     });
 
     it("should allow ADMIN to delete MEMBER task", async () => {
@@ -78,10 +81,12 @@ describe("DeleteTaskUseCase (application)", () => {
 
         taskRepo.delete.mockResolvedValue({ id: TASK_ID });
 
-        await expect(useCase.execute({
-            ...baseDto,
-            actorId: ADMIN_ID,
-        })).resolves.toEqual({ id: TASK_ID });
+        await expect(
+            useCase.execute({
+                ...baseDto,
+                actorId: ADMIN_ID,
+            })
+        ).resolves.toMatchObject({ id: TASK_ID });
     });
 
     it("should allow MEMBER to delete own task", async () => {
@@ -95,10 +100,12 @@ describe("DeleteTaskUseCase (application)", () => {
 
         taskRepo.delete.mockResolvedValue({ id: TASK_ID });
 
-        await expect(useCase.execute({
-            ...baseDto,
-            actorId: MEMBER_ID,
-        })).resolves.toEqual({ id: TASK_ID });
+        await expect(
+            useCase.execute({
+                ...baseDto,
+                actorId: MEMBER_ID,
+            })
+        ).resolves.toMatchObject({ id: TASK_ID });
     });
 
     /* ===================== CONTEXT ERRORS ===================== */
@@ -106,16 +113,18 @@ describe("DeleteTaskUseCase (application)", () => {
     it("should throw if actor is not a member", async () => {
         memberRepo.findById.mockResolvedValue(null);
 
-        await expect(useCase.execute(baseDto))
-            .rejects.toBeInstanceOf(ActorNotAMemberError);
+        await expect(
+            useCase.execute(baseDto)
+        ).rejects.toBeInstanceOf(ActorNotAMemberError);
     });
 
     it("should throw if task does not exist", async () => {
         memberRepo.findById.mockResolvedValue(mockMember("OWNER"));
         taskRepo.findById.mockResolvedValue(null);
 
-        await expect(useCase.execute(baseDto))
-            .rejects.toBeInstanceOf(TaskNotFoundError);
+        await expect(
+            useCase.execute(baseDto)
+        ).rejects.toBeInstanceOf(TaskNotFoundError);
     });
 
     it("should throw if assignee is not a member", async () => {
@@ -127,13 +136,14 @@ describe("DeleteTaskUseCase (application)", () => {
             mockTask(MEMBER_ID, MEMBER_ID)
         );
 
-        await expect(useCase.execute(baseDto))
-            .rejects.toBeInstanceOf(TargetNotAMemberError);
+        await expect(
+            useCase.execute(baseDto)
+        ).rejects.toBeInstanceOf(TargetNotAMemberError);
     });
 
     /* ===================== RBAC ===================== */
 
-    it("should NOT allow MEMBER to delete чужую задачу", async () => {
+    it("should NOT allow MEMBER to delete foreign task", async () => {
         memberRepo.findById
             .mockResolvedValueOnce(mockMember("MEMBER"))
             .mockResolvedValueOnce(mockMember("MEMBER"));
@@ -142,10 +152,12 @@ describe("DeleteTaskUseCase (application)", () => {
             mockTask(OWNER_ID, OWNER_ID)
         );
 
-        await expect(useCase.execute({
-            ...baseDto,
-            actorId: MEMBER_ID,
-        })).rejects.toBeInstanceOf(
+        await expect(
+            useCase.execute({
+                ...baseDto,
+                actorId: MEMBER_ID,
+            })
+        ).rejects.toBeInstanceOf(
             OrganizationMemberInsufficientPermissionsError
         );
     });
@@ -159,10 +171,12 @@ describe("DeleteTaskUseCase (application)", () => {
             mockTask(ADMIN_ID, ADMIN_ID)
         );
 
-        await expect(useCase.execute({
-            ...baseDto,
-            actorId: ADMIN_ID,
-        })).rejects.toBeInstanceOf(
+        await expect(
+            useCase.execute({
+                ...baseDto,
+                actorId: ADMIN_ID,
+            })
+        ).rejects.toBeInstanceOf(
             OrganizationMemberInsufficientPermissionsError
         );
     });
@@ -180,7 +194,8 @@ describe("DeleteTaskUseCase (application)", () => {
 
         taskRepo.delete.mockResolvedValue(null);
 
-        await expect(useCase.execute(baseDto))
-            .rejects.toBeInstanceOf(TaskNotFoundError);
+        await expect(
+            useCase.execute(baseDto)
+        ).rejects.toBeInstanceOf(TaskNotFoundError);
     });
 });

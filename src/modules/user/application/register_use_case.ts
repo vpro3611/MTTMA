@@ -12,11 +12,15 @@ export class RegisterUseCase {
                 private readonly hasher: PasswordHasher,
     ){}
 
+    private async userExists(email: string) {
+        const exists = await this.userRepository.findByEmail(Email.create(email));
+        if (exists) throw new UserAlreadyExistsError();
+    }
+
     async execute(email: string, plainPass: string) {
         const emailVerified = Email.create(email);
 
-        const existingUser = await this.userRepository.findByEmail(emailVerified);
-        if (existingUser) throw new UserAlreadyExistsError();
+        await this.userExists(email);
 
         const verifiedPassword = Password.validatePlain(plainPass);
         const passwordHash = await this.hasher.hash(verifiedPassword);

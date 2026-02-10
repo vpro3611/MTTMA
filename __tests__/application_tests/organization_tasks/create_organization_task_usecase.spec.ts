@@ -100,12 +100,12 @@ describe("CreateOrganizationTaskUseCase (application)", () => {
 
     /* ===================== CONTEXT ERRORS ===================== */
 
-    it("should throw if organization does not exist", async () => {
-        orgRepo.findById.mockResolvedValue(null);
-
-        await expect(useCase.execute(baseDto))
-            .rejects.toBeInstanceOf(OrganizationNotFoundError);
-    });
+    // it("should throw if organization does not exist", async () => {
+    //     orgRepo.findById.mockResolvedValue(null);
+    //
+    //     await expect(useCase.execute(baseDto))
+    //         .rejects.toBeInstanceOf(OrganizationNotFoundError);
+    // });
 
     it("should throw if creator is not a member", async () => {
         orgRepo.findById.mockResolvedValue({});

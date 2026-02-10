@@ -12,6 +12,8 @@ import {
     ActorNotAMemberError, OrganizationMemberInsufficientPermissionsError,
     TargetNotAMemberError
 } from "../../organization_members/errors/organization_members_domain_error.js";
+import {OrganizationMember} from "../../organization_members/domain/organization_member_domain.js";
+import {TaskPermissionPolicy} from "../domain/policies/task_permission_policy.js";
 
 
 export class CreateOrganizationTaskUseCase {
@@ -24,26 +26,36 @@ export class CreateOrganizationTaskUseCase {
         return assignedTo ?? createdBy;
     }
 
+    private async creatorExists(actorId: string, orgId: string): Promise<OrganizationMember> {
+        const creator = await this.orgMemberRepo.findById(actorId, orgId);
+        if (!creator) throw new ActorNotAMemberError();
+        return creator;
+    }
+
+    private async assigneeExists(assigneeId: string, orgId: string): Promise<OrganizationMember> {
+        const assignee = await this.orgMemberRepo.findById(assigneeId, orgId);
+        if (!assignee) throw new TargetNotAMemberError();
+        return assignee;
+    }
+
     execute = async (createOrgTaskDto: CreateOrgTaskDataInputDTO) => {
 
         const toWhoWeAssign = this.parseAssignee(createOrgTaskDto.assignedTo, createOrgTaskDto.createdBy);
 
-        const existingOrg = await this.orgRepo.findById(createOrgTaskDto.organizationId);
-        if (!existingOrg) throw new OrganizationNotFoundError();
+       // const existingOrg = await this.orgRepo.findById(createOrgTaskDto.organizationId);
+       // if (!existingOrg) throw new OrganizationNotFoundError();
 
-        const creator = await this.orgMemberRepo.findById(createOrgTaskDto.createdBy, createOrgTaskDto.organizationId);
-        if (!creator) throw new ActorNotAMemberError();
+        const creator = await this.creatorExists(createOrgTaskDto.createdBy, createOrgTaskDto.organizationId);
 
-        const assignee = await this.orgMemberRepo.findById(toWhoWeAssign, createOrgTaskDto.organizationId);
-        if (!assignee) throw new TargetNotAMemberError();
+        const assignee = await this.assigneeExists(toWhoWeAssign, createOrgTaskDto.organizationId);
 
-        if (creator.getRole() === "MEMBER" && toWhoWeAssign !== createOrgTaskDto.createdBy) {
-            throw new OrganizationMemberInsufficientPermissionsError();
-        }
 
-        if (assignee.getRole() === "ADMIN" && creator.getRole() !== "OWNER") {
-            throw new OrganizationMemberInsufficientPermissionsError();
-        }
+        TaskPermissionPolicy.canChangeTaskElements(
+            creator.getRole(),
+            createOrgTaskDto.createdBy,
+            toWhoWeAssign,
+            assignee.getRole()
+        );
 
         const validTaskTitle = TaskTitle.create(createOrgTaskDto.title);
         const validTaskDescription = TaskDescription.create(createOrgTaskDto.description);

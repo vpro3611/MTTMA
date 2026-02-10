@@ -7,6 +7,7 @@ import {
     ActorNotAMemberError,
     OrganizationMemberInsufficientPermissionsError
 } from "../../organization_members/errors/organization_members_domain_error.js";
+import {OrganizationMember} from "../../organization_members/domain/organization_member_domain.js";
 
 
 export class GetFilteredAuditOrgUseCase {
@@ -25,15 +26,24 @@ export class GetFilteredAuditOrgUseCase {
         };
     }
 
-    execute = async (queryDto: GetAuditEventQuery) => {
-        const actor = await this.orgMemberRepo.findById(queryDto.actorId, queryDto.orgId);
-        if (!actor) {
+    private async actorExists(actorId: string, orgId: string): Promise<OrganizationMember> {
+        const existing = await this.orgMemberRepo.findById(actorId, orgId);
+        if (!existing) {
             throw new ActorNotAMemberError();
         }
+        return existing;
+    }
 
-        if (actor.getRole() === "MEMBER") {
+    private checkActorRole(actorRole: string) {
+        if (actorRole === "MEMBER") {
             throw new OrganizationMemberInsufficientPermissionsError();
         }
+    }
+
+    execute = async (queryDto: GetAuditEventQuery) => {
+        const actor = await this.actorExists(queryDto.actorId, queryDto.orgId);
+
+        this.checkActorRole(actor.getRole());
 
         const normalizedFilters = this.normalizeFilters(queryDto["filters"]);
 
