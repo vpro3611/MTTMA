@@ -52,6 +52,8 @@ describe('OrganizationMemberRepositoryPG (integration)', () => {
 
     afterAll(async () => {
         await pool.query('TRUNCATE TABLE organization_members CASCADE');
+        await pool.query('TRUNCATE TABLE organizations CASCADE');
+        await pool.query('TRUNCATE TABLE users CASCADE');
         await pool.end();
     });
 
