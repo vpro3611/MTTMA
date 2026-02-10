@@ -4,10 +4,21 @@ import {TaskDescriptionTooLongError, TaskDescriptionTooShortError} from "../erro
 export class TaskDescription {
     private constructor(private readonly value: string) {}
 
+    private static readonly MAX_LENGTH = 500;
+    private static readonly MIN_LENGTH = 1;
+
+    private static checkMaxLength(desc: string) {
+        if (desc.length > this.MAX_LENGTH) throw new TaskDescriptionTooLongError(this.MAX_LENGTH);
+    }
+
+    private static checkMinLength(desc: string) {
+        if (desc.length < this.MIN_LENGTH) throw new TaskDescriptionTooShortError(this.MIN_LENGTH);
+    }
+
     static create(desc: string) {
         const trimmedDesc = desc.trim();
-        if (trimmedDesc.length > 500) throw new TaskDescriptionTooLongError(500);
-        if (trimmedDesc.length < 1) throw new TaskDescriptionTooShortError(1);
+        TaskDescription.checkMaxLength(trimmedDesc);
+        TaskDescription.checkMinLength(trimmedDesc);
         return new TaskDescription(trimmedDesc);
     }
 
