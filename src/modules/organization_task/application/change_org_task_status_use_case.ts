@@ -7,8 +7,10 @@ import {
     ActorNotAMemberError,
     OrganizationMemberInsufficientPermissionsError, TargetNotAMemberError
 } from "../../organization_members/errors/organization_members_domain_error.js";
-import {TaskStatus} from "../domain/task_domain.js";
+import {Task, TaskStatus} from "../domain/task_domain.js";
 import {InvalidTaskStatusError, TaskNotFoundError} from "../errors/application_errors.js";
+import {OrganizationMember} from "../../organization_members/domain/organization_member_domain.js";
+import {TaskPermissionPolicy} from "../domain/policies/task_permission_policy.js";
 
 
 export class ChangeOrgTaskStatusUseCase {
@@ -29,31 +31,44 @@ export class ChangeOrgTaskStatusUseCase {
         throw new InvalidTaskStatusError(status);
     }
 
-
-
-    execute = async (statusDto: ChangeStatusDTO) => {
-        const orgMember = await this.orgMemberRepo.findById(statusDto.actorId, statusDto.orgId);
-        if (!orgMember) {
-            throw new ActorNotAMemberError()
+    private async orgMemberExists(actorId: string, orgId: string): Promise<OrganizationMember> {
+        const existing = await this.orgMemberRepo.findById(actorId, orgId);
+        if (!existing) {
+            throw new ActorNotAMemberError();
         }
+        return existing;
+    }
 
-        const task = await this.orgTaskRepo.findById(statusDto.orgTaskId, statusDto.orgId);
+
+    private async taskExists(taskId: string, orgId: string): Promise<Task> {
+        const task = await this.orgTaskRepo.findById(taskId, orgId);
         if (!task) {
             throw new TaskNotFoundError();
         }
+        return task;
+    }
 
-        const assignee = await this.orgMemberRepo.findById(task.getAssignedTo(), statusDto.orgId);
+    private async assigneeExists(assigneeId: string, orgId: string): Promise<OrganizationMember> {
+        const assignee = await this.orgMemberRepo.findById(assigneeId, orgId);
         if (!assignee) {
             throw new TargetNotAMemberError();
         }
+        return assignee;
+    }
 
-        if (orgMember.getRole() === "MEMBER" && statusDto.actorId !== task.getCreatedBy()) {
-            throw new OrganizationMemberInsufficientPermissionsError()
-        }
+    execute = async (statusDto: ChangeStatusDTO) => {
+        const orgMember = await this.orgMemberExists(statusDto.actorId, statusDto.orgId);
 
-        if (orgMember.getRole() === "ADMIN" && assignee.getRole() === "ADMIN") {
-            throw new OrganizationMemberInsufficientPermissionsError()
-        }
+        const task = await this.taskExists(statusDto.orgTaskId, statusDto.orgId);
+
+        const assignee = await this.assigneeExists(task.getAssignedTo(), statusDto.orgId);
+
+        TaskPermissionPolicy.canChangeTaskElements(
+            orgMember.getRole(),
+            statusDto.actorId,
+            task.getCreatedBy(),
+            assignee.getRole()
+        );
 
         const parsedStatus = this.parseStatus(statusDto.newStatus);
 
