@@ -3,6 +3,7 @@ import { UserRepositoryPG } from "../../src/modules/user/repository_realization/
 import { User } from "../../src/modules/user/domain/user_domain.js";
 import { Email } from "../../src/modules/user/domain/email.js";
 import { Password } from "../../src/modules/user/domain/password.js";
+import {UserStatus} from "../../src/modules/user/domain/user_status.js";
 
 describe('UserRepositoryPG (integration)', () => {
 
@@ -39,7 +40,7 @@ describe('UserRepositoryPG (integration)', () => {
             crypto.randomUUID(),
             Email.create('test1@example.com'),
             Password.fromHash('password123'),
-            'active',
+            UserStatus.ACTIVE,
             new Date()
         );
 
@@ -50,7 +51,7 @@ describe('UserRepositoryPG (integration)', () => {
         expect(result).not.toBeNull();
         expect(result!.id).toBe(user.id);
         expect(result!.getEmail().getValue()).toBe('test1@example.com');
-        expect(result!.getStatus()).toBe('active');
+        expect(result!.getStatus()).toBe(UserStatus.ACTIVE);
     });
 
     it('should return null when user is not found by id', async () => {
@@ -63,7 +64,7 @@ describe('UserRepositoryPG (integration)', () => {
             crypto.randomUUID(),
             Email.create('test2@example.com'),
             Password.fromHash('password123'),
-            'active',
+            UserStatus.ACTIVE,
             new Date()
         );
 
@@ -92,7 +93,7 @@ describe('UserRepositoryPG (integration)', () => {
             id,
             Email.create('old@example.com'),
             Password.fromHash('oldpassword'),
-            'active',
+            UserStatus.ACTIVE,
             new Date()
         );
 
@@ -102,7 +103,7 @@ describe('UserRepositoryPG (integration)', () => {
             id,
             Email.create('new@example.com'),
             Password.fromHash('newpassword'),
-            'banned',
+            UserStatus.BANNED,
             user.getCreatedAt()
         );
 
@@ -111,7 +112,7 @@ describe('UserRepositoryPG (integration)', () => {
         const result = await repo.findById(id);
 
         expect(result!.getEmail().getValue()).toBe('new@example.com');
-        expect(result!.getStatus()).toBe('banned');
+        expect(result!.getStatus()).toBe(UserStatus.BANNED);
     });
 
     it('should fail when saving user with duplicate email', async () => {
@@ -119,7 +120,7 @@ describe('UserRepositoryPG (integration)', () => {
             crypto.randomUUID(),
             Email.create('unique@example.com'),
             Password.fromHash('password123'),
-            'active',
+            UserStatus.ACTIVE,
             new Date()
         );
 
@@ -127,7 +128,7 @@ describe('UserRepositoryPG (integration)', () => {
             crypto.randomUUID(),
             Email.create('unique@example.com'),
             Password.fromHash('password456'),
-            'active',
+            UserStatus.ACTIVE,
             new Date()
         );
 

@@ -2,6 +2,7 @@ import {User} from "../../../src/modules/user/domain/user_domain.js";
 import {Email} from "../../../src/modules/user/domain/email.js";
 import {Password} from "../../../src/modules/user/domain/password.js";
 import {UserIsBannedError} from "../../../src/modules/user/errors/user_domain_error.js";
+import {UserStatus} from "../../../src/modules/user/domain/user_status.js";
 
 describe('User (domain)', () => {
 
@@ -15,7 +16,7 @@ describe('User (domain)', () => {
     it('should create user with active status', () => {
         const user = User.create(validEmail, validPassword);
 
-        expect(user.getStatus()).toBe('active');
+        expect(user.getStatus()).toBe(UserStatus.ACTIVE);
     });
 
     /**
@@ -53,7 +54,7 @@ describe('User (domain)', () => {
             'user-id',
             validEmail,
             validPassword,
-            'banned',
+            UserStatus.BANNED,
             new Date()
         );
 
@@ -73,7 +74,7 @@ describe('User (domain)', () => {
             'user-id',
             validEmail,
             validPassword,
-            'banned',
+            UserStatus.BANNED,
             new Date()
         );
 
@@ -97,7 +98,7 @@ describe('User (domain)', () => {
             'user-id',
             validEmail,
             validPassword,
-            'suspended',
+            UserStatus.SUSPENDED,
             new Date()
         );
 
