@@ -7,7 +7,8 @@ import {
     ActorNotAMemberError,
     OrganizationMemberInsufficientPermissionsError, TargetNotAMemberError
 } from "../../organization_members/errors/organization_members_domain_error.js";
-import {Task, TaskStatus} from "../domain/task_domain.js";
+import {Task} from "../domain/task_domain.js";
+import {TaskStatus} from "../domain/task_status.js";
 import {InvalidTaskStatusError, TaskNotFoundError} from "../errors/application_errors.js";
 import {OrganizationMember} from "../../organization_members/domain/organization_member_domain.js";
 import {TaskPermissionPolicy} from "../domain/policies/task_permission_policy.js";
@@ -23,7 +24,7 @@ export class ChangeOrgTaskStatusUseCase {
             status === "TODO" ||
             status === "IN_PROGRESS" ||
             status === "COMPLETED" ||
-            status === "CANCELED"
+            status === "CANCELLED"
         ) {
             return status;
         }

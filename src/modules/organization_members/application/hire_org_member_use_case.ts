@@ -1,5 +1,5 @@
 import {OrganizationMembersRepository} from "../domain/ports/organization_memebers_repo_interface.js";
-import {OrganizationMember, OrgMemRole} from "../domain/organization_member_domain.js";
+import {OrganizationMember} from "../domain/organization_member_domain.js";
 import {
     ActorNotAMemberError,
     CannotAssignRole, CannotPerformActionOnYourselfError,
@@ -10,6 +10,7 @@ import {User} from "../../user/domain/user_domain.js";
 import {UserRepository} from "../../user/domain/ports/user_repo_interface.js";
 import {UserNotFoundError} from "../errors/organization_members_repo_errors.js";
 import {UserResponseDto} from "../../user/DTO/user_response_dto.js";
+import {OrgMemsRole} from "../domain/org_members_role.js";
 
 
 export class HireOrgMemberUseCase {
@@ -17,10 +18,10 @@ export class HireOrgMemberUseCase {
                 private readonly userRepo: UserRepository,
     ) {}
 
-    private parseRole(role?: string): OrgMemRole | undefined {
+    private parseRole(role?: string): OrgMemsRole | undefined {
         if (!role) return undefined;
 
-        if (role === "OWNER" || role === "ADMIN" || role === "MEMBER") {
+        if (role === OrgMemsRole.OWNER || role === OrgMemsRole.ADMIN || role === OrgMemsRole.MEMBER) {
             return role;
         }
 
@@ -55,7 +56,7 @@ export class HireOrgMemberUseCase {
         return actorMember;
     }
 
-    private assertRoleAndActor(parsedRole: OrgMemRole | undefined, actorMember: OrganizationMember) {
+    private assertRoleAndActor(parsedRole: OrgMemsRole | undefined, actorMember: OrganizationMember) {
         if (parsedRole === "OWNER") {
             throw new CannotAssignRole(parsedRole);
         }
@@ -67,7 +68,7 @@ export class HireOrgMemberUseCase {
         }
     }
 
-    execute = async (actorUserId: string, organizationId: string, targetUserId: string, role?: OrgMemRole) => {
+    execute = async (actorUserId: string, organizationId: string, targetUserId: string, role?: OrgMemsRole) => {
         const parsedRole = this.parseRole(role);
 
         this.checkForSelfAssign(actorUserId, targetUserId);

@@ -1,27 +1,27 @@
 
-import { OrgMemRole } from "../../../organization_members/domain/organization_member_domain.js"
 import {
     OrganizationMemberInsufficientPermissionsError
 } from
         "../../../organization_members/errors/organization_members_domain_error.js";
+import {OrgMemsRole} from "../../../organization_members/domain/org_members_role.js";
 
 export class TaskPermissionPolicy {
 
-    private static readonly ROLE_RANK: Record<OrgMemRole, number> = {
+    private static readonly ROLE_RANK: Record<OrgMemsRole, number> = {
         OWNER: 3,
         ADMIN: 2,
         MEMBER: 1,
     };
 
     static canChangeTaskElements(
-        actorRole: OrgMemRole,
+        actorRole: OrgMemsRole,
         actorId: string,
         taskCreatedBy: string,
-        assigneeRole: OrgMemRole,
+        assigneeRole: OrgMemsRole,
     ): void {
 
         // MEMBER: only own tasks
-        if (actorRole === "MEMBER") {
+        if (actorRole === OrgMemsRole.MEMBER) {
             if (actorId !== taskCreatedBy) {
                 throw new OrganizationMemberInsufficientPermissionsError();
             }
@@ -32,7 +32,7 @@ export class TaskPermissionPolicy {
         if (
             TaskPermissionPolicy.ROLE_RANK[actorRole] <=
             TaskPermissionPolicy.ROLE_RANK[assigneeRole] &&
-            actorRole !== "OWNER"
+            actorRole !== OrgMemsRole.OWNER
         ) {
             throw new OrganizationMemberInsufficientPermissionsError();
         }

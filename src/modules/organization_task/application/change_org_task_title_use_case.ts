@@ -47,7 +47,6 @@ export class ChangeOrgTaskTitleUseCase {
 
         const orgMember = await this.orgMemberExists(titleDto.actorId, titleDto.orgId);
 
-
         const task = await this.taskExists(titleDto.orgTaskId, titleDto.orgId);
 
         const assignee = await this.assigneeExists(task.getAssignedTo(), titleDto.orgId);

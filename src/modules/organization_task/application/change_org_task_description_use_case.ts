@@ -9,9 +9,10 @@ import {
 } from "../../organization_members/errors/organization_members_domain_error.js";
 import {TaskDescription} from "../domain/task_description.js";
 import {TaskNotFoundError} from "../errors/application_errors.js";
-import {OrganizationMember, OrgMemRole} from "../../organization_members/domain/organization_member_domain.js";
+import {OrganizationMember} from "../../organization_members/domain/organization_member_domain.js";
 import {Task} from "../domain/task_domain.js";
 import {TaskPermissionPolicy} from "../domain/policies/task_permission_policy.js";
+import {OrgMemsRole} from "../../organization_members/domain/org_members_role.js";
 
 export class ChangeOrgTaskDescriptionUseCase {
     constructor(

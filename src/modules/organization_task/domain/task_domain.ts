@@ -8,8 +8,9 @@ import {
     CannotChangeCompletedError,
     UnchangeableDueToStatusError
 } from "../errors/task_domain_errors.js";
+import {TaskStatus} from "./task_status.js";
 
-export type TaskStatus = "TODO" | "COMPLETED" | "CANCELED" | "IN_PROGRESS"
+// export type TaskStatus = "TODO" | "COMPLETED" | "CANCELED" | "IN_PROGRESS"
 
 export class Task {
     constructor(
@@ -24,17 +25,17 @@ export class Task {
     ) {}
 
     private checkTaskStatus = (taskStatus: TaskStatus) => {
-        if (taskStatus === "CANCELED" || taskStatus === "COMPLETED") {
+        if (taskStatus === TaskStatus.CANCELLED || taskStatus === TaskStatus.COMPLETED) {
             throw new UnchangeableDueToStatusError(taskStatus);
         }
     }
 
     private assertStatusForChange = (newStatus: TaskStatus) => {
-        if (this.status === "CANCELED") {
+        if (this.status === TaskStatus.CANCELLED) {
             throw new CannotChangeCancelledError()
         }
 
-        if (this.status === "COMPLETED" && newStatus === "IN_PROGRESS") {
+        if (this.status === TaskStatus.COMPLETED && newStatus === TaskStatus.IN_PROGRESS) {
             throw new CannotChangeCompletedError()
         }
     }
@@ -45,7 +46,7 @@ export class Task {
             organizationId,
             title,
             description,
-            "TODO",
+            TaskStatus.TODO,
             assignedTo,
             createdBy,
             new Date()

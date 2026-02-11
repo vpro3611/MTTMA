@@ -1,19 +1,20 @@
 import {OrganizationMemberInsufficientPermissionsError} from "../errors/organization_members_domain_error.js";
+import {OrgMemsRole} from "./org_members_role.js";
 
 
-export type OrgMemRole = "OWNER" | "ADMIN" | "MEMBER";
+
 
 export class OrganizationMember {
     constructor(
         public readonly organizationId: string,
         public readonly userId: string,
-        private role: OrgMemRole,
+        private role: OrgMemsRole,
         private readonly joinedAt: Date
     ){}
 
 
-    private canChangeRole(actorRole: OrgMemRole, targetRole: OrgMemRole): boolean {
-        const hierarchy = ["MEMBER", "ADMIN", "OWNER"];
+    private canChangeRole(actorRole: OrgMemsRole, targetRole: OrgMemsRole): boolean {
+        const hierarchy = [OrgMemsRole.MEMBER, OrgMemsRole.ADMIN, OrgMemsRole.OWNER];
 
         const actorIndex = hierarchy.indexOf(actorRole);
         const targetIndex = hierarchy.indexOf(this.role);
@@ -24,23 +25,23 @@ export class OrganizationMember {
         )
     }
 
-    static hire(organizationId: string, userId: string, role?: OrgMemRole) {
+    static hire(organizationId: string, userId: string, role?: OrgMemsRole) {
         return new OrganizationMember(
             organizationId,
             userId,
-            role ?? "MEMBER",
+            role ?? OrgMemsRole.MEMBER,
             new Date()
         )
     }
 
 
-    assertCanBeFiredBy = (actorRole: OrgMemRole) => {
-        if (actorRole !== "OWNER") {
+    assertCanBeFiredBy = (actorRole: OrgMemsRole) => {
+        if (actorRole !== OrgMemsRole.OWNER) {
             throw new OrganizationMemberInsufficientPermissionsError();
         }
     }
 
-    changeRole = (actorRole: OrgMemRole, newRole: OrgMemRole) => {
+    changeRole = (actorRole: OrgMemsRole, newRole: OrgMemsRole) => {
         if (!this.canChangeRole(actorRole, newRole)) {
             throw new OrganizationMemberInsufficientPermissionsError();
         }
