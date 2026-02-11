@@ -1,17 +1,19 @@
 import {OrganizationMembersRepository} from "../domain/ports/organization_memebers_repo_interface.js";
-import {OrganizationMember, OrgMemRole} from "../domain/organization_member_domain.js";
+import {OrganizationMember} from "../domain/organization_member_domain.js";
+
 import {
     ActorNotAMemberError, CannotPerformActionOnYourselfError,
     InvalidOrganizationMemberRoleError,
     TargetNotAMemberError
 } from "../errors/organization_members_domain_error.js";
+import {OrgMemsRole} from "../domain/org_members_role.js";
 
 
 export class ChangeOrgMemberRoleUseCase {
     constructor(private readonly orgMemberRepo: OrganizationMembersRepository) {}
 
-    private parseRole(role: string): OrgMemRole {
-        if (role === "OWNER" || role === "ADMIN" || role === "MEMBER") {
+    private parseRole(role: string): OrgMemsRole {
+        if (role === OrgMemsRole.OWNER|| role === OrgMemsRole.ADMIN || role === OrgMemsRole.MEMBER) {
             return role;
         }
         throw new InvalidOrganizationMemberRoleError()

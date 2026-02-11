@@ -1,5 +1,6 @@
-import { OrganizationMember, OrgMemRole } from "../../../src/modules/organization_members/domain/organization_member_domain.js";
+import { OrganizationMember} from "../../../src/modules/organization_members/domain/organization_member_domain.js";
 import { OrganizationMemberInsufficientPermissionsError } from "../../../src/modules/organization_members/errors/organization_members_domain_error.js";
+import {OrgMemsRole} from "../../../src/modules/organization_members/domain/org_members_role.js";
 
 describe('OrganizationMember (domain)', () => {
 

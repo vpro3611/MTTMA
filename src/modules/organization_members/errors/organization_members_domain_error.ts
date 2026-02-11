@@ -1,4 +1,4 @@
-import {OrgMemRole} from "../domain/organization_member_domain.js";
+import {OrgMemsRole} from "../domain/org_members_role.js";
 
 
 export class OrganizationMembersDomainError extends Error {
@@ -44,7 +44,7 @@ export class CannotPerformActionOnYourselfError extends OrganizationMembersDomai
 }
 
 export class CannotAssignRole extends OrganizationMembersDomainError {
-    constructor(role: OrgMemRole) {
+    constructor(role: OrgMemsRole) {
         super(`Cannot assign role ${role}`);
         this.name = "CannotAssignRole";
     }
