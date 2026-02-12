@@ -41,7 +41,7 @@ describe('ChangeUserEmailUseCase', () => {
         expect(userRepository.findById).toHaveBeenCalledWith(user.id);
         expect(userRepository.save).toHaveBeenCalledWith(user);
 
-        expect(result.email.getValue()).toBe('new@example.com');
+        expect(result.email).toBe('new@example.com');
         expect(result.status).toBe(UserStatus.ACTIVE);
     });
 

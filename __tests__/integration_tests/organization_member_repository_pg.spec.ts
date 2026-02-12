@@ -183,5 +183,58 @@ describe('OrganizationMemberRepositoryPG (integration)', () => {
             OrganizationMemberNotFoundError
         );
     });
+    /**
+     * getAllMembers
+     */
+
+    it('should return all members of organization', async () => {
+
+        const userId2 = crypto.randomUUID();
+
+        // создаём второго пользователя
+        await poolT.query(
+            `INSERT INTO users (id, email, password_hash, status, created_at)
+         VALUES ($1, $2, $3, $4, NOW())`,
+            [
+                userId2,
+                'member2@test.com',
+                'hashed-password',
+                'active',
+            ]
+        );
+
+        const member1 = OrganizationMember.hire(
+            orgId,
+            userId,
+            'MEMBER'
+        );
+
+        const member2 = OrganizationMember.hire(
+            orgId,
+            userId2,
+            'ADMIN'
+        );
+
+        await repo.save(member1);
+        await repo.save(member2);
+
+        const members = await repo.getAllMembers(orgId);
+
+        expect(members).toHaveLength(2);
+
+        const roles = members.map(m => m.getRole());
+
+        expect(roles).toContain('MEMBER');
+        expect(roles).toContain('ADMIN');
+    });
+
+
+    it('should return empty array if organization has no members', async () => {
+
+        const members = await repo.getAllMembers(orgId);
+
+        expect(members).toEqual([]);
+    });
+
 
 });

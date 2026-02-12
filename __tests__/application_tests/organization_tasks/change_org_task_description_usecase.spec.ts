@@ -32,6 +32,7 @@ describe("ChangeOrgTaskDescriptionUseCase (application)", () => {
     let taskRepo: any;
     let memberRepo: any;
     let useCase: ChangeOrgTaskDescriptionUseCase;
+
     beforeEach(() => {
         taskRepo = {
             findById: jest.fn(),
@@ -64,6 +65,19 @@ describe("ChangeOrgTaskDescriptionUseCase (application)", () => {
             createdBy
         );
 
+    const expectDtoFromTask = (result: any, task: Task) => {
+        expect(result).toMatchObject({
+            id: task.id,
+            organizationId: task.organizationId,
+            title: task.getTitle().getValue(),
+            description: "New description",
+            status: task.getStatus(),
+            assignedTo: task.getAssignedTo(),
+            createdBy: task.getCreatedBy(),
+        });
+        expect(result.createdAt).toBeInstanceOf(Date);
+    };
+
     /* ===================== HAPPY PATH ===================== */
 
     it("should allow OWNER to change task description", async () => {
@@ -79,11 +93,9 @@ describe("ChangeOrgTaskDescriptionUseCase (application)", () => {
 
         taskRepo.findById.mockResolvedValue(task);
 
-        await expect(
-            useCase.execute(baseDto)
-        ).resolves.toBe(task);
+        const result = await useCase.execute(baseDto);
 
-        expect(task.getDescription().getValue()).toBe("New description");
+        expectDtoFromTask(result, task);
         expect(taskRepo.save).toHaveBeenCalledWith(task);
     });
 
@@ -100,12 +112,12 @@ describe("ChangeOrgTaskDescriptionUseCase (application)", () => {
 
         taskRepo.findById.mockResolvedValue(task);
 
-        await expect(
-            useCase.execute({
-                ...baseDto,
-                actorId: ADMIN_ID,
-            })
-        ).resolves.toBe(task);
+        const result = await useCase.execute({
+            ...baseDto,
+            actorId: ADMIN_ID,
+        });
+
+        expectDtoFromTask(result, task);
     });
 
     it("should allow MEMBER to change own task description", async () => {
@@ -121,12 +133,12 @@ describe("ChangeOrgTaskDescriptionUseCase (application)", () => {
 
         taskRepo.findById.mockResolvedValue(task);
 
-        await expect(
-            useCase.execute({
-                ...baseDto,
-                actorId: MEMBER_ID,
-            })
-        ).resolves.toBe(task);
+        const result = await useCase.execute({
+            ...baseDto,
+            actorId: MEMBER_ID,
+        });
+
+        expectDtoFromTask(result, task);
     });
 
     /* ===================== CONTEXT ERRORS ===================== */
@@ -143,6 +155,7 @@ describe("ChangeOrgTaskDescriptionUseCase (application)", () => {
         memberRepo.findById.mockResolvedValue(
             OrganizationMember.hire(ORG_ID, OWNER_ID, "OWNER")
         );
+
         taskRepo.findById.mockResolvedValue(null);
 
         await expect(
@@ -214,3 +227,4 @@ describe("ChangeOrgTaskDescriptionUseCase (application)", () => {
         );
     });
 });
+

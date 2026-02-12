@@ -12,13 +12,25 @@ import {
     TaskNotFoundError
 } from "../../../src/modules/organization_task/errors/application_errors.js";
 
+import { Task } from
+        "../../../src/modules/organization_task/domain/task_domain.js";
+
+import { TaskTitle } from
+        "../../../src/modules/organization_task/domain/task_title.js";
+
+import { TaskDescription } from
+        "../../../src/modules/organization_task/domain/task_description.js";
+
+import { OrganizationMember } from
+        "../../../src/modules/organization_members/domain/organization_member_domain.js";
+
+
 describe("ChangeOrgTaskStatusUseCase (application)", () => {
 
     const ORG_ID = "org-1";
     const OWNER_ID = "owner-1";
     const ADMIN_ID = "admin-1";
     const MEMBER_ID = "member-1";
-    const TASK_ID = "task-1";
 
     let taskRepo: any;
     let memberRepo: any;
@@ -37,69 +49,102 @@ describe("ChangeOrgTaskStatusUseCase (application)", () => {
         useCase = new ChangeOrgTaskStatusUseCase(taskRepo, memberRepo);
     });
 
-    const mockMember = (role: "OWNER" | "ADMIN" | "MEMBER") => ({
-        getRole: () => role,
-    });
-
-    const mockTask = (createdBy: string, assignedTo: string) => ({
-        getCreatedBy: () => createdBy,
-        getAssignedTo: () => assignedTo,
-        changeStatus: jest.fn(),
-    });
-
     const baseDto = {
         actorId: OWNER_ID,
         orgId: ORG_ID,
-        orgTaskId: TASK_ID,
+        orgTaskId: "task-id",
         newStatus: "IN_PROGRESS",
+    };
+
+    const makeTask = (createdBy: string, assignedTo: string) =>
+        Task.create(
+            ORG_ID,
+            TaskTitle.create("Test task"),
+            TaskDescription.create("Old description"),
+            assignedTo,
+            createdBy
+        );
+
+    const expectDto = (result: any, task: Task) => {
+        expect(result).toMatchObject({
+            id: task.id,
+            organizationId: task.organizationId,
+            title: task.getTitle().getValue(),
+            description: task.getDescription().getValue(),
+            status: "IN_PROGRESS",
+            assignedTo: task.getAssignedTo(),
+            createdBy: task.getCreatedBy(),
+        });
+
+        expect(result.createdAt).toBeInstanceOf(Date);
     };
 
     /* ===================== HAPPY PATH ===================== */
 
     it("should allow OWNER to change task status", async () => {
-        const task = mockTask(ADMIN_ID, ADMIN_ID);
+
+        const task = makeTask(ADMIN_ID, ADMIN_ID);
 
         memberRepo.findById
-            .mockResolvedValueOnce(mockMember("OWNER"))
-            .mockResolvedValueOnce(mockMember("ADMIN"));
+            .mockResolvedValueOnce(
+                OrganizationMember.hire(ORG_ID, OWNER_ID, "OWNER")
+            )
+            .mockResolvedValueOnce(
+                OrganizationMember.hire(ORG_ID, ADMIN_ID, "ADMIN")
+            );
 
         taskRepo.findById.mockResolvedValue(task);
 
-        await expect(useCase.execute(baseDto))
-            .resolves.toBe(task);
+        const result = await useCase.execute(baseDto);
 
-        expect(task.changeStatus).toHaveBeenCalledWith("IN_PROGRESS");
+        expect(task.getStatus()).toBe("IN_PROGRESS");
         expect(taskRepo.save).toHaveBeenCalledWith(task);
+
+        expectDto(result, task);
     });
 
     it("should allow ADMIN to change MEMBER task status", async () => {
-        const task = mockTask(MEMBER_ID, MEMBER_ID);
+
+        const task = makeTask(MEMBER_ID, MEMBER_ID);
 
         memberRepo.findById
-            .mockResolvedValueOnce(mockMember("ADMIN"))
-            .mockResolvedValueOnce(mockMember("MEMBER"));
+            .mockResolvedValueOnce(
+                OrganizationMember.hire(ORG_ID, ADMIN_ID, "ADMIN")
+            )
+            .mockResolvedValueOnce(
+                OrganizationMember.hire(ORG_ID, MEMBER_ID, "MEMBER")
+            );
 
         taskRepo.findById.mockResolvedValue(task);
 
-        await expect(useCase.execute({
+        const result = await useCase.execute({
             ...baseDto,
             actorId: ADMIN_ID,
-        })).resolves.toBe(task);
+        });
+
+        expectDto(result, task);
     });
 
     it("should allow MEMBER to change own task status", async () => {
-        const task = mockTask(MEMBER_ID, MEMBER_ID);
+
+        const task = makeTask(MEMBER_ID, MEMBER_ID);
 
         memberRepo.findById
-            .mockResolvedValueOnce(mockMember("MEMBER"))
-            .mockResolvedValueOnce(mockMember("MEMBER"));
+            .mockResolvedValueOnce(
+                OrganizationMember.hire(ORG_ID, MEMBER_ID, "MEMBER")
+            )
+            .mockResolvedValueOnce(
+                OrganizationMember.hire(ORG_ID, MEMBER_ID, "MEMBER")
+            );
 
         taskRepo.findById.mockResolvedValue(task);
 
-        await expect(useCase.execute({
+        const result = await useCase.execute({
             ...baseDto,
             actorId: MEMBER_ID,
-        })).resolves.toBe(task);
+        });
+
+        expectDto(result, task);
     });
 
     /* ===================== CONTEXT ERRORS ===================== */
@@ -112,7 +157,10 @@ describe("ChangeOrgTaskStatusUseCase (application)", () => {
     });
 
     it("should throw if task does not exist", async () => {
-        memberRepo.findById.mockResolvedValue(mockMember("OWNER"));
+        memberRepo.findById.mockResolvedValue(
+            OrganizationMember.hire(ORG_ID, OWNER_ID, "OWNER")
+        );
+
         taskRepo.findById.mockResolvedValue(null);
 
         await expect(useCase.execute(baseDto))
@@ -120,13 +168,16 @@ describe("ChangeOrgTaskStatusUseCase (application)", () => {
     });
 
     it("should throw if assignee is not a member", async () => {
+
+        const task = makeTask(MEMBER_ID, MEMBER_ID);
+
         memberRepo.findById
-            .mockResolvedValueOnce(mockMember("OWNER"))
+            .mockResolvedValueOnce(
+                OrganizationMember.hire(ORG_ID, OWNER_ID, "OWNER")
+            )
             .mockResolvedValueOnce(null);
 
-        taskRepo.findById.mockResolvedValue(
-            mockTask(MEMBER_ID, MEMBER_ID)
-        );
+        taskRepo.findById.mockResolvedValue(task);
 
         await expect(useCase.execute(baseDto))
             .rejects.toBeInstanceOf(TargetNotAMemberError);
@@ -135,13 +186,18 @@ describe("ChangeOrgTaskStatusUseCase (application)", () => {
     /* ===================== RBAC ===================== */
 
     it("should NOT allow MEMBER to change foreign task", async () => {
-        memberRepo.findById
-            .mockResolvedValueOnce(mockMember("MEMBER")) // actor
-            .mockResolvedValueOnce(mockMember("MEMBER")); // assignee
 
-        taskRepo.findById.mockResolvedValue(
-            mockTask(OWNER_ID, OWNER_ID) // чужая задача
-        );
+        const task = makeTask(OWNER_ID, OWNER_ID);
+
+        memberRepo.findById
+            .mockResolvedValueOnce(
+                OrganizationMember.hire(ORG_ID, MEMBER_ID, "MEMBER")
+            )
+            .mockResolvedValueOnce(
+                OrganizationMember.hire(ORG_ID, OWNER_ID, "OWNER")
+            );
+
+        taskRepo.findById.mockResolvedValue(task);
 
         await expect(
             useCase.execute({
@@ -153,20 +209,26 @@ describe("ChangeOrgTaskStatusUseCase (application)", () => {
         );
     });
 
-
     it("should NOT allow ADMIN to change ADMIN task status", async () => {
+
+        const task = makeTask(ADMIN_ID, ADMIN_ID);
+
         memberRepo.findById
-            .mockResolvedValueOnce(mockMember("ADMIN"))
-            .mockResolvedValueOnce(mockMember("ADMIN"));
+            .mockResolvedValueOnce(
+                OrganizationMember.hire(ORG_ID, ADMIN_ID, "ADMIN")
+            )
+            .mockResolvedValueOnce(
+                OrganizationMember.hire(ORG_ID, ADMIN_ID, "ADMIN")
+            );
 
-        taskRepo.findById.mockResolvedValue(
-            mockTask(ADMIN_ID, ADMIN_ID)
-        );
+        taskRepo.findById.mockResolvedValue(task);
 
-        await expect(useCase.execute({
-            ...baseDto,
-            actorId: ADMIN_ID,
-        })).rejects.toBeInstanceOf(
+        await expect(
+            useCase.execute({
+                ...baseDto,
+                actorId: ADMIN_ID,
+            })
+        ).rejects.toBeInstanceOf(
             OrganizationMemberInsufficientPermissionsError
         );
     });
@@ -174,17 +236,24 @@ describe("ChangeOrgTaskStatusUseCase (application)", () => {
     /* ===================== STATUS VALIDATION ===================== */
 
     it("should throw if status is invalid", async () => {
+
+        const task = makeTask(MEMBER_ID, MEMBER_ID);
+
         memberRepo.findById
-            .mockResolvedValueOnce(mockMember("OWNER"))
-            .mockResolvedValueOnce(mockMember("MEMBER"));
+            .mockResolvedValueOnce(
+                OrganizationMember.hire(ORG_ID, OWNER_ID, "OWNER")
+            )
+            .mockResolvedValueOnce(
+                OrganizationMember.hire(ORG_ID, MEMBER_ID, "MEMBER")
+            );
 
-        taskRepo.findById.mockResolvedValue(
-            mockTask(MEMBER_ID, MEMBER_ID)
-        );
+        taskRepo.findById.mockResolvedValue(task);
 
-        await expect(useCase.execute({
-            ...baseDto,
-            newStatus: "INVALID_STATUS",
-        })).rejects.toBeInstanceOf(InvalidTaskStatusError);
+        await expect(
+            useCase.execute({
+                ...baseDto,
+                newStatus: "INVALID_STATUS",
+            })
+        ).rejects.toBeInstanceOf(InvalidTaskStatusError);
     });
 });
