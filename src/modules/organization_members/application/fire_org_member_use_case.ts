@@ -5,6 +5,7 @@ import {
     TargetNotAMemberError
 } from "../errors/organization_members_domain_error.js";
 import {OrganizationMember} from "../domain/organization_member_domain.js";
+import {OrgMemDTO} from "../DTO/for_return/org_mem_dto.js";
 
 
 export class FireOrgMemberUseCase {
@@ -39,6 +40,14 @@ export class FireOrgMemberUseCase {
 
         targetMember.assertCanBeFiredBy(actorMember.getRole());
 
-        return await this.orgMemberRepo.delete(targetUserId, organizationId);
+        const fired = await this.orgMemberRepo.delete(targetUserId, organizationId);
+
+        const forReturn: OrgMemDTO = {
+            organizationId: fired.organizationId,
+            userId: fired.userId,
+            role: fired.getRole(),
+            joinedAt: fired.getJoinedAt(),
+        }
+        return forReturn;
     }
 }

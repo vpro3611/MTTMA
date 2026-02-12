@@ -1,12 +1,12 @@
-import { Pool } from "pg";
+import {Pool, PoolClient} from "pg";
 import { AuditEvent } from "../domain/audit_event_domain.js";
 import { AuditEventReader } from "../domain/ports/audit_event_reader_interface.js";
 import {AuditPersistenceError} from "../errors/audit_repo_errors.js";
 
 export class AuditEventReaderPG implements AuditEventReader {
-    constructor(private readonly pool: Pool) {}
+    constructor(private readonly pool: Pool | PoolClient) {}
 
-    async getByOrganization(
+    async getByOrganizationFiltered(
         organizationId: string,
         filters?: {
             action?: string;
@@ -73,25 +73,25 @@ export class AuditEventReaderPG implements AuditEventReader {
         }
     }
 
-    async getById(id: string): Promise<AuditEvent | null> {
+    async getByOrganization(orgId: string): Promise<AuditEvent[]> {
         try {
             const res = await this.pool.query(
                 `SELECT *
                  FROM audit_events
-                 WHERE id = $1`,
-                [id]
+                 WHERE organization_id = $1 ORDER BY created_at DESC`,
+                [orgId]
             );
 
-            const row = res.rows[0];
-            if (!row) return null;
-
-            return new AuditEvent(
-                row.id,
-                row.actor_user_id,
-                row.organization_id,
-                row.action,
-                row.created_at
+            return res.rows.map(row =>
+                new AuditEvent(
+                    row.id,
+                    row.actor_user_id,
+                    row.organization_id,
+                    row.action,
+                    row.created_at
+                )
             );
+
         } catch (err: any) {
             console.error(err);
             throw new AuditPersistenceError();

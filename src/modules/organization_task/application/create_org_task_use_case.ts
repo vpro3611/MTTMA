@@ -14,6 +14,7 @@ import {
 } from "../../organization_members/errors/organization_members_domain_error.js";
 import {OrganizationMember} from "../../organization_members/domain/organization_member_domain.js";
 import {TaskPermissionPolicy} from "../domain/policies/task_permission_policy.js";
+import {TaskDto} from "../DTO/return_dto/task_dto.js";
 
 
 export class CreateOrganizationTaskUseCase {
@@ -70,6 +71,17 @@ export class CreateOrganizationTaskUseCase {
 
         await this.orgTaskRepo.save(taskCreated);
 
-        return taskCreated;
+        const dtoReturn: TaskDto = {
+            id: taskCreated.id,
+            organizationId: taskCreated.organizationId,
+            title: taskCreated.getTitle().getValue(),
+            description: taskCreated.getDescription().getValue(),
+            status: taskCreated.getStatus(),
+            assignedTo: taskCreated.getAssignedTo(),
+            createdBy: taskCreated.getCreatedBy(),
+            createdAt: taskCreated.getCreatedAt(),
+        };
+
+        return dtoReturn;
     }
 }

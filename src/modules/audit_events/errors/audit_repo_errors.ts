@@ -13,3 +13,9 @@ export class AuditPersistenceError extends AuditRepoError {
     }
 }
 
+export class AuditNotFoundError extends AuditRepoError {
+    constructor() {
+        super("Audit event not found");
+        this.name = "AuditNotFoundError";
+    }
+}

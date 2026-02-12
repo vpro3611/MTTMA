@@ -4,10 +4,12 @@ import {
     OrganizationMemberAlreadyExistsError, OrganizationMemberNotFoundError, OrganizationMemberPersistenceError,
     OrganizationNotFoundError, UserNotFoundError
 } from "../errors/organization_members_repo_errors.js";
+import {Pool, PoolClient} from "pg";
+import {Organization} from "../../organization/domain/organiztion_domain.js";
 
 
 export class OrganizationMemberRepositoryPG implements OrganizationMembersRepository {
-    constructor(private readonly pool: any) {}
+    constructor(private readonly pool: Pool | PoolClient) {}
 
     save = async (orgMember: OrganizationMember): Promise<void> => {
         try {
@@ -82,6 +84,23 @@ export class OrganizationMemberRepositoryPG implements OrganizationMembersReposi
             );
         } catch (err) {
             throw new OrganizationMemberPersistenceError();
+        }
+    }
+
+    getAllMembers = async (organizationId: string): Promise<OrganizationMember[]> => {
+        try {
+            const result = await this.pool.query("SELECT * FROM organization_members WHERE organization_id = $1", [organizationId]);
+
+            return result.rows.map(row =>
+                new OrganizationMember(
+                    row.organization_id,
+                    row.user_id,
+                    row.role,
+                    row.joined_at,
+                )
+            );
+        } catch (err) {
+            throw new OrganizationNotFoundError();
         }
     }
 }

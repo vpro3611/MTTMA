@@ -1,10 +1,10 @@
-import {Pool} from "pg";
+import {Pool, PoolClient} from "pg";
 import {AuditEvent} from "../domain/audit_event_domain.js";
 import {AuditPersistenceError} from "../errors/audit_repo_errors.js";
 
 
 export class AuditEventsRepositoryPg {
-    constructor(private readonly pool: Pool) {}
+    constructor(private readonly pool: Pool | PoolClient) {}
 
 
     append = async (event: AuditEvent) => {

@@ -27,3 +27,10 @@ export class OrganizationNotFoundError extends OrganizationRepositoryError {
         this.name = "OrganizationNotFoundError";
     }
 }
+
+export class ForeignKeyViolationError extends OrganizationRepositoryError {
+    constructor() {
+        super("Foreign key violation");
+        this.name = "ForeignKeyViolationError";
+    }
+}

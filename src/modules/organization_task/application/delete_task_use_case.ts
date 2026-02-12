@@ -11,6 +11,7 @@ import {TaskNotFoundError} from "../errors/application_errors.js";
 import {OrganizationMember} from "../../organization_members/domain/organization_member_domain.js";
 import {Task} from "../domain/task_domain.js";
 import {TaskPermissionPolicy} from "../domain/policies/task_permission_policy.js";
+import {TaskDto} from "../DTO/return_dto/task_dto.js";
 
 
 export class DeleteTaskUseCase {
@@ -67,7 +68,17 @@ export class DeleteTaskUseCase {
 
         const taskForDelete = await this.taskDeleted(deleteDto.orgTaskId, deleteDto.orgId);
 
-        // return {id: deleteDto.orgTaskId};
-        return taskForDelete;
+        const dtoReturn: TaskDto = {
+            id: task.id,
+            organizationId: task.organizationId,
+            title: task.getTitle().getValue(),
+            description: task.getDescription().getValue(),
+            status: task.getStatus(),
+            assignedTo: task.getAssignedTo(),
+            createdBy: task.getCreatedBy(),
+            createdAt: task.getCreatedAt(),
+        };
+
+        return dtoReturn;
     }
 }

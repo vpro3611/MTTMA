@@ -13,6 +13,7 @@ import {OrganizationMember} from "../../organization_members/domain/organization
 import {Task} from "../domain/task_domain.js";
 import {TaskPermissionPolicy} from "../domain/policies/task_permission_policy.js";
 import {OrgMemsRole} from "../../organization_members/domain/org_members_role.js";
+import {TaskDto} from "../DTO/return_dto/task_dto.js";
 
 export class ChangeOrgTaskDescriptionUseCase {
     constructor(
@@ -89,6 +90,17 @@ export class ChangeOrgTaskDescriptionUseCase {
 
         await this.orgTaskRepo.save(task);
 
-        return task;
+        const dtoReturn: TaskDto = {
+            id: task.id,
+            organizationId: task.organizationId,
+            title: task.getTitle().getValue(),
+            description: task.getDescription().getValue(),
+            status: task.getStatus(),
+            assignedTo: task.getAssignedTo(),
+            createdBy: task.getCreatedBy(),
+            createdAt: task.getCreatedAt(),
+        };
+
+        return dtoReturn;
     };
 }

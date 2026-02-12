@@ -8,6 +8,8 @@ import {
     OrganizationMemberInsufficientPermissionsError
 } from "../../organization_members/errors/organization_members_domain_error.js";
 import {OrganizationMember} from "../../organization_members/domain/organization_member_domain.js";
+import {AuditDto} from "../DTO/for_return/audit_dto.js";
+import {AuditEvent} from "../domain/audit_event_domain.js";
 
 
 export class GetFilteredAuditOrgUseCase {
@@ -40,13 +42,35 @@ export class GetFilteredAuditOrgUseCase {
         }
     }
 
-    execute = async (queryDto: GetAuditEventQuery) => {
+    private toDto(event: AuditEvent): AuditDto {
+        return {
+            id: event.id,
+            actorId: event.getActorId(),
+            organizationId: event.getOrganizationId(),
+            action: event.getAction(),
+            createdAt: event.getCreatedAt(),
+        };
+    }
+
+
+    execute = async (queryDto: GetAuditEventQuery): Promise<AuditDto[]> => {
         const actor = await this.actorExists(queryDto.actorId, queryDto.orgId);
 
         this.checkActorRole(actor.getRole());
 
         const normalizedFilters = this.normalizeFilters(queryDto["filters"]);
 
-        return await this.auditEventReader.getByOrganization(queryDto.orgId, normalizedFilters);
+        const found = await this.auditEventReader.getByOrganizationFiltered(queryDto.orgId, normalizedFilters);
+
+        return found.map(this.toDto);
     }
+    /*
+    export type AuditDto = {
+        id: string,
+        actorId: string,
+        organizationId: string,
+        action: string,
+        createdAt: Date,
+    }
+     */
 }
