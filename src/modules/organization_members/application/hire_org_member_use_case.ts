@@ -40,7 +40,7 @@ export class HireOrgMemberUseCase {
 
         const response: UserResponseDto = {
             id: user.id,
-            email: user.getEmail(),
+            email: user.getEmail().getValue(),
             status: user.getStatus(),
             created_at: user.getCreatedAt(),
         }
@@ -57,13 +57,13 @@ export class HireOrgMemberUseCase {
     }
 
     private assertRoleAndActor(parsedRole: OrgMemsRole | undefined, actorMember: OrganizationMember) {
-        if (parsedRole === "OWNER") {
+        if (parsedRole === OrgMemsRole.OWNER) {
             throw new CannotAssignRole(parsedRole);
         }
-        if (parsedRole === "ADMIN" && actorMember.getRole() !== "OWNER") {
+        if (parsedRole === OrgMemsRole.ADMIN && actorMember.getRole() !== OrgMemsRole.OWNER) {
             throw new OnlyOwnerCanAssign();
         }
-        if (parsedRole === "MEMBER" && actorMember.getRole() === "MEMBER") {
+        if (parsedRole === OrgMemsRole.MEMBER && actorMember.getRole() === OrgMemsRole.MEMBER) {
             throw new OrganizationMemberInsufficientPermissionsError();
         }
     }

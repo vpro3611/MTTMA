@@ -2,7 +2,7 @@ import {AuditEvent} from "../audit_event_domain.js";
 
 
 export interface AuditEventReader {
-    getByOrganization(
+    getByOrganizationFiltered(
         orgId: string,
         filters?: {
             action?: string,
@@ -13,5 +13,5 @@ export interface AuditEventReader {
             offset?: number,
         }): Promise<AuditEvent[]>;
 
-    getById(id: string): Promise<AuditEvent | null>;
+    getByOrganization(id: string): Promise<AuditEvent[]>;
 }

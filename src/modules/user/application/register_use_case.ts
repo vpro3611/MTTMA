@@ -20,7 +20,7 @@ export class RegisterUseCase {
     async execute(email: string, plainPass: string) {
         const emailVerified = Email.create(email);
 
-        await this.userExists(email);
+        await this.userExists(emailVerified.getValue());
 
         const verifiedPassword = Password.validatePlain(plainPass);
         const passwordHash = await this.hasher.hash(verifiedPassword);
@@ -31,7 +31,7 @@ export class RegisterUseCase {
 
         const returnUser: UserResponseDto = {
             id: user.id,
-            email: user.getEmail(),
+            email: user.getEmail().getValue(),
             status: user.getStatus(),
             created_at: user.getCreatedAt(),
         }

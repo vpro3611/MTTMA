@@ -6,6 +6,9 @@ import {
     OrganizationMemberInsufficientPermissionsError
 } from "../../../src/modules/organization_members/errors/organization_members_domain_error.js";
 
+import { AuditEvent } from
+        "../../../src/modules/audit_events/domain/audit_event_domain.js";
+
 describe("GetFilteredAuditOrgUseCase (unit)", () => {
 
     const orgId = "org-1";
@@ -13,7 +16,7 @@ describe("GetFilteredAuditOrgUseCase (unit)", () => {
 
     const createMocks = () => {
         const auditEventReader = {
-            getByOrganization: jest.fn(),
+            getByOrganizationFiltered: jest.fn(),
         };
 
         const orgMemberRepo = {
@@ -29,6 +32,8 @@ describe("GetFilteredAuditOrgUseCase (unit)", () => {
         filters: undefined
     };
 
+    /* ===================== CONTEXT ERRORS ===================== */
+
     it("should throw ActorNotAMemberError if actor not found", async () => {
         const { auditEventReader, orgMemberRepo } = createMocks();
 
@@ -43,7 +48,8 @@ describe("GetFilteredAuditOrgUseCase (unit)", () => {
             useCase.execute(baseQuery as any)
         ).rejects.toBeInstanceOf(ActorNotAMemberError);
 
-        expect(auditEventReader.getByOrganization).not.toHaveBeenCalled();
+        expect(auditEventReader.getByOrganizationFiltered)
+            .not.toHaveBeenCalled();
     });
 
     it("should throw OrganizationMemberInsufficientPermissionsError if role is MEMBER", async () => {
@@ -64,8 +70,11 @@ describe("GetFilteredAuditOrgUseCase (unit)", () => {
             OrganizationMemberInsufficientPermissionsError
         );
 
-        expect(auditEventReader.getByOrganization).not.toHaveBeenCalled();
+        expect(auditEventReader.getByOrganizationFiltered)
+            .not.toHaveBeenCalled();
     });
+
+    /* ===================== FILTER NORMALIZATION ===================== */
 
     it("should call reader with default filters when none provided", async () => {
         const { auditEventReader, orgMemberRepo } = createMocks();
@@ -74,7 +83,7 @@ describe("GetFilteredAuditOrgUseCase (unit)", () => {
             getRole: () => "ADMIN"
         });
 
-        auditEventReader.getByOrganization.mockResolvedValue([]);
+        auditEventReader.getByOrganizationFiltered.mockResolvedValue([]);
 
         const useCase = new GetFilteredAuditOrgUseCase(
             auditEventReader as any,
@@ -83,7 +92,7 @@ describe("GetFilteredAuditOrgUseCase (unit)", () => {
 
         await useCase.execute(baseQuery as any);
 
-        expect(auditEventReader.getByOrganization)
+        expect(auditEventReader.getByOrganizationFiltered)
             .toHaveBeenCalledWith(orgId, {
                 action: undefined,
                 actorUserId: undefined,
@@ -101,7 +110,7 @@ describe("GetFilteredAuditOrgUseCase (unit)", () => {
             getRole: () => "ADMIN"
         });
 
-        auditEventReader.getByOrganization.mockResolvedValue([]);
+        auditEventReader.getByOrganizationFiltered.mockResolvedValue([]);
 
         const useCase = new GetFilteredAuditOrgUseCase(
             auditEventReader as any,
@@ -116,7 +125,7 @@ describe("GetFilteredAuditOrgUseCase (unit)", () => {
             }
         } as any);
 
-        expect(auditEventReader.getByOrganization)
+        expect(auditEventReader.getByOrganizationFiltered)
             .toHaveBeenCalledWith(orgId, expect.objectContaining({
                 limit: 100
             }));
@@ -129,7 +138,7 @@ describe("GetFilteredAuditOrgUseCase (unit)", () => {
             getRole: () => "ADMIN"
         });
 
-        auditEventReader.getByOrganization.mockResolvedValue([]);
+        auditEventReader.getByOrganizationFiltered.mockResolvedValue([]);
 
         const from = new Date("2024-01-01");
         const to = new Date("2024-12-31");
@@ -152,7 +161,7 @@ describe("GetFilteredAuditOrgUseCase (unit)", () => {
             }
         } as any);
 
-        expect(auditEventReader.getByOrganization)
+        expect(auditEventReader.getByOrganizationFiltered)
             .toHaveBeenCalledWith(orgId, {
                 action: "ORG_MEMBER_HIRED",
                 actorUserId: "actor-x",
@@ -161,6 +170,41 @@ describe("GetFilteredAuditOrgUseCase (unit)", () => {
                 limit: 10,
                 offset: 5,
             });
+    });
+
+    /* ===================== DTO MAPPING ===================== */
+
+    it("should map domain events to AuditDto[]", async () => {
+        const { auditEventReader, orgMemberRepo } = createMocks();
+
+        orgMemberRepo.findById.mockResolvedValue({
+            getRole: () => "ADMIN"
+        });
+
+        const event = AuditEvent.create(
+            actorId,
+            orgId,
+            "GET_AUDIT_EVENTS_FILTERED"
+        );
+
+        auditEventReader.getByOrganizationFiltered.mockResolvedValue([event]);
+
+        const useCase = new GetFilteredAuditOrgUseCase(
+            auditEventReader as any,
+            orgMemberRepo as any
+        );
+
+        const result = await useCase.execute(baseQuery as any);
+
+        expect(result).toHaveLength(1);
+
+        expect(result[0]).toMatchObject({
+            id: event.id,
+            actorId: event.getActorId(),
+            organizationId: event.getOrganizationId(),
+            action: event.getAction(),
+            createdAt: event.getCreatedAt(),
+        });
     });
 
 });

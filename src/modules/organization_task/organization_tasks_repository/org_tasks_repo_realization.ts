@@ -1,5 +1,5 @@
 import {OrganizationTaskRepository} from "../domain/ports/org_tasks_repo_interface.js";
-import {Pool} from "pg";
+import {Pool, PoolClient} from "pg";
 import {Task} from "../domain/task_domain.js";
 import {TaskTitle} from "../domain/task_title.js";
 import {TaskDescription} from "../domain/task_description.js";
@@ -11,7 +11,7 @@ import {
 
 
 export class OrganizationTasksRepositoryPG implements OrganizationTaskRepository {
-    constructor(private readonly pool: Pool) {}
+    constructor(private readonly pool: Pool | PoolClient) {}
 
     save = async (orgTask: Task) => {
         try {

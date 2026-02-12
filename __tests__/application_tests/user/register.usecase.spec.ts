@@ -41,7 +41,7 @@ describe('RegisterUseCase', () => {
         expect(hasher.hash).toHaveBeenCalledWith('StrongPass1!');
         expect(userRepository.save).toHaveBeenCalledTimes(1);
 
-        expect(result.email.getValue()).toBe('test@example.com');
+        expect(result.email).toBe('test@example.com');
         expect(result.status).toBe(UserStatus.ACTIVE);
     });
 

@@ -5,10 +5,12 @@ import {
     ActorNotAMemberError,
     OrganizationMemberInsufficientPermissionsError,
     TargetNotAMemberError
-} from "../../../src/modules/organization_members/errors/organization_members_domain_error.js";
+} from
+        "../../../src/modules/organization_members/errors/organization_members_domain_error.js";
 
 import { TaskNotFoundError } from
         "../../../src/modules/organization_task/errors/application_errors.js";
+
 
 describe("DeleteTaskUseCase (application)", () => {
 
@@ -39,9 +41,15 @@ describe("DeleteTaskUseCase (application)", () => {
         getRole: () => role,
     });
 
-    const mockTask = (createdBy: string, assignedTo: string) => ({
+    const makeTask = (createdBy: string, assignedTo: string) => ({
+        id: TASK_ID,
+        organizationId: ORG_ID,
         getCreatedBy: () => createdBy,
         getAssignedTo: () => assignedTo,
+        getTitle: () => ({ getValue: () => "Test task" }),
+        getDescription: () => ({ getValue: () => "Test description" }),
+        getStatus: () => "TODO",
+        getCreatedAt: () => new Date(),
     });
 
     const baseDto = {
@@ -50,62 +58,77 @@ describe("DeleteTaskUseCase (application)", () => {
         orgTaskId: TASK_ID,
     };
 
+    const expectDto = (result: any, assignedTo: string, createdBy: string) => {
+        expect(result).toMatchObject({
+            id: TASK_ID,
+            organizationId: ORG_ID,
+            title: "Test task",
+            description: "Test description",
+            status: "TODO",
+            assignedTo,
+            createdBy,
+        });
+
+        expect(result.createdAt).toBeInstanceOf(Date);
+    };
+
     /* ===================== HAPPY PATH ===================== */
 
     it("should allow OWNER to delete any task", async () => {
+
         memberRepo.findById
             .mockResolvedValueOnce(mockMember("OWNER"))
             .mockResolvedValueOnce(mockMember("ADMIN"));
 
-        taskRepo.findById.mockResolvedValue(
-            mockTask(ADMIN_ID, ADMIN_ID)
-        );
+        const task = makeTask(ADMIN_ID, ADMIN_ID);
 
-        taskRepo.delete.mockResolvedValue({ id: TASK_ID });
+        taskRepo.findById.mockResolvedValue(task);
+        taskRepo.delete.mockResolvedValue(task);
 
-        await expect(
-            useCase.execute(baseDto)
-        ).resolves.toMatchObject({ id: TASK_ID });
+        const result = await useCase.execute(baseDto);
 
-        expect(taskRepo.delete).toHaveBeenCalledWith(TASK_ID, ORG_ID);
+        expect(taskRepo.delete)
+            .toHaveBeenCalledWith(TASK_ID, ORG_ID);
+
+        expectDto(result, ADMIN_ID, ADMIN_ID);
     });
 
     it("should allow ADMIN to delete MEMBER task", async () => {
+
         memberRepo.findById
             .mockResolvedValueOnce(mockMember("ADMIN"))
             .mockResolvedValueOnce(mockMember("MEMBER"));
 
-        taskRepo.findById.mockResolvedValue(
-            mockTask(MEMBER_ID, MEMBER_ID)
-        );
+        const task = makeTask(MEMBER_ID, MEMBER_ID);
 
-        taskRepo.delete.mockResolvedValue({ id: TASK_ID });
+        taskRepo.findById.mockResolvedValue(task);
+        taskRepo.delete.mockResolvedValue(task);
 
-        await expect(
-            useCase.execute({
-                ...baseDto,
-                actorId: ADMIN_ID,
-            })
-        ).resolves.toMatchObject({ id: TASK_ID });
+        const result = await useCase.execute({
+            ...baseDto,
+            actorId: ADMIN_ID,
+        });
+
+        expectDto(result, MEMBER_ID, MEMBER_ID);
     });
 
     it("should allow MEMBER to delete own task", async () => {
+
         memberRepo.findById
             .mockResolvedValueOnce(mockMember("MEMBER"))
             .mockResolvedValueOnce(mockMember("MEMBER"));
 
-        taskRepo.findById.mockResolvedValue(
-            mockTask(MEMBER_ID, MEMBER_ID)
-        );
+        const task = makeTask(MEMBER_ID, MEMBER_ID);
 
-        taskRepo.delete.mockResolvedValue({ id: TASK_ID });
+        taskRepo.findById.mockResolvedValue(task);
+        taskRepo.delete.mockResolvedValue(task);
 
-        await expect(
-            useCase.execute({
-                ...baseDto,
-                actorId: MEMBER_ID,
-            })
-        ).resolves.toMatchObject({ id: TASK_ID });
+        const result = await useCase.execute({
+            ...baseDto,
+            actorId: MEMBER_ID,
+        });
+
+        expectDto(result, MEMBER_ID, MEMBER_ID);
     });
 
     /* ===================== CONTEXT ERRORS ===================== */
@@ -119,7 +142,10 @@ describe("DeleteTaskUseCase (application)", () => {
     });
 
     it("should throw if task does not exist", async () => {
-        memberRepo.findById.mockResolvedValue(mockMember("OWNER"));
+
+        memberRepo.findById
+            .mockResolvedValueOnce(mockMember("OWNER"));
+
         taskRepo.findById.mockResolvedValue(null);
 
         await expect(
@@ -128,12 +154,13 @@ describe("DeleteTaskUseCase (application)", () => {
     });
 
     it("should throw if assignee is not a member", async () => {
+
         memberRepo.findById
             .mockResolvedValueOnce(mockMember("OWNER"))
             .mockResolvedValueOnce(null);
 
         taskRepo.findById.mockResolvedValue(
-            mockTask(MEMBER_ID, MEMBER_ID)
+            makeTask(MEMBER_ID, MEMBER_ID)
         );
 
         await expect(
@@ -144,12 +171,13 @@ describe("DeleteTaskUseCase (application)", () => {
     /* ===================== RBAC ===================== */
 
     it("should NOT allow MEMBER to delete foreign task", async () => {
+
         memberRepo.findById
             .mockResolvedValueOnce(mockMember("MEMBER"))
             .mockResolvedValueOnce(mockMember("MEMBER"));
 
         taskRepo.findById.mockResolvedValue(
-            mockTask(OWNER_ID, OWNER_ID)
+            makeTask(OWNER_ID, OWNER_ID)
         );
 
         await expect(
@@ -163,12 +191,13 @@ describe("DeleteTaskUseCase (application)", () => {
     });
 
     it("should NOT allow ADMIN to delete ADMIN task", async () => {
+
         memberRepo.findById
             .mockResolvedValueOnce(mockMember("ADMIN"))
             .mockResolvedValueOnce(mockMember("ADMIN"));
 
         taskRepo.findById.mockResolvedValue(
-            mockTask(ADMIN_ID, ADMIN_ID)
+            makeTask(ADMIN_ID, ADMIN_ID)
         );
 
         await expect(
@@ -184,14 +213,14 @@ describe("DeleteTaskUseCase (application)", () => {
     /* ===================== DELETE RESULT ===================== */
 
     it("should throw if delete returns null", async () => {
+
         memberRepo.findById
             .mockResolvedValueOnce(mockMember("OWNER"))
             .mockResolvedValueOnce(mockMember("MEMBER"));
 
-        taskRepo.findById.mockResolvedValue(
-            mockTask(MEMBER_ID, MEMBER_ID)
-        );
+        const task = makeTask(MEMBER_ID, MEMBER_ID);
 
+        taskRepo.findById.mockResolvedValue(task);
         taskRepo.delete.mockResolvedValue(null);
 
         await expect(

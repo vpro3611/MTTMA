@@ -93,7 +93,7 @@ describe("AuditEventReaderPG (integration)", () => {
             AuditEvent.create(USER_ID, ORG_ID, AuditEventActions.ORG_MEMBER_FIRED)
         );
 
-        const res = await reader.getByOrganization(ORG_ID, {
+        const res = await reader.getByOrganizationFiltered(ORG_ID, {
             action: AuditEventActions.ORG_MEMBER_HIRED,
         });
 
@@ -110,7 +110,7 @@ describe("AuditEventReaderPG (integration)", () => {
             AuditEvent.create(OTHER_USER_ID, ORG_ID, AuditEventActions.ORG_MEMBER_HIRED)
         );
 
-        const res = await reader.getByOrganization(ORG_ID, {
+        const res = await reader.getByOrganizationFiltered(ORG_ID, {
             actorUserId: OTHER_USER_ID,
         });
 
@@ -133,7 +133,7 @@ describe("AuditEventReaderPG (integration)", () => {
         await new Promise(r => setTimeout(r, 10));
         const to = new Date();
 
-        const res = await reader.getByOrganization(ORG_ID, { from, to });
+        const res = await reader.getByOrganizationFiltered(ORG_ID, { from, to });
 
         expect(res).toHaveLength(1);
         expect(res[0].id).toBe(event.id);
@@ -146,7 +146,7 @@ describe("AuditEventReaderPG (integration)", () => {
             );
         }
 
-        const res = await reader.getByOrganization(ORG_ID, {
+        const res = await reader.getByOrganizationFiltered(ORG_ID, {
             limit: 2,
             offset: 1,
         });
@@ -163,26 +163,65 @@ describe("AuditEventReaderPG (integration)", () => {
         expect(res).toEqual([]);
     });
 
-    describe("getById", () => {
-        it("returns audit event by id", async () => {
-            const event = AuditEvent.create(
+    describe("getByOrganization", () => {
+
+        it("returns all audit events for given organization", async () => {
+
+            const event1 = AuditEvent.create(
                 USER_ID,
                 ORG_ID,
                 AuditEventActions.ORG_MEMBER_HIRED
             );
 
-            await writer.append(event);
+            const event2 = AuditEvent.create(
+                USER_ID,
+                ORG_ID,
+                AuditEventActions.ORG_MEMBER_FIRED
+            );
 
-            const res = await reader.getById(event.id);
+            await writer.append(event1);
+            await writer.append(event2);
 
-            expect(res).not.toBeNull();
-            expect(res!.id).toBe(event.id);
-            expect(res!.getAction()).toBe(AuditEventActions.ORG_MEMBER_HIRED);
+            const result = await reader.getByOrganization(ORG_ID);
+
+            expect(result.length).toBe(2);
+
+            const ids = result.map(e => e.id);
+
+            expect(ids).toContain(event1.id);
+            expect(ids).toContain(event2.id);
         });
 
-        it("returns null if event not found", async () => {
-            const res = await reader.getById(crypto.randomUUID());
-            expect(res).toBeNull();
+        it("returns only events for requested organization", async () => {
+
+            const event1 = AuditEvent.create(
+                USER_ID,
+                ORG_ID,
+                AuditEventActions.ORG_MEMBER_HIRED
+            );
+
+            const event2 = AuditEvent.create(
+                USER_ID,
+                OTHER_ORG_ID, // ← используем уже вставленную организацию
+                AuditEventActions.ORG_MEMBER_FIRED
+            );
+
+            await writer.append(event1);
+            await writer.append(event2);
+
+            const result = await reader.getByOrganization(ORG_ID);
+
+            expect(result).toHaveLength(1);
+            expect(result[0].getOrganizationId()).toBe(ORG_ID);
         });
+
+
+
+        it("returns empty array if no events exist", async () => {
+            const result = await reader.getByOrganization(ORG_ID);
+            expect(result).toEqual([]);
+        });
+
     });
+
 });

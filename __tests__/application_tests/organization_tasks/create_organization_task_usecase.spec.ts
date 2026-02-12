@@ -5,12 +5,8 @@ import {
     ActorNotAMemberError,
     OrganizationMemberInsufficientPermissionsError,
     TargetNotAMemberError
-} from "../../../src/modules/organization_members/errors/organization_members_domain_error.js";
-
-import { OrganizationNotFoundError } from
-        "../../../src/modules/organization/errors/organization_repository_errors.js";
-
-import { Task } from "../../../src/modules/organization_task/domain/task_domain.js";
+} from
+        "../../../src/modules/organization_members/errors/organization_members_domain_error.js";
 
 describe("CreateOrganizationTaskUseCase (application)", () => {
 
@@ -27,16 +23,13 @@ describe("CreateOrganizationTaskUseCase (application)", () => {
         assignedTo: MEMBER_ID,
     };
 
-    let orgRepo: any;
     let orgMemberRepo: any;
     let taskRepo: any;
+    let orgRepo: any;
 
     let useCase: CreateOrganizationTaskUseCase;
 
     beforeEach(() => {
-        orgRepo = {
-            findById: jest.fn(),
-        };
 
         orgMemberRepo = {
             findById: jest.fn(),
@@ -57,58 +50,68 @@ describe("CreateOrganizationTaskUseCase (application)", () => {
         getRole: () => role,
     });
 
+    const expectDto = (result: any, assignedTo: string) => {
+        expect(result).toMatchObject({
+            organizationId: ORG_ID,
+            title: "Task title",
+            description: "Task description",
+            status: "TODO",
+            assignedTo,
+            createdBy: expect.any(String),
+        });
+
+        expect(result.id).toBeDefined();
+        expect(result.createdAt).toBeInstanceOf(Date);
+    };
+
     /* ===================== HAPPY PATHS ===================== */
 
     it("should allow OWNER to create task for MEMBER", async () => {
-        orgRepo.findById.mockResolvedValue({});
+
         orgMemberRepo.findById
-            .mockResolvedValueOnce(mockMember("OWNER")) // creator
+            .mockResolvedValueOnce(mockMember("OWNER"))  // creator
             .mockResolvedValueOnce(mockMember("MEMBER")); // assignee
 
-        const task = await useCase.execute(baseDto);
+        const result = await useCase.execute(baseDto);
 
-        expect(task).toBeInstanceOf(Task);
         expect(taskRepo.save).toHaveBeenCalledTimes(1);
+
+        expectDto(result, MEMBER_ID);
     });
 
     it("should allow ADMIN to create task for MEMBER", async () => {
-        orgRepo.findById.mockResolvedValue({});
+
         orgMemberRepo.findById
             .mockResolvedValueOnce(mockMember("ADMIN"))
             .mockResolvedValueOnce(mockMember("MEMBER"));
 
-        await expect(useCase.execute({
+        const result = await useCase.execute({
             ...baseDto,
             createdBy: ADMIN_ID,
-        })).resolves.toBeInstanceOf(Task);
+        });
+
+        expectDto(result, MEMBER_ID);
     });
 
     it("should allow MEMBER to create task for himself", async () => {
-        orgRepo.findById.mockResolvedValue({});
+
         orgMemberRepo.findById
             .mockResolvedValueOnce(mockMember("MEMBER"))
             .mockResolvedValueOnce(mockMember("MEMBER"));
 
-        const task = await useCase.execute({
+        const result = await useCase.execute({
             ...baseDto,
             createdBy: MEMBER_ID,
             assignedTo: undefined,
         });
 
-        expect(task.getAssignedTo()).toBe(MEMBER_ID);
+        expectDto(result, MEMBER_ID);
     });
 
     /* ===================== CONTEXT ERRORS ===================== */
 
-    // it("should throw if organization does not exist", async () => {
-    //     orgRepo.findById.mockResolvedValue(null);
-    //
-    //     await expect(useCase.execute(baseDto))
-    //         .rejects.toBeInstanceOf(OrganizationNotFoundError);
-    // });
-
     it("should throw if creator is not a member", async () => {
-        orgRepo.findById.mockResolvedValue({});
+
         orgMemberRepo.findById.mockResolvedValue(null);
 
         await expect(useCase.execute(baseDto))
@@ -116,7 +119,7 @@ describe("CreateOrganizationTaskUseCase (application)", () => {
     });
 
     it("should throw if assignee is not a member", async () => {
-        orgRepo.findById.mockResolvedValue({});
+
         orgMemberRepo.findById
             .mockResolvedValueOnce(mockMember("OWNER"))
             .mockResolvedValueOnce(null);
@@ -128,7 +131,7 @@ describe("CreateOrganizationTaskUseCase (application)", () => {
     /* ===================== RBAC ===================== */
 
     it("should NOT allow MEMBER to create task for another user", async () => {
-        orgRepo.findById.mockResolvedValue({});
+
         orgMemberRepo.findById
             .mockResolvedValueOnce(mockMember("MEMBER"))
             .mockResolvedValueOnce(mockMember("MEMBER"));
@@ -143,7 +146,7 @@ describe("CreateOrganizationTaskUseCase (application)", () => {
     });
 
     it("should NOT allow ADMIN to create task for ADMIN", async () => {
-        orgRepo.findById.mockResolvedValue({});
+
         orgMemberRepo.findById
             .mockResolvedValueOnce(mockMember("ADMIN"))
             .mockResolvedValueOnce(mockMember("ADMIN"));

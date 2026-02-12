@@ -24,7 +24,7 @@ export class ChangeUserEmailUseCase {
 
         const returnUser: UserResponseDto = {
             id: exists.id,
-            email: exists.getEmail(),
+            email: exists.getEmail().getValue(),
             status: exists.getStatus(),
             created_at: exists.getCreatedAt(),
         }

@@ -5,6 +5,7 @@ import { Name } from "../../src/modules/organization/domain/name.js";
 import {
     OrganizationAlreadyExistsError,
 } from "../../src/modules/organization/errors/organization_repository_errors.js";
+import {randomUUID} from "node:crypto";
 
 describe('OrganizationRepositoryPG (integration)', () => {
 
@@ -112,4 +113,30 @@ describe('OrganizationRepositoryPG (integration)', () => {
             OrganizationAlreadyExistsError
         );
     });
+
+    it("should delete organization and return it", async () => {
+        const organization = Organization.create(
+            Name.validate('To delete')
+        );
+        await repo.save(organization);
+        const deleted = await repo.delete(organization.id);
+        expect(deleted).not.toBeNull();
+        expect(deleted!.id).toBe(organization.id);
+        const after = await repo.findById(organization.id);
+        expect(after).toBeNull();
+    })
+
+    it("should NOT delete organization by id and return it if it does not exist", async () => {
+        const organization = Organization.create(
+            Name.validate('To delete')
+        );
+        expect(organization.getName().getValue()).toBe("To delete");
+        await repo.save(organization);
+        const randomId = randomUUID();
+        const deleted = await repo.delete(randomId);
+        expect(deleted).toBeNull();
+
+        const after = await repo.findById(organization.id);
+        expect(after).not.toBeNull();
+    })
 });

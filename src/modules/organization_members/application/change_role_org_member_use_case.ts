@@ -7,6 +7,7 @@ import {
     TargetNotAMemberError
 } from "../errors/organization_members_domain_error.js";
 import {OrgMemsRole} from "../domain/org_members_role.js";
+import {OrgMemDTO} from "../DTO/for_return/org_mem_dto.js";
 
 
 export class ChangeOrgMemberRoleUseCase {
@@ -50,5 +51,14 @@ export class ChangeOrgMemberRoleUseCase {
         targetMember.changeRole(actorMember.getRole(), targetRoleParsed);
 
         await this.orgMemberRepo.save(targetMember);
+
+        const forReturn: OrgMemDTO = {
+            organizationId: targetMember.organizationId,
+            userId: targetMember.userId,
+            role: targetMember.getRole(),
+            joinedAt: targetMember.getJoinedAt(),
+        }
+
+        return forReturn;
     }
 }

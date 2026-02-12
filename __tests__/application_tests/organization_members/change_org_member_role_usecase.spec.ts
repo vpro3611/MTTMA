@@ -1,15 +1,24 @@
-import { ChangeOrgMemberRoleUseCase } from "../../../src/modules/organization_members/application/change_role_org_member_use_case.js";
-import { OrganizationMember } from "../../../src/modules/organization_members/domain/organization_member_domain.js";
-import { OrganizationMembersRepository } from "../../../src/modules/organization_members/domain/ports/organization_memebers_repo_interface.js";
+import { ChangeOrgMemberRoleUseCase } from
+        "../../../src/modules/organization_members/application/change_role_org_member_use_case.js";
+
+import { OrganizationMember } from
+        "../../../src/modules/organization_members/domain/organization_member_domain.js";
+
+import { OrganizationMembersRepository } from
+        "../../../src/modules/organization_members/domain/ports/organization_memebers_repo_interface.js";
+
 import {
     ActorNotAMemberError,
     TargetNotAMemberError,
     CannotPerformActionOnYourselfError,
-} from "../../../src/modules/organization_members/errors/organization_members_domain_error.js";
-import { OrganizationMemberInsufficientPermissionsError } from "../../../src/modules/organization_members/errors/organization_members_domain_error.js";
-import { InvalidOrganizationMemberRoleError } from "../../../src/modules/organization_members/errors/organization_members_domain_error.js";
+    OrganizationMemberInsufficientPermissionsError,
+    InvalidOrganizationMemberRoleError
+} from
+        "../../../src/modules/organization_members/errors/organization_members_domain_error.js";
+
 
 describe("ChangeOrgMemberRoleUseCase", () => {
+
     const ORG_ID = "org-1";
     const ACTOR_ID = "actor-1";
     const TARGET_ID = "target-1";
@@ -18,60 +27,90 @@ describe("ChangeOrgMemberRoleUseCase", () => {
     let useCase: ChangeOrgMemberRoleUseCase;
 
     beforeEach(() => {
+
         repo = {
             findById: jest.fn(),
             save: jest.fn(),
             delete: jest.fn(),
+            getAllMembers: jest.fn(),
         } as any;
 
         useCase = new ChangeOrgMemberRoleUseCase(repo);
     });
 
-    /**
-     * HAPPY PATHS
-     */
-    it("should allow OWNER to downgrade ADMIN to MEMBER", async () => {
-        repo.findById
-            .mockResolvedValueOnce(
-                OrganizationMember.hire(ORG_ID, ACTOR_ID, "OWNER")
-            )
-            .mockResolvedValueOnce(
-                OrganizationMember.hire(ORG_ID, TARGET_ID, "ADMIN")
-            );
+    const expectDto = (result: any, expectedRole: string) => {
+        expect(result).toMatchObject({
+            organizationId: ORG_ID,
+            userId: TARGET_ID,
+            role: expectedRole,
+        });
 
-        await useCase.execute(
+        expect(result.joinedAt).toBeInstanceOf(Date);
+    };
+
+    /* ===================== HAPPY PATH ===================== */
+
+    it("should allow OWNER to downgrade ADMIN to MEMBER", async () => {
+
+        const actor = OrganizationMember.hire(
+            ORG_ID,
+            ACTOR_ID,
+            "OWNER"
+        );
+
+        const target = OrganizationMember.hire(
+            ORG_ID,
+            TARGET_ID,
+            "ADMIN"
+        );
+
+        repo.findById
+            .mockResolvedValueOnce(actor)
+            .mockResolvedValueOnce(target);
+
+        const result = await useCase.execute(
             ACTOR_ID,
             TARGET_ID,
             ORG_ID,
             "MEMBER"
         );
 
-        expect(repo.save).toHaveBeenCalledTimes(1);
+        expect(repo.save).toHaveBeenCalledWith(target);
+        expectDto(result, "MEMBER");
     });
 
     it("should allow ADMIN to downgrade MEMBER", async () => {
-        repo.findById
-            .mockResolvedValueOnce(
-                OrganizationMember.hire(ORG_ID, ACTOR_ID, "ADMIN")
-            )
-            .mockResolvedValueOnce(
-                OrganizationMember.hire(ORG_ID, TARGET_ID, "MEMBER")
-            );
 
-        await useCase.execute(
+        const actor = OrganizationMember.hire(
+            ORG_ID,
+            ACTOR_ID,
+            "ADMIN"
+        );
+
+        const target = OrganizationMember.hire(
+            ORG_ID,
+            TARGET_ID,
+            "MEMBER"
+        );
+
+        repo.findById
+            .mockResolvedValueOnce(actor)
+            .mockResolvedValueOnce(target);
+
+        const result = await useCase.execute(
             ACTOR_ID,
             TARGET_ID,
             ORG_ID,
             "MEMBER"
         );
 
-        expect(repo.save).toHaveBeenCalledTimes(1);
+        expectDto(result, "MEMBER");
     });
 
-    /**
-     * ERROR PATHS
-     */
+    /* ===================== ERROR PATHS ===================== */
+
     it("should not allow actor to change own role", async () => {
+
         await expect(
             useCase.execute(
                 ACTOR_ID,
@@ -85,6 +124,7 @@ describe("ChangeOrgMemberRoleUseCase", () => {
     });
 
     it("should throw if actor is not a member", async () => {
+
         repo.findById.mockResolvedValueOnce(null);
 
         await expect(
@@ -100,6 +140,7 @@ describe("ChangeOrgMemberRoleUseCase", () => {
     });
 
     it("should throw if target is not a member", async () => {
+
         repo.findById
             .mockResolvedValueOnce(
                 OrganizationMember.hire(ORG_ID, ACTOR_ID, "OWNER")
@@ -119,6 +160,7 @@ describe("ChangeOrgMemberRoleUseCase", () => {
     });
 
     it("should not allow ADMIN to change OWNER role", async () => {
+
         repo.findById
             .mockResolvedValueOnce(
                 OrganizationMember.hire(ORG_ID, ACTOR_ID, "ADMIN")
@@ -140,6 +182,7 @@ describe("ChangeOrgMemberRoleUseCase", () => {
     });
 
     it("should not allow MEMBER to change any role", async () => {
+
         repo.findById
             .mockResolvedValueOnce(
                 OrganizationMember.hire(ORG_ID, ACTOR_ID, "MEMBER")
@@ -161,6 +204,7 @@ describe("ChangeOrgMemberRoleUseCase", () => {
     });
 
     it("should throw on invalid target role", async () => {
+
         await expect(
             useCase.execute(
                 ACTOR_ID,

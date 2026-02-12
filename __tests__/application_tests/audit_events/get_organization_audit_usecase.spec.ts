@@ -6,6 +6,9 @@ import {
     OrganizationMemberInsufficientPermissionsError
 } from "../../../src/modules/organization_members/errors/organization_members_domain_error.js";
 
+import { AuditEvent } from
+        "../../../src/modules/audit_events/domain/audit_event_domain.js";
+
 describe("GetOrganizationAuditUseCase (unit)", () => {
 
     const organizationId = "org-1";
@@ -13,7 +16,7 @@ describe("GetOrganizationAuditUseCase (unit)", () => {
 
     const createMocks = () => {
         const auditEventReader = {
-            getById: jest.fn(),
+            getByOrganization: jest.fn(),
         };
 
         const orgMemberRepo = {
@@ -22,6 +25,8 @@ describe("GetOrganizationAuditUseCase (unit)", () => {
 
         return { auditEventReader, orgMemberRepo };
     };
+
+    /* ===================== CONTEXT ERRORS ===================== */
 
     it("should throw ActorNotAMemberError if actor not found", async () => {
         const { auditEventReader, orgMemberRepo } = createMocks();
@@ -37,7 +42,7 @@ describe("GetOrganizationAuditUseCase (unit)", () => {
             useCase.execute(actorId, organizationId)
         ).rejects.toBeInstanceOf(ActorNotAMemberError);
 
-        expect(auditEventReader.getById).not.toHaveBeenCalled();
+        expect(auditEventReader.getByOrganization).not.toHaveBeenCalled();
     });
 
     it("should throw OrganizationMemberInsufficientPermissionsError if role is MEMBER", async () => {
@@ -58,19 +63,34 @@ describe("GetOrganizationAuditUseCase (unit)", () => {
             OrganizationMemberInsufficientPermissionsError
         );
 
-        expect(auditEventReader.getById).not.toHaveBeenCalled();
+        expect(auditEventReader.getByOrganization).not.toHaveBeenCalled();
     });
 
-    it("should return audit events if actor has sufficient permissions", async () => {
+    /* ===================== HAPPY PATH ===================== */
+
+    it("should return mapped audit DTOs if actor has sufficient permissions", async () => {
         const { auditEventReader, orgMemberRepo } = createMocks();
 
-        const fakeResult = ["event1", "event2"];
+        const event1 = AuditEvent.create(
+            actorId,
+            organizationId,
+            "GET_AUDIT_EVENT"
+        );
+
+        const event2 = AuditEvent.create(
+            actorId,
+            organizationId,
+            "GET_AUDIT_EVENT"
+        );
 
         orgMemberRepo.findById.mockResolvedValue({
             getRole: () => "ADMIN"
         });
 
-        auditEventReader.getById.mockResolvedValue(fakeResult);
+        auditEventReader.getByOrganization.mockResolvedValue([
+            event1,
+            event2
+        ]);
 
         const useCase = new GetOrganizationAuditUseCase(
             auditEventReader as any,
@@ -79,9 +99,25 @@ describe("GetOrganizationAuditUseCase (unit)", () => {
 
         const result = await useCase.execute(actorId, organizationId);
 
-        expect(result).toEqual(fakeResult);
+        expect(result).toHaveLength(2);
 
-        expect(auditEventReader.getById)
+        expect(result[0]).toMatchObject({
+            id: event1.id,
+            actorId: event1.getActorId(),
+            organizationId: event1.getOrganizationId(),
+            action: event1.getAction(),
+            createdAt: event1.getCreatedAt(),
+        });
+
+        expect(result[1]).toMatchObject({
+            id: event2.id,
+            actorId: event2.getActorId(),
+            organizationId: event2.getOrganizationId(),
+            action: event2.getAction(),
+            createdAt: event2.getCreatedAt(),
+        });
+
+        expect(auditEventReader.getByOrganization)
             .toHaveBeenCalledWith(organizationId);
     });
 

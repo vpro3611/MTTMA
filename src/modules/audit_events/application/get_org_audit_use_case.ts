@@ -7,6 +7,10 @@ import {
 } from "../../organization_members/errors/organization_members_domain_error.js";
 import {AuditEventReader} from "../domain/ports/audit_event_reader_interface.js";
 import {OrganizationMember} from "../../organization_members/domain/organization_member_domain.js";
+import {AuditEvent} from "../domain/audit_event_domain.js";
+import {AuditNotFoundError} from "../errors/audit_repo_errors.js";
+import {AuditDto} from "../DTO/for_return/audit_dto.js";
+import {OrgMemsRole} from "../../organization_members/domain/org_members_role.js";
 
 
 export class GetOrganizationAuditUseCase {
@@ -23,16 +27,28 @@ export class GetOrganizationAuditUseCase {
     }
 
     private checkActorRole(actorRole: string) {
-        if (actorRole === "MEMBER") {
+        if (actorRole === OrgMemsRole.MEMBER) {
             throw new OrganizationMemberInsufficientPermissionsError();
         }
     }
 
-    execute = async (actorId: string, organizationId: string) => {
+    private mapDto(audit: AuditEvent): AuditDto {
+        return {
+            id: audit.id,
+            actorId: audit.getActorId(),
+            organizationId: audit.getOrganizationId(),
+            action: audit.getAction(),
+            createdAt: audit.getCreatedAt(),
+        }
+    }
+
+    execute = async (actorId: string, organizationId: string)=> {
         const actor = await this.actorExists(actorId, organizationId);
 
         this.checkActorRole(actor.getRole());
 
-        return await this.auditEventReader.getById(organizationId);
+        const audit = await this.auditEventReader.getByOrganization(organizationId);
+
+        return audit.map(this.mapDto);
     }
 }
