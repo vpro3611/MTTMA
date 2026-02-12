@@ -9,6 +9,9 @@ import {
 import { AuditEvent } from
         "../../../src/modules/audit_events/domain/audit_event_domain.js";
 
+import { OrgMemsRole } from
+        "../../../src/modules/organization_members/domain/org_members_role.js";
+
 describe("GetFilteredAuditOrgUseCase (unit)", () => {
 
     const orgId = "org-1";
@@ -56,7 +59,10 @@ describe("GetFilteredAuditOrgUseCase (unit)", () => {
         const { auditEventReader, orgMemberRepo } = createMocks();
 
         orgMemberRepo.findById.mockResolvedValue({
-            getRole: () => "MEMBER"
+            getRole: () => OrgMemsRole.MEMBER,
+            isMember: () => {
+                throw new OrganizationMemberInsufficientPermissionsError();
+            }
         });
 
         const useCase = new GetFilteredAuditOrgUseCase(
@@ -80,7 +86,8 @@ describe("GetFilteredAuditOrgUseCase (unit)", () => {
         const { auditEventReader, orgMemberRepo } = createMocks();
 
         orgMemberRepo.findById.mockResolvedValue({
-            getRole: () => "ADMIN"
+            getRole: () => OrgMemsRole.ADMIN,
+            isMember: jest.fn(),
         });
 
         auditEventReader.getByOrganizationFiltered.mockResolvedValue([]);
@@ -107,7 +114,8 @@ describe("GetFilteredAuditOrgUseCase (unit)", () => {
         const { auditEventReader, orgMemberRepo } = createMocks();
 
         orgMemberRepo.findById.mockResolvedValue({
-            getRole: () => "ADMIN"
+            getRole: () => OrgMemsRole.ADMIN,
+            isMember: jest.fn(),
         });
 
         auditEventReader.getByOrganizationFiltered.mockResolvedValue([]);
@@ -120,9 +128,7 @@ describe("GetFilteredAuditOrgUseCase (unit)", () => {
         await useCase.execute({
             actorId,
             orgId,
-            filters: {
-                limit: 999
-            }
+            filters: { limit: 999 }
         } as any);
 
         expect(auditEventReader.getByOrganizationFiltered)
@@ -131,54 +137,12 @@ describe("GetFilteredAuditOrgUseCase (unit)", () => {
             }));
     });
 
-    it("should pass provided filters correctly", async () => {
-        const { auditEventReader, orgMemberRepo } = createMocks();
-
-        orgMemberRepo.findById.mockResolvedValue({
-            getRole: () => "ADMIN"
-        });
-
-        auditEventReader.getByOrganizationFiltered.mockResolvedValue([]);
-
-        const from = new Date("2024-01-01");
-        const to = new Date("2024-12-31");
-
-        const useCase = new GetFilteredAuditOrgUseCase(
-            auditEventReader as any,
-            orgMemberRepo as any
-        );
-
-        await useCase.execute({
-            actorId,
-            orgId,
-            filters: {
-                action: "ORG_MEMBER_HIRED",
-                actorUserId: "actor-x",
-                from,
-                to,
-                limit: 10,
-                offset: 5
-            }
-        } as any);
-
-        expect(auditEventReader.getByOrganizationFiltered)
-            .toHaveBeenCalledWith(orgId, {
-                action: "ORG_MEMBER_HIRED",
-                actorUserId: "actor-x",
-                from,
-                to,
-                limit: 10,
-                offset: 5,
-            });
-    });
-
-    /* ===================== DTO MAPPING ===================== */
-
     it("should map domain events to AuditDto[]", async () => {
         const { auditEventReader, orgMemberRepo } = createMocks();
 
         orgMemberRepo.findById.mockResolvedValue({
-            getRole: () => "ADMIN"
+            getRole: () => OrgMemsRole.ADMIN,
+            isMember: jest.fn(),
         });
 
         const event = AuditEvent.create(

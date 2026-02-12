@@ -9,6 +9,9 @@ import {
 import { AuditEvent } from
         "../../../src/modules/audit_events/domain/audit_event_domain.js";
 
+import { OrgMemsRole } from
+        "../../../src/modules/organization_members/domain/org_members_role.js";
+
 describe("GetOrganizationAuditUseCase (unit)", () => {
 
     const organizationId = "org-1";
@@ -25,6 +28,16 @@ describe("GetOrganizationAuditUseCase (unit)", () => {
 
         return { auditEventReader, orgMemberRepo };
     };
+
+    const makeActor = (
+        role: OrgMemsRole,
+        shouldThrow = false
+    ) => ({
+        getRole: () => role,
+        isMember: shouldThrow
+            ? () => { throw new OrganizationMemberInsufficientPermissionsError(); }
+            : jest.fn(),
+    });
 
     /* ===================== CONTEXT ERRORS ===================== */
 
@@ -48,9 +61,9 @@ describe("GetOrganizationAuditUseCase (unit)", () => {
     it("should throw OrganizationMemberInsufficientPermissionsError if role is MEMBER", async () => {
         const { auditEventReader, orgMemberRepo } = createMocks();
 
-        orgMemberRepo.findById.mockResolvedValue({
-            getRole: () => "MEMBER"
-        });
+        orgMemberRepo.findById.mockResolvedValue(
+            makeActor(OrgMemsRole.MEMBER, true)
+        );
 
         const useCase = new GetOrganizationAuditUseCase(
             auditEventReader as any,
@@ -83,9 +96,9 @@ describe("GetOrganizationAuditUseCase (unit)", () => {
             "GET_AUDIT_EVENT"
         );
 
-        orgMemberRepo.findById.mockResolvedValue({
-            getRole: () => "ADMIN"
-        });
+        orgMemberRepo.findById.mockResolvedValue(
+            makeActor(OrgMemsRole.ADMIN)
+        );
 
         auditEventReader.getByOrganization.mockResolvedValue([
             event1,

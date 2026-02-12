@@ -30,7 +30,7 @@ describe('CreateOrganizationUseCase', () => {
             findByName: jest.fn(),
             save: jest.fn(),
             delete: jest.fn(),
-        };
+        } as any;
 
         userRepo = {
             findById: jest.fn(),
@@ -42,11 +42,15 @@ describe('CreateOrganizationUseCase', () => {
 
     /* ===================== HAPPY PATH ===================== */
 
-    it('should create organization if user exists', async () => {
+    it('should create organization and return response dto', async () => {
 
-        userRepo.findById.mockResolvedValue(
-            { id: OWNER_ID } as User
-        );
+        const mockUser = {
+            id: OWNER_ID,
+            getStatus: jest.fn().mockReturnValue('ACTIVE'),
+            checkUserStatus: jest.fn(),
+        } as unknown as User;
+
+        userRepo.findById.mockResolvedValue(mockUser);
 
         const result = await useCase.execute(
             'My Organization',
@@ -56,15 +60,23 @@ describe('CreateOrganizationUseCase', () => {
         expect(userRepo.findById)
             .toHaveBeenCalledWith(OWNER_ID);
 
+        expect(mockUser.getStatus)
+            .toHaveBeenCalled();
+
+        expect(mockUser.checkUserStatus)
+            .toHaveBeenCalledWith('ACTIVE');
+
         expect(repo.save)
             .toHaveBeenCalledTimes(1);
 
-        expect(result.name).toBe('My Organization');
-        expect(result.id).toBeDefined();
-        expect(result.createdAt).toBeInstanceOf(Date);
+        expect(result).toEqual({
+            id: expect.any(String),
+            name: 'My Organization',
+            createdAt: expect.any(Date),
+        });
     });
 
-    /* ===================== USER CHECK ===================== */
+    /* ===================== USER NOT FOUND ===================== */
 
     it('should throw if user does not exist', async () => {
 
@@ -77,13 +89,38 @@ describe('CreateOrganizationUseCase', () => {
         expect(repo.save).not.toHaveBeenCalled();
     });
 
+    /* ===================== USER STATUS CHECK ===================== */
+
+    it('should propagate error if user status is invalid', async () => {
+
+        const mockUser = {
+            id: OWNER_ID,
+            getStatus: jest.fn().mockReturnValue('BLOCKED'),
+            checkUserStatus: jest.fn().mockImplementation(() => {
+                throw new Error('User inactive');
+            }),
+        } as unknown as User;
+
+        userRepo.findById.mockResolvedValue(mockUser);
+
+        await expect(
+            useCase.execute('My Organization', OWNER_ID)
+        ).rejects.toThrow('User inactive');
+
+        expect(repo.save).not.toHaveBeenCalled();
+    });
+
     /* ===================== NAME VALIDATION ===================== */
 
-    it('should throw error if name is invalid', async () => {
+    it('should throw if name is invalid', async () => {
 
-        userRepo.findById.mockResolvedValue(
-            { id: OWNER_ID } as User
-        );
+        const mockUser = {
+            id: OWNER_ID,
+            getStatus: jest.fn().mockReturnValue('ACTIVE'),
+            checkUserStatus: jest.fn(),
+        } as unknown as User;
+
+        userRepo.findById.mockResolvedValue(mockUser);
 
         await expect(
             useCase.execute('ab', OWNER_ID)
@@ -96,9 +133,13 @@ describe('CreateOrganizationUseCase', () => {
 
     it('should propagate repository error', async () => {
 
-        userRepo.findById.mockResolvedValue(
-            { id: OWNER_ID } as User
-        );
+        const mockUser = {
+            id: OWNER_ID,
+            getStatus: jest.fn().mockReturnValue('ACTIVE'),
+            checkUserStatus: jest.fn(),
+        } as unknown as User;
+
+        userRepo.findById.mockResolvedValue(mockUser);
 
         repo.save.mockRejectedValue(
             new OrganizationPersistenceError()
@@ -110,5 +151,4 @@ describe('CreateOrganizationUseCase', () => {
             OrganizationPersistenceError
         );
     });
-
 });
