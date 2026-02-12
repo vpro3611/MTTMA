@@ -11,7 +11,6 @@ export class GetFilterAuditWithAudit {
     ) {};
 
     executeTx = async (queryDto: GetAuditEventQuery) => {
-        const result = await this.filteredAudit.execute(queryDto)
 
         const audit = AuditEvent.create(
             queryDto.actorId,
@@ -20,6 +19,8 @@ export class GetFilterAuditWithAudit {
         );
 
         await this.writeAudit.execute(audit);
+
+        const result = await this.filteredAudit.execute(queryDto)
 
         return result;
     }

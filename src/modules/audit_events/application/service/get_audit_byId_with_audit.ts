@@ -10,11 +10,11 @@ export class GetAllAuditWithAudit {
     ) {};
 
     executeTx = async (actorId: string, orgId: string) => {
-        const auditEvents = this.getAuditEvents.execute(actorId, orgId);
-
         const audit = AuditEvent.create(actorId, orgId, AuditEventActions.GET_AUDIT_EVENT);
 
         await this.auditEventWrite.execute(audit);
+
+        const auditEvents = await this.getAuditEvents.execute(actorId, orgId);
 
         return auditEvents;
     }
