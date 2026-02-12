@@ -23,6 +23,8 @@ export class CreateOrganizationUseCase {
     execute = async (name: string, id: string)=> {
         const user = await this.userExists(id);
 
+        user.checkUserStatus(user.getStatus());
+
         const validatedName = Name.validate(name);
         const organization = Organization.create(validatedName);
         await this.repo.save(organization);

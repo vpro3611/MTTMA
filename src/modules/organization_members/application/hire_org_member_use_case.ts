@@ -77,9 +77,9 @@ export class HireOrgMemberUseCase {
 
         const actorMember = await this.actorMemberExists(actorUserId, organizationId);
 
-        this.assertRoleAndActor(parsedRole, actorMember);
-
         const newMember = OrganizationMember.hire(organizationId, userExists.id, parsedRole);
+
+        actorMember.assertCanAssignRole(newMember.getRole());
 
         await this.orgMemberRepo.save(newMember);
 

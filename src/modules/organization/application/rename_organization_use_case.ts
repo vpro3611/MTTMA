@@ -36,16 +36,11 @@ export class RenameOrganizationUseCase {
         return member;
     }
 
-    private checkMemberRole(memberRole: OrgMemsRole) {
-        if (memberRole !== OrgMemsRole.OWNER) {
-            throw new OrganizationMemberInsufficientPermissionsError();
-        }
-    }
 
     execute = async (id: string, newName: string, actorId: string) => {
         const member = await this.memberExists(actorId, id);
 
-        this.checkMemberRole(member.getRole());
+        member.ensureIsOwner(member.getRole());
 
         const validatedNameNew = Name.validate(newName);
 

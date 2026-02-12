@@ -25,12 +25,12 @@ export class GetOrganizationAuditUseCase {
         }
         return existing;
     }
-
-    private checkActorRole(actorRole: string) {
-        if (actorRole === OrgMemsRole.MEMBER) {
-            throw new OrganizationMemberInsufficientPermissionsError();
-        }
-    }
+    //
+    // private checkActorRole(actorRole: string) {
+    //     if (actorRole === OrgMemsRole.MEMBER) {
+    //         throw new OrganizationMemberInsufficientPermissionsError();
+    //     }
+    // }
 
     private mapDto(audit: AuditEvent): AuditDto {
         return {
@@ -45,7 +45,7 @@ export class GetOrganizationAuditUseCase {
     execute = async (actorId: string, organizationId: string)=> {
         const actor = await this.actorExists(actorId, organizationId);
 
-        this.checkActorRole(actor.getRole());
+        actor.isMember(actor.getRole());
 
         const audit = await this.auditEventReader.getByOrganization(organizationId);
 

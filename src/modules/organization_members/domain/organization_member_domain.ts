@@ -1,4 +1,8 @@
-import {OrganizationMemberInsufficientPermissionsError} from "../errors/organization_members_domain_error.js";
+import {
+    CannotAssignRole,
+    OnlyOwnerCanAssign,
+    OrganizationMemberInsufficientPermissionsError
+} from "../errors/organization_members_domain_error.js";
 import {OrgMemsRole} from "./org_members_role.js";
 
 
@@ -25,6 +29,34 @@ export class OrganizationMember {
         )
     }
 
+    ensureIsOwner = (actorRole: OrgMemsRole) => {
+        if (actorRole !== OrgMemsRole.OWNER) {
+            throw new OrganizationMemberInsufficientPermissionsError();
+        }
+    }
+
+    isMember = (role: OrgMemsRole) => {
+        if (role === OrgMemsRole.MEMBER) {
+            throw new OrganizationMemberInsufficientPermissionsError()
+        }
+    }
+
+    assertCanAssignRole(newRole: OrgMemsRole) {
+        if (newRole === OrgMemsRole.OWNER) {
+            throw new CannotAssignRole(newRole);
+        }
+
+        if (newRole === OrgMemsRole.ADMIN && this.role !== OrgMemsRole.OWNER) {
+            throw new OnlyOwnerCanAssign();
+        }
+
+        if (newRole === OrgMemsRole.MEMBER && this.role === OrgMemsRole.MEMBER) {
+            throw new OrganizationMemberInsufficientPermissionsError();
+        }
+    }
+
+
+
     static hire(organizationId: string, userId: string, role?: OrgMemsRole) {
         return new OrganizationMember(
             organizationId,
@@ -36,9 +68,7 @@ export class OrganizationMember {
 
 
     assertCanBeFiredBy = (actorRole: OrgMemsRole) => {
-        if (actorRole !== OrgMemsRole.OWNER) {
-            throw new OrganizationMemberInsufficientPermissionsError();
-        }
+        this.ensureIsOwner(actorRole);
     }
 
     changeRole = (actorRole: OrgMemsRole, newRole: OrgMemsRole) => {

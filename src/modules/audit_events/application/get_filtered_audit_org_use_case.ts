@@ -36,11 +36,11 @@ export class GetFilteredAuditOrgUseCase {
         return existing;
     }
 
-    private checkActorRole(actorRole: string) {
-        if (actorRole === "MEMBER") {
-            throw new OrganizationMemberInsufficientPermissionsError();
-        }
-    }
+    // private checkActorRole(actorRole: string) {
+    //     if (actorRole === "MEMBER") {
+    //         throw new OrganizationMemberInsufficientPermissionsError();
+    //     }
+    // }
 
     private toDto(event: AuditEvent): AuditDto {
         return {
@@ -56,7 +56,7 @@ export class GetFilteredAuditOrgUseCase {
     execute = async (queryDto: GetAuditEventQuery): Promise<AuditDto[]> => {
         const actor = await this.actorExists(queryDto.actorId, queryDto.orgId);
 
-        this.checkActorRole(actor.getRole());
+        actor.isMember(actor.getRole());
 
         const normalizedFilters = this.normalizeFilters(queryDto["filters"]);
 

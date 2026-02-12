@@ -69,14 +69,14 @@ export class DeleteTaskUseCase {
         const taskForDelete = await this.taskDeleted(deleteDto.orgTaskId, deleteDto.orgId);
 
         const dtoReturn: TaskDto = {
-            id: task.id,
-            organizationId: task.organizationId,
-            title: task.getTitle().getValue(),
-            description: task.getDescription().getValue(),
-            status: task.getStatus(),
-            assignedTo: task.getAssignedTo(),
-            createdBy: task.getCreatedBy(),
-            createdAt: task.getCreatedAt(),
+            id: taskForDelete.id,
+            organizationId: taskForDelete.organizationId,
+            title: taskForDelete.getTitle().getValue(),
+            description: taskForDelete.getDescription().getValue(),
+            status: taskForDelete.getStatus(),
+            assignedTo: taskForDelete.getAssignedTo(),
+            createdBy: taskForDelete.getCreatedBy(),
+            createdAt: taskForDelete.getCreatedAt(),
         };
 
         return dtoReturn;

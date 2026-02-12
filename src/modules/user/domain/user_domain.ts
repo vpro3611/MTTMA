@@ -13,7 +13,7 @@ export class User {
         private created_at: Date,
     ) {}
 
-    private checkUserStatus = (userStatus: UserStatus) => {
+     checkUserStatus = (userStatus: UserStatus) => {
         if (userStatus === UserStatus.BANNED) {
             throw new UserIsBannedError();
         }

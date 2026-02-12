@@ -34,21 +34,20 @@ export class DeleteOrganizationUseCase {
         return org;
     }
 
-    private validateDeletion(members: OrganizationMember[], actor: OrganizationMember) {
-        if (actor.getRole() !== OrgMemsRole.OWNER) {
-            throw new OrganizationMemberInsufficientPermissionsError();
-        }
+    private validateDeletion(members: OrganizationMember[]) {
         if (members.length !== 1) {
             throw new CannotDeleteOrganizationError();
         }
     }
+
     execute = async (actorId: string, orgId: string) => {
         const member = await this.memberExists(actorId, orgId);
 
+        member.ensureIsOwner(member.getRole());
 
         const allMembers = await this.orgMembers.getAllMembers(orgId);
 
-        this.validateDeletion(allMembers, member);
+        this.validateDeletion(allMembers);
 
         const deleted = await this.organizationRepository.delete(orgId);
 
