@@ -42,6 +42,7 @@ export class ChangeOrgMemberRoleUseCase {
 
     execute = async (actorUserId: string, targetUserId: string, orgId: string, targetRole: string) => {
         this.checkForSelfAssign(actorUserId, targetUserId);
+
         const targetRoleParsed = this.parseRole(targetRole);
 
         const actorMember = await this.actorExists(actorUserId, orgId);
