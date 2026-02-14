@@ -1,6 +1,7 @@
+import {InfrastructureError, NotFoundError} from "../../../errors_base/errors_base.js";
 
 
-export class OrganizationMembersRepoError extends Error {
+export class OrganizationMembersRepoError extends InfrastructureError {
     constructor(message: string) {
         super(message);
         this.name = "OrganizationMembersRepositoryError";
@@ -14,14 +15,14 @@ export class OrganizationMemberAlreadyExistsError extends OrganizationMembersRep
     }
 }
 
-export class OrganizationNotFoundError extends OrganizationMembersRepoError {
+export class OrganizationNotFoundError extends NotFoundError {
     constructor() {
         super("Organization not found");
         this.name = "OrganizationNotFoundError";
     }
 }
 
-export class UserNotFoundError extends OrganizationMembersRepoError {
+export class UserNotFoundError extends NotFoundError {
     constructor() {
         super("User not found");
         this.name = "UserNotFoundError";
@@ -35,7 +36,7 @@ export class OrganizationMemberPersistenceError extends OrganizationMembersRepoE
     }
 }
 
-export class OrganizationMemberNotFoundError extends OrganizationMembersRepoError {
+export class OrganizationMemberNotFoundError extends NotFoundError {
     constructor() {
         super("Organization member not found");
         this.name = "OrganizationMemberNotFoundError";

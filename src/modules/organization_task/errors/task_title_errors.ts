@@ -1,4 +1,6 @@
-export class TaskTitleErrors extends Error{
+import {ValidationError} from "../../../errors_base/errors_base.js";
+
+export class TaskTitleErrors extends ValidationError{
     constructor(message: string) {
         super(message);
         this.name = "TaskTitleErrors";
