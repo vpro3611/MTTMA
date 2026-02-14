@@ -1,6 +1,7 @@
+import {AuthenticationError} from "../../../errors_base/errors_base.js";
 
 
-export class LoginError extends Error {
+export class LoginError extends AuthenticationError {
     constructor(message: string) {
         super(message);
         this.name = "LoginError";
