@@ -1,33 +1,35 @@
 import { ChangePassServ } from "../../src/modules/user/controller/services/change_pass_serv.js";
 import { ChangePassService } from "../../src/modules/user/application/service/change_pass.js";
 
-jest.mock("../../src/modules/user/application/service/change_pass.js");
+jest.mock(
+    "../../src/modules/user/application/service/change_pass.js",
+    () => ({
+        ChangePassService: jest.fn(),
+    })
+);
 
 describe("ChangePassServ", () => {
 
     let txManager: any;
-    let mockChangePassServiceInstance: any;
     let service: ChangePassServ;
 
     beforeEach(() => {
 
-        mockChangePassServiceInstance = {
-            executeTx: jest.fn().mockResolvedValue("password-updated"),
+        const fakeUser = {
+            id: "user-1",
+            email: "updated@mail.com"
         };
 
         (ChangePassService as jest.Mock)
-            .mockImplementation(() => mockChangePassServiceInstance);
+            .mockImplementation(() => ({
+                executeTx: jest.fn().mockResolvedValue(fakeUser),
+            }));
 
         txManager = {
-            runInTransaction: jest.fn((callback) => {
-                return callback({});
-            }),
+            runInTransaction: jest.fn((callback) => callback({}))
         };
 
-        service = new ChangePassServ(
-            {} as any,
-            txManager
-        );
+        service = new ChangePassServ(txManager);
     });
 
     it("should execute change password inside transaction", async () => {
@@ -36,10 +38,10 @@ describe("ChangePassServ", () => {
 
         expect(txManager.runInTransaction).toHaveBeenCalled();
 
-        expect(mockChangePassServiceInstance.executeTx)
-            .toHaveBeenCalledWith("user-1", "old", "new");
-
-        expect(result).toBe("password-updated");
+        expect(result).toEqual({
+            id: "user-1",
+            email: "updated@mail.com"
+        });
     });
 
 });
