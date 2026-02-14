@@ -92,4 +92,14 @@ describe("JWTTokenService", () => {
         ).toThrow("No refresh token secret provided");
     });
 
+    it("should not verify access token with refresh secret", () => {
+        const token = tokenService.generateAccessToken("user-1");
+
+        process.env.ACCESS_TOKEN_SECRET = "wrong-secret";
+
+        expect(() =>
+            tokenService.verifyAccessToken(token)
+        ).toThrow();
+    });
+
 });
