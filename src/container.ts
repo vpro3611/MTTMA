@@ -59,6 +59,10 @@ import {RefreshTokensRepository} from "./Auth/refresh_tokens/refresh_tokens_repo
 import {JWTTokenService} from "./Auth/jwt_token_service/token_service.js";
 import {TransactionManagerPg} from "./modules/transaction_manager/transaction_manager_pg.js";
 import {AuthController} from "./Auth/auth_controller/auth_controller.js";
+import {ChangePassController} from "./modules/user/controller/change_pass_controller.js";
+import {ChangeEmailController} from "./modules/user/controller/change_email_controller.js";
+import {ChangePassServ} from "./modules/user/controller/services/change_pass_serv.js";
+import {ChangeEmailServ} from "./modules/user/controller/services/change_email_serv.js";
 
 export function assembleContainer() {
 
@@ -138,11 +142,17 @@ export function assembleContainer() {
     const authService = new AuthService(tokensRepository, jwtTokenService, txManager); // login + register + logout + refresh;
 
 
+    // TODO : SERVS (dealing with transactions and PoolClient);
+    // 1) user
+    const changePassServ = new ChangePassServ(txManager);
+    const changeEmailServ = new ChangeEmailServ(txManager);
 
     // TODO : CONTROLLERS (HTTP management);
     // 1) authentification
     const authController = new AuthController(authService);
-
+    // 2) user
+    const changePasswordController = new ChangePassController(changePassServ);
+    const changeEmailController = new ChangeEmailController(changeEmailServ);
 
 
     // TODO : RETURN ALL SERVICES
@@ -183,7 +193,10 @@ export function assembleContainer() {
 
         jwtTokenService,
         authService,
-        authController
+
+        authController,
+        changePasswordController,
+        changeEmailController,
     };
 }
 
