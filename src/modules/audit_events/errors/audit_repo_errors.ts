@@ -1,5 +1,6 @@
+import {InfrastructureError, NotFoundError} from "../../../errors_base/errors_base.js";
 
-export class AuditRepoError extends Error {
+export class AuditRepoError extends InfrastructureError {
     constructor(message: string) {
         super(message);
         this.name = "AuditRepoError";
@@ -13,7 +14,7 @@ export class AuditPersistenceError extends AuditRepoError {
     }
 }
 
-export class AuditNotFoundError extends AuditRepoError {
+export class AuditNotFoundError extends NotFoundError {
     constructor() {
         super("Audit event not found");
         this.name = "AuditNotFoundError";

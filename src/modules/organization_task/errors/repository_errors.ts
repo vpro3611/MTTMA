@@ -1,4 +1,6 @@
-export class OrgTaskRepoError extends Error {
+import {InfrastructureError, NotFoundError} from "../../../errors_base/errors_base.js";
+
+export class OrgTaskRepoError extends InfrastructureError {
      constructor(message: string){
         super(message);
         this.name = "orgTaskRepoError";
@@ -6,14 +8,14 @@ export class OrgTaskRepoError extends Error {
 }
 
 
-export class OrganizationDoesNotExistError extends OrgTaskRepoError {
+export class OrganizationDoesNotExistError extends NotFoundError {
     constructor() {
         super("Organization does not exist");
         this.name = "OrganizationDoesNotExistError";
     }
 }
 
-export class UserDoesNotExistError extends OrgTaskRepoError {
+export class UserDoesNotExistError extends NotFoundError {
     constructor() {
         super("User does not exist");
         this.name = "UserDoesNotExistError";

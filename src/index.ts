@@ -1,14 +1,8 @@
-import dotenv from 'dotenv';
-import {pool} from "./db/pg_pool.js";
+import {startServer} from "./server.js";
+import dotenv from "dotenv";
 
-// load env
 
-async function main() {
-    const res = await pool.query('SELECT NOW()');
-    console.log(res.rows[0].now);
-}
-
-main().catch((err) => {
-    console.error(err);
+startServer().catch((err) => {
+    console.error("Error while starting the server: ", err);
     process.exit(1);
-});
+})

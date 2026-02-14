@@ -1,4 +1,6 @@
-export class TaskDomainError extends Error {
+import {AuthorizationError} from "../../../errors_base/errors_base.js";
+
+export class TaskDomainError extends AuthorizationError {
     constructor(message: string) {
         super(message);
         this.name = "TaskDomainError";

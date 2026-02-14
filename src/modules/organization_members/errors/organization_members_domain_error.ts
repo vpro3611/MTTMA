@@ -1,7 +1,8 @@
 import {OrgMemsRole} from "../domain/org_members_role.js";
+import {AuthorizationError, ValidationError} from "../../../errors_base/errors_base.js";
 
 
-export class OrganizationMembersDomainError extends Error {
+export class OrganizationMembersDomainError extends AuthorizationError {
     constructor(message: string) {
         super(message);
         this.name = "OrganizationMembersDomainError";
@@ -15,14 +16,14 @@ export class OrganizationMemberInsufficientPermissionsError extends Organization
     }
 }
 
-export class InvalidOrganizationMemberRoleError extends OrganizationMembersDomainError {
+export class InvalidOrganizationMemberRoleError extends ValidationError {
     constructor() {
         super("Invalid organization member role");
         this.name = "InvalidOrganizationMemberRoleError";
     }
 }
 
-export class ActorNotAMemberError extends OrganizationMembersDomainError {
+export class ActorNotAMemberError extends OrganizationMembersDomainError{
     constructor() {
         super("Actor is not a member of this organization");
         this.name = "ActorNotAMemberError";
