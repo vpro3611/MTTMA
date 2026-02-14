@@ -1,9 +1,8 @@
 import request from "supertest";
 import express from "express";
 import cookieParser from "cookie-parser";
-import { AuthController } from "../../src/Auth/auth_controller/auth_controller.js";
-import { MissingRefreshTokenError } from "../../src/http_errors/token_errors.js";
-import {errorMiddleware} from "../../src/middlewares/error_middleware.js";
+import { AuthController } from "../../../src/Auth/auth_controller/auth_controller.js";
+import {errorMiddleware} from "../../../src/middlewares/error_middleware.js";
 
 describe("AuthController (HTTP integration)", () => {
 
