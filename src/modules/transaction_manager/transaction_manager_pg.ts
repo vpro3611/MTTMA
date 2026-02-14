@@ -1,7 +1,7 @@
 import {Pool, PoolClient} from "pg";
 
 export interface TransactionManager {
-    runInTransaction<T>(work: (client: unknown) => Promise<T>): Promise<T>
+    runInTransaction<T>(work: (client: PoolClient) => Promise<T>): Promise<T>
 }
 
 export class TransactionManagerPg implements TransactionManager {
