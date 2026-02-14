@@ -1,10 +1,10 @@
 import {UserRepositoryPG} from "./modules/user/repository_realization/user_repository_pg.js";
 import {pool} from "./db/pg_pool.js";
-import {HasherBcrypt} from "../src/modules/user/infrastructure/hasher_bcrypt.js";
-import {PasswordHasher} from "../src/modules/user/application/ports/password_hasher_interface.js";
-import {ChangePasswordUseCase} from "../src/modules/user/application/change_pass_use_case.js";
-import {ChangeUserEmailUseCase} from "../src/modules/user/application/change_user_email_use_case.js";
-import {RegisterUseCase} from "../src/modules/user/application/register_use_case.js";
+import {HasherBcrypt} from "./modules/user/infrastructure/hasher_bcrypt.js";
+import {PasswordHasher} from "./modules/user/application/ports/password_hasher_interface.js";
+import {ChangePasswordUseCase} from "./modules/user/application/change_pass_use_case.js";
+import {ChangeUserEmailUseCase} from "./modules/user/application/change_user_email_use_case.js";
+import {RegisterUseCase} from "./modules/user/application/register_use_case.js";
 import {OrganizationRepositoryPG} from "./modules/organization/repository_realization/organization_repository.js";
 import {CreateOrganizationUseCase} from "./modules/organization/application/create_organization_use_case.js";
 import {RenameOrganizationUseCase} from "./modules/organization/application/rename_organization_use_case.js";
@@ -54,8 +54,19 @@ import {DeleteOrganization} from "./modules/organization/application/service/del
 import {RenameWithAudit} from "./modules/organization/application/service/rename_with_audit.js";
 import {GetAllAuditWithAudit} from "./modules/audit_events/application/service/get_audit_byId_with_audit.js";
 import {GetFilterAuditWithAudit} from "./modules/audit_events/application/service/get_filter_audit_with_audit.js";
+import {AuthService} from "./Auth/auth_service/auth_service.js";
+import {RefreshTokensRepository} from "./Auth/refresh_tokens/refresh_tokens_repository.js";
+import {JWTTokenService} from "./Auth/jwt_token_service/token_service.js";
+import {TransactionManagerPg} from "./modules/transaction_manager/transaction_manager_pg.js";
+import {AuthController} from "./Auth/auth_controller/auth_controller.js";
 
 export function assembleContainer() {
+
+    // TODO : TRANSACTION MANAGER
+    // 1) tx manager;
+    const txManager = new TransactionManagerPg(pool)
+
+
     // TODO : REPOSITORIES (data access);
     // 1) user
     const userRepoPG = new UserRepositoryPG(pool);
@@ -69,7 +80,8 @@ export function assembleContainer() {
     const auditEventWriter = new AuditEventsRepositoryPg(pool)
     // 6) audit events (reader)
     const auditEventReader = new AuditEventReaderPG(pool);
-
+    // 7) refresh tokens
+    const tokensRepository = new RefreshTokensRepository(pool)
 
     // infrastructure services
     const hasher: PasswordHasher = new HasherBcrypt();
@@ -120,6 +132,59 @@ export function assembleContainer() {
     // 5 audit events
     const getAuditByOrganizationService = new GetAllAuditWithAudit(getOrganizationAuditUC, appendToAuditUC);
     const getFilteredAuditService = new GetFilterAuditWithAudit(getFilteredAuditUC, appendToAuditUC);
+    // 6 token service
+    const jwtTokenService = new JWTTokenService();
+    // 7 auth service
+    const authService = new AuthService(tokensRepository, jwtTokenService, txManager); // login + register + logout + refresh;
+
+
+
+    // TODO : CONTROLLERS (HTTP management);
+    // 1) authentification
+    const authController = new AuthController(authService);
+
+
 
     // TODO : RETURN ALL SERVICES
+
+    return {
+        txManager,
+
+        userRepoPG,
+        organizationTaskRepoPG,
+        organizationMemberRepoPG,
+        organizationRepoPG,
+        auditEventWriter,
+        auditEventReader,
+        tokensRepository,
+
+        hasher,
+
+        registerService,
+        changeEmailService,
+        changePassService,
+
+        changeTaskDescService,
+        changeTaskStatusService,
+        changeTaskTitleService,
+        createTaskService,
+        deleteTaskService,
+
+        changeOrgMemberRoleService,
+        fireMemberService,
+        hireMemberService,
+
+        createOrganizationService,
+        deleteOrganizationService,
+        renameOrganizationService,
+
+        getAuditByOrganizationService,
+        getFilteredAuditService,
+
+        jwtTokenService,
+        authService,
+        authController
+    };
 }
+
+export type AppContainer = ReturnType<typeof assembleContainer>;
