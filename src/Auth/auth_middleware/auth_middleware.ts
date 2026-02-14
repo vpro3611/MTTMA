@@ -19,7 +19,6 @@ export const createAuthMiddleware = (jwtService: JWTTokenService) => {
         try {
             const payload = jwtService.verifyAccessToken(token);
             req.user = payload;
-
             next();
         } catch (e) {
             return res.status(401).json({message: "Invalid or expired token"});
