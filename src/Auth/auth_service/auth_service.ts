@@ -10,6 +10,7 @@ import {RegisterUseCase} from "../../modules/user/application/register_use_case.
 import {RegisterService} from "../../modules/user/application/service/register.js";
 import {LoginUseCase} from "../../modules/user/application/login_use_case.js";
 import {LoginService} from "../../modules/user/application/service/login.js";
+import {InvalidRefreshTokenError} from "../../http_errors/token_errors.js";
 
 export class AuthService {
     constructor(private readonly tokenRepo: RefreshToken,
@@ -18,8 +19,6 @@ export class AuthService {
     ) {}
 
     generateTokens = async (userId: string) => {
-
-
         const accessToken = this.jwtService.generateAccessToken(userId);
         const refreshToken = this.jwtService.generateRefreshToken(userId);
 
@@ -44,10 +43,10 @@ export class AuthService {
 
         const existingToken = await this.tokenRepo.findValidByHash(hash);
         if (!existingToken) {
-            throw new Error('Invalid refresh token');
+            throw new InvalidRefreshTokenError();
         }
 
-        await this.tokenRepo.revoke(existingToken.userId);
+        await this.tokenRepo.revoke(existingToken.id);
 
         return this.generateTokens(payload.sub);
     }
@@ -115,13 +114,7 @@ export class AuthService {
 
             const hash = sha256(refreshToken);
 
-            const existingToken = await refreshRepo.findValidByHash(hash);
-
-            if (existingToken) {
-                await refreshRepo.revoke(existingToken.userId);
-                return {message: 'Successfully logged out'};
-            }
-            return {message: 'Invalid refresh token'};
+            await refreshRepo.revokeByHash(hash);
         });
     }
 }
