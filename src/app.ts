@@ -4,6 +4,11 @@ import {createAuthMiddleware} from "./Auth/auth_middleware/auth_middleware.js";
 import {errorMiddleware} from "./middlewares/error_middleware.js";
 import {loggerMiddleware} from "./middlewares/logger_middleware.js";
 import cookieParser from "cookie-parser";
+import {validateZodMiddleware} from "./middlewares/validate_zod_middleware.js";
+import {ChangeEmailSchema} from "./modules/user/controller/change_email_controller.js"
+import {ChangePassSchema} from "./modules/user/controller/change_pass_controller.js";
+import {LoginSchema, RegisterSchema} from "./Auth/auth_controller/auth_controller.js";
+
 
 export function createApp(dependencies: AppContainer) {
     const app = express();
@@ -23,13 +28,13 @@ export function createApp(dependencies: AppContainer) {
 
     privateRouter.use(createAuthMiddleware(dependencies.jwtTokenService));
 
-    publicRouter.post('/register', dependencies.authController.register);
-    publicRouter.post('/login', dependencies.authController.login);
+    publicRouter.post('/register', validateZodMiddleware(RegisterSchema), dependencies.authController.register);
+    publicRouter.post('/login', validateZodMiddleware(LoginSchema), dependencies.authController.login);
     publicRouter.post('/refresh', dependencies.authController.refresh);
 
     privateRouter.post('/logout', dependencies.authController.logout);
-    privateRouter.patch('/change_pass', dependencies.changePasswordController.changePassCont);
-    privateRouter.patch('/change-email', dependencies.changeEmailController.changeEmailCont);
+    privateRouter.patch('/change_pass', validateZodMiddleware(ChangePassSchema), dependencies.changePasswordController.changePassCont);
+    privateRouter.patch('/change_email', validateZodMiddleware(ChangeEmailSchema), dependencies.changeEmailController.changeEmailCont);
 
 
     app.use(loggerMiddleware());

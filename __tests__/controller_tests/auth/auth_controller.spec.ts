@@ -2,14 +2,16 @@ import request from "supertest";
 import express from "express";
 import cookieParser from "cookie-parser";
 import { AuthController } from "../../../src/Auth/auth_controller/auth_controller.js";
-import {errorMiddleware} from "../../../src/middlewares/error_middleware.js";
+import { errorMiddleware } from "../../../src/middlewares/error_middleware.js";
+import { validateZodMiddleware } from "../../../src/middlewares/validate_zod_middleware.js";
+import { RegisterSchema, LoginSchema } from "../../../src/Auth/auth_controller/auth_controller.js";
 
-describe("AuthController (HTTP integration)", () => {
+describe("AuthController (HTTP integration with Zod)", () => {
 
     let app: express.Express;
     let authService: any;
 
-    beforeEach(() => {
+    const setupApp = () => {
 
         authService = {
             refresh: jest.fn(),
@@ -24,19 +26,34 @@ describe("AuthController (HTTP integration)", () => {
         app.use(express.json());
         app.use(cookieParser());
 
-        app.post("/pub/register", controller.register);
-        app.post("/pub/login", controller.login);
+        app.post(
+            "/pub/register",
+            validateZodMiddleware(RegisterSchema),
+            controller.register
+        );
+
+        app.post(
+            "/pub/login",
+            validateZodMiddleware(LoginSchema),
+            controller.login
+        );
+
         app.post("/pub/refresh", controller.refresh);
         app.post("/pub/logout", controller.logout);
 
         app.use(errorMiddleware());
+
         process.env.NODE_ENV = "test";
+    };
+
+    beforeEach(() => {
+        setupApp();
     });
 
     /**
      * REFRESH
      */
-    it("POST /auth/refresh should refresh tokens and set cookie", async () => {
+    it("POST /refresh should refresh tokens and set cookie", async () => {
 
         authService.refresh.mockResolvedValue({
             accessToken: "new-access",
@@ -49,24 +66,21 @@ describe("AuthController (HTTP integration)", () => {
 
         expect(res.status).toBe(200);
         expect(res.body.accessToken).toBe("new-access");
-
-        expect(res.headers["set-cookie"]).toBeDefined();
         expect(res.headers["set-cookie"][0]).toContain("refreshToken=new-refresh");
     });
 
-    it("POST /auth/refresh should return 500 if token missing", async () => {
+    it("POST /refresh should return 401 if token missing", async () => {
 
         const res = await request(app)
             .post("/pub/refresh");
 
         expect(res.status).toBe(401);
-
     });
 
     /**
      * REGISTER
      */
-    it("POST /auth/register should register and set cookie", async () => {
+    it("POST /register should register and set cookie", async () => {
 
         authService.register.mockResolvedValue({
             accessToken: "access",
@@ -78,20 +92,46 @@ describe("AuthController (HTTP integration)", () => {
             .post("/pub/register")
             .send({
                 email: "test@test.com",
-                password: "password",
+                password: "validpassword123",
             });
 
         expect(res.status).toBe(201);
         expect(res.body.accessToken).toBe("access");
         expect(res.body.user.id).toBe("user-1");
-
         expect(res.headers["set-cookie"]).toBeDefined();
+    });
+
+    it("POST /register should return 400 for invalid email", async () => {
+
+        const res = await request(app)
+            .post("/pub/register")
+            .send({
+                email: "invalid",
+                password: "validpassword123",
+            });
+
+        expect(res.status).toBe(400);
+        expect(res.body.code).toBe("VALIDATION_ERROR");
+        expect(authService.register).not.toHaveBeenCalled();
+    });
+
+    it("POST /register should return 400 for short password", async () => {
+
+        const res = await request(app)
+            .post("/pub/register")
+            .send({
+                email: "test@test.com",
+                password: "short",
+            });
+
+        expect(res.status).toBe(400);
+        expect(authService.register).not.toHaveBeenCalled();
     });
 
     /**
      * LOGIN
      */
-    it("POST /auth/login should login and set cookie", async () => {
+    it("POST /login should login and set cookie", async () => {
 
         authService.login.mockResolvedValue({
             accessToken: "access",
@@ -103,20 +143,31 @@ describe("AuthController (HTTP integration)", () => {
             .post("/pub/login")
             .send({
                 email: "login@test.com",
-                password: "password",
+                password: "validpassword123",
             });
 
         expect(res.status).toBe(200);
-        expect(res.body.accessToken).toBe("access");
         expect(res.body.user.id).toBe("user-2");
-
         expect(res.headers["set-cookie"]).toBeDefined();
+    });
+
+    it("POST /login should return 400 for invalid payload", async () => {
+
+        const res = await request(app)
+            .post("/pub/login")
+            .send({
+                email: "bad",
+                password: "short",
+            });
+
+        expect(res.status).toBe(400);
+        expect(authService.login).not.toHaveBeenCalled();
     });
 
     /**
      * LOGOUT
      */
-    it("POST /auth/logout should clear cookie and return 204", async () => {
+    it("POST /logout should clear cookie and return 204", async () => {
 
         const res = await request(app)
             .post("/pub/logout")
@@ -124,4 +175,5 @@ describe("AuthController (HTTP integration)", () => {
 
         expect(res.status).toBe(204);
     });
+
 });

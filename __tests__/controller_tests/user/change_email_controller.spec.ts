@@ -1,15 +1,15 @@
 import express from "express";
 import request from "supertest";
-import { ChangeEmailController } from "../../../src/modules/user/controller/change_email_controller.js";
+import { ChangeEmailController, ChangeEmailSchema } from "../../../src/modules/user/controller/change_email_controller.js";
 import { errorMiddleware } from "../../../src/middlewares/error_middleware.js";
-import { UserIdError } from "../../../src/http_errors/user_id_error.js";
+import { validateZodMiddleware } from "../../../src/middlewares/validate_zod_middleware.js";
 
-describe("ChangeEmailController (HTTP integration)", () => {
+describe("ChangeEmailController (HTTP integration with Zod)", () => {
 
     let app: express.Express;
     let mockService: any;
 
-    beforeEach(() => {
+    const setupApp = (withUser = true) => {
 
         mockService = {
             changeEmailS: jest.fn().mockResolvedValue({
@@ -23,17 +23,28 @@ describe("ChangeEmailController (HTTP integration)", () => {
         app = express();
         app.use(express.json());
 
-        // middleware, который имитирует req.user
-        app.use((req: any, res, next) => {
-            req.user = { sub: "user-1" };
-            next();
-        });
+        if (withUser) {
+            app.use((req: any, res, next) => {
+                req.user = { sub: "user-1" };
+                next();
+            });
+        }
 
-        app.put("/user/email", controller.changeEmailCont);
+        app.put(
+            "/user/email",
+            validateZodMiddleware(ChangeEmailSchema),
+            controller.changeEmailCont
+        );
+
         app.use(errorMiddleware());
-    });
+    };
 
+    /**
+     *  Happy path
+     */
     it("should return 200 and updated user", async () => {
+
+        setupApp(true);
 
         const res = await request(app)
             .put("/user/email")
@@ -46,21 +57,52 @@ describe("ChangeEmailController (HTTP integration)", () => {
             .toHaveBeenCalledWith("user-1", "updated@mail.com");
     });
 
+    /**
+     * Invalid email format
+     */
+    it("should return 400 if email format is invalid", async () => {
+
+        setupApp(true);
+
+        const res = await request(app)
+            .put("/user/email")
+            .send({ new_email: "not-an-email" });
+
+        expect(res.status).toBe(400);
+        expect(res.body.code).toBe("VALIDATION_ERROR");
+
+        expect(mockService.changeEmailS).not.toHaveBeenCalled();
+    });
+
+    /**
+     *  Missing field
+     */
+    it("should return 400 if new_email is missing", async () => {
+
+        setupApp(true);
+
+        const res = await request(app)
+            .put("/user/email")
+            .send({});
+
+        expect(res.status).toBe(400);
+        expect(res.body.code).toBe("VALIDATION_ERROR");
+
+        expect(mockService.changeEmailS).not.toHaveBeenCalled();
+    });
+
+    /**
+     *  Missing user
+     */
     it("should return 401 if user not present", async () => {
 
-        app = express();
-        app.use(express.json());
-
-        const controller = new ChangeEmailController(mockService);
-
-        app.put("/user/email", controller.changeEmailCont);
-        app.use(errorMiddleware());
+        setupApp(false);
 
         const res = await request(app)
             .put("/user/email")
             .send({ new_email: "updated@mail.com" });
 
-        expect(res.status).toBe(401); // зависит от твоего errorMiddleware
+        expect(res.status).toBe(401);
     });
 
 });

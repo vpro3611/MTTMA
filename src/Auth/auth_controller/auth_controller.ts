@@ -2,6 +2,23 @@ import {AuthService} from "../auth_service/auth_service.js";
 import {Request, Response} from "express";
 import {MissingRefreshTokenError} from "../../http_errors/token_errors.js";
 
+import {z} from "zod";
+import {TypedRequest} from "../declare_global_request.js";
+
+export const RegisterSchema = z.object({
+    email: z.string().email().min(5).max(255),
+    password: z.string().min(10).max(255),
+});
+
+export type RegisterInput = z.infer<typeof RegisterSchema>;
+
+export const LoginSchema = z.object({
+    email: z.string().email().min(5).max(255),
+    password: z.string().min(10).max(255),
+})
+
+export type LoginInput = z.infer<typeof LoginSchema>;
+
 export class AuthController {
     constructor(private readonly authService: AuthService) {}
 
@@ -26,7 +43,7 @@ export class AuthController {
             .json({accessToken: tokens.accessToken});
     };
 
-    register = async (req: Request, res: Response) => {
+    register = async (req: TypedRequest<RegisterInput>, res: Response) => {
         const {email, password} = req.body;
         const tokens = await this.authService.register(email, password);
 
@@ -47,7 +64,7 @@ export class AuthController {
             );
     }
 
-    login = async (req: Request, res: Response) => {
+    login = async (req: TypedRequest<LoginInput>, res: Response) => {
         const {email, password} = req.body;
         const tokens = await this.authService.login(email, password);
 

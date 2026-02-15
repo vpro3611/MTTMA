@@ -1,14 +1,15 @@
 import express from "express";
 import request from "supertest";
-import { ChangePassController } from "../../../src/modules/user/controller/change_pass_controller.js";
+import { ChangePassController, ChangePassSchema } from "../../../src/modules/user/controller/change_pass_controller.js";
 import { errorMiddleware } from "../../../src/middlewares/error_middleware.js";
+import { validateZodMiddleware } from "../../../src/middlewares/validate_zod_middleware.js";
 
-describe("ChangePassController (HTTP integration)", () => {
+describe("ChangePassController (HTTP integration with Zod)", () => {
 
     let app: express.Express;
     let mockService: any;
 
-    beforeEach(() => {
+    const setupApp = (withUser = true) => {
 
         mockService = {
             changePassS: jest.fn().mockResolvedValue({
@@ -22,58 +23,100 @@ describe("ChangePassController (HTTP integration)", () => {
         app = express();
         app.use(express.json());
 
-        // имитация middleware, который ставит req.user
-        app.use((req: any, res, next) => {
-            req.user = { sub: "user-1" };
-            next();
-        });
+        if (withUser) {
+            app.use((req: any, res, next) => {
+                req.user = { sub: "user-1" };
+                next();
+            });
+        }
 
-        app.put("/user/password", controller.changePassCont);
+        app.put(
+            "/user/password",
+            validateZodMiddleware(ChangePassSchema),
+            controller.changePassCont
+        );
+
         app.use(errorMiddleware());
-    });
+    };
 
-    // ✅ Happy path #1
+    /**
+     * ✅ Happy path
+     */
     it("should return 200 and updated user", async () => {
+
+        setupApp(true);
 
         const res = await request(app)
             .put("/user/password")
-            .send({ old_pass: "old", new_pass: "new" });
+            .send({
+                old_pass: "oldpassword123",
+                new_pass: "newpassword123"
+            });
 
         expect(res.status).toBe(200);
         expect(res.body.id).toBe("user-1");
 
         expect(mockService.changePassS)
-            .toHaveBeenCalledWith("user-1", "old", "new");
+            .toHaveBeenCalledWith(
+                "user-1",
+                "oldpassword123",
+                "newpassword123"
+            );
     });
 
-    // ✅ Happy path #2 (другие данные)
-    it("should pass correct values to service", async () => {
+    /**
+     * ❌ Too short password
+     */
+    it("should return 400 if password is too short", async () => {
 
-        await request(app)
-            .put("/user/password")
-            .send({ old_pass: "123", new_pass: "456" });
-
-        expect(mockService.changePassS)
-            .toHaveBeenCalledWith("user-1", "123", "456");
-    });
-
-    //  Error case — нет req.user
-    it("should return error if user not present", async () => {
-
-        const controller = new ChangePassController(mockService);
-
-        app = express();
-        app.use(express.json());
-
-        // НЕ добавляем middleware, который ставит req.user
-        app.put("/user/password", controller.changePassCont);
-        app.use(errorMiddleware());
+        setupApp(true);
 
         const res = await request(app)
             .put("/user/password")
-            .send({ old_pass: "old", new_pass: "new" });
+            .send({
+                old_pass: "short",
+                new_pass: "short"
+            });
 
-        // зависит от твоей иерархии ошибок
+        expect(res.status).toBe(400);
+        expect(res.body.code).toBe("VALIDATION_ERROR");
+
+        expect(mockService.changePassS).not.toHaveBeenCalled();
+    });
+
+    /**
+     * ❌ Missing field
+     */
+    it("should return 400 if field is missing", async () => {
+
+        setupApp(true);
+
+        const res = await request(app)
+            .put("/user/password")
+            .send({
+                old_pass: "oldpassword123"
+            });
+
+        expect(res.status).toBe(400);
+        expect(res.body.code).toBe("VALIDATION_ERROR");
+
+        expect(mockService.changePassS).not.toHaveBeenCalled();
+    });
+
+    /**
+     * ❌ No user
+     */
+    it("should return 401 if user not present", async () => {
+
+        setupApp(false);
+
+        const res = await request(app)
+            .put("/user/password")
+            .send({
+                old_pass: "oldpassword123",
+                new_pass: "newpassword123"
+            });
+
         expect(res.status).toBe(401);
     });
 
