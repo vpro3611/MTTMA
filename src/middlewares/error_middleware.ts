@@ -7,10 +7,21 @@ import {
     NotFoundError,
     ValidationError
 } from "../errors_base/errors_base.js";
+import {ZodError} from "zod";
 
 
 export const errorMiddleware = () => {
-    return (err: unknown, req: Request, res: Response, next: NextFunction) => {
+    return (err: Error, req: Request, res: Response, next: NextFunction) => {
+
+        if (err instanceof ZodError) {
+            return res.status(400).json(
+                {
+                    code: "VALIDATION_ERROR",
+                    message: err.issues.map(issue => issue.message).join(", ")
+                }
+            )
+        }
+
         if (err instanceof ValidationError) {
             return res.status(400).json(
                 {
@@ -59,6 +70,8 @@ export const errorMiddleware = () => {
                 }
             );
         }
+
+
 
         console.error("Unhandled error: ", err);
 
