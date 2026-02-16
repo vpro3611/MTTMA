@@ -11,16 +11,30 @@ export class LoginUseCase {
                 private readonly passwordHasher: PasswordHasher
     ) {}
 
-    async execute(email: string, plainPass: string) {
-        const emailVerified = Email.create(email);
-        const user = await this.userRepo.findByEmail(emailVerified);
+    private async userExists(email: Email) {
+        const user = await this.userRepo.findByEmail(email);
         if (!user) {
             throw new UserNotFound();
         }
-        const isValid = await this.passwordHasher.compare(plainPass, user.getPasswordHash());
+        return user;
+    }
+
+    private async checkPassword(plain: string, hash: string) {
+        const isValid = await this.passwordHasher.compare(plain, hash);
         if (!isValid) {
             throw new InvalidCredentialsError();
         }
+    }
+
+    async execute(email: string, plainPass: string) {
+        const emailVerified = Email.create(email);
+
+        const user = await this.userExists(emailVerified);
+
+        user.checkUserStatus(user.getStatus());
+
+        await this.checkPassword(plainPass, user.getPasswordHash());
+
         const forReturn: UserResponseDto = {
             id: user.id,
             email: user.getEmail().getValue(),

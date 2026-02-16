@@ -34,6 +34,9 @@ import {
     HireMemberBodySchema,
     HireMemberParamsSchema
 } from "./modules/organization_members/controllers/hire_member_controller.js";
+import {GetAuditByOrgIdParamsSchema} from "./modules/audit_events/controllers/get_audit_by_org_id_controller.js";
+import {GetFilteredAuditParamsSchema} from "./modules/audit_events/controllers/get_filtered_audit_controller.js";
+import {validateQuery} from "./middlewares/validateQuery.js";
 
 
 export function createApp(dependencies: AppContainer) {
@@ -145,6 +148,17 @@ export function createApp(dependencies: AppContainer) {
         validate_params(HireMemberParamsSchema),
         validateZodMiddleware(HireMemberBodySchema),
         dependencies.hireMemberController.hireMemberCont
+    );
+
+    organizationRouter.get("/:orgId/audit_events/all",
+        validate_params(GetAuditByOrgIdParamsSchema),
+        dependencies.getAuditByOrgIdController.getAuditByOrgIdCont
+    );
+
+    organizationRouter.get("/:orgId/audit_events/filtered",
+        validate_params(GetFilteredAuditParamsSchema),
+        // validateQuery(GetFilteredAuditParamsSchema),
+        dependencies.getFilteredAuditController.getFilteredAuditCont
     );
 
     app.use(loggerMiddleware());

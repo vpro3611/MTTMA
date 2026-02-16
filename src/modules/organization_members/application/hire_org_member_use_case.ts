@@ -6,11 +6,11 @@ import {
     InvalidOrganizationMemberRoleError, OnlyOwnerCanAssign, OrganizationMemberInsufficientPermissionsError
 } from "../errors/organization_members_domain_error.js";
 import {OrgMemberDTO} from "../DTO/org_member_dto.js";
-import {User} from "../../user/domain/user_domain.js";
 import {UserRepository} from "../../user/domain/ports/user_repo_interface.js";
 import {UserNotFoundError} from "../errors/organization_members_repo_errors.js";
 import {UserResponseDto} from "../../user/DTO/user_response_dto.js";
 import {OrgMemsRole} from "../domain/org_members_role.js";
+import {User} from "../../user/domain/user_domain.js";
 
 
 export class HireOrgMemberUseCase {
@@ -32,20 +32,20 @@ export class HireOrgMemberUseCase {
         if (actorUserId === targetUserId) throw new CannotPerformActionOnYourselfError();
     }
 
-    private async checkIfUserExists(targetUserId: string): Promise<UserResponseDto> {
+    private async checkIfUserExists(targetUserId: string): Promise<User> {
         const user = await this.userRepo.findById(targetUserId);
         if (!user) {
             throw new UserNotFoundError();
         }
 
-        const response: UserResponseDto = {
-            id: user.id,
-            email: user.getEmail().getValue(),
-            status: user.getStatus(),
-            created_at: user.getCreatedAt(),
-        }
+        // const response: UserResponseDto = {
+        //     id: user.id,
+        //     email: user.getEmail().getValue(),
+        //     status: user.getStatus(),
+        //     created_at: user.getCreatedAt(),
+        // }
 
-        return response;
+        return user;
     }
 
     private async actorMemberExists(actorUserId: string, orgId: string): Promise<OrganizationMember> {
@@ -74,6 +74,8 @@ export class HireOrgMemberUseCase {
         this.checkForSelfAssign(actorUserId, targetUserId);
 
         const userExists = await this.checkIfUserExists(targetUserId);
+
+        userExists.checkUserStatus(userExists.getStatus());
 
         const actorMember = await this.actorMemberExists(actorUserId, organizationId);
 
