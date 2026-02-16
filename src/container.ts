@@ -63,6 +63,18 @@ import {ChangePassController} from "./modules/user/controller/change_pass_contro
 import {ChangeEmailController} from "./modules/user/controller/change_email_controller.js";
 import {ChangePassServ} from "./modules/user/controller/services/change_pass_serv.js";
 import {ChangeEmailServ} from "./modules/user/controller/services/change_email_serv.js";
+import {ChangeDescServ} from "./modules/organization_task/controller/services/change_desc_serv.js";
+import {
+    ChangeDescController,
+} from "./modules/organization_task/controller/change_desc_controller.js";
+import {ChangeStatusServ} from "./modules/organization_task/controller/services/change_status_serv.js";
+import {ChangeTitleServ} from "./modules/organization_task/controller/services/change_title_serv.js";
+import {CreateTaskServ} from "./modules/organization_task/controller/services/create_task_serv.js";
+import {DeleteTaskServ} from "./modules/organization_task/controller/services/delete_task_serv.js";
+import {ChangeStatusController} from "./modules/organization_task/controller/change_status_controller.js";
+import {ChangeTitleController} from "./modules/organization_task/controller/change_title_controller.js";
+import {CreateTaskController} from "./modules/organization_task/controller/create_task_controller.js";
+import {DeleteTaskController} from "./modules/organization_task/controller/delete_task_controller.js";
 
 export function assembleContainer() {
 
@@ -146,16 +158,25 @@ export function assembleContainer() {
     // 1) user
     const changePassServ = new ChangePassServ(txManager);
     const changeEmailServ = new ChangeEmailServ(txManager);
-
+    // 2) tasks
+    const changeDescServ = new ChangeDescServ(txManager);
+    const changeStatusServ = new ChangeStatusServ(txManager);
+    const changeTitleServ = new ChangeTitleServ(txManager);
+    const createTaskServ = new CreateTaskServ(txManager);
+    const deleteTaskServ = new DeleteTaskServ(txManager);
     // TODO : CONTROLLERS (HTTP management);
     // 1) authentification
     const authController = new AuthController(authService);
     // 2) user
     const changePasswordController = new ChangePassController(changePassServ);
     const changeEmailController = new ChangeEmailController(changeEmailServ);
-
-
-    // TODO : RETURN ALL SERVICES
+    // 3) tasks
+    const changeTaskDescController = new ChangeDescController(changeDescServ);
+    const changeTaskStatusController = new ChangeStatusController(changeStatusServ);
+    const changeTaskTitleController = new ChangeTitleController(changeTitleServ);
+    const createTaskController = new CreateTaskController(createTaskServ);
+    const deleteTaskController = new DeleteTaskController(deleteTaskServ);
+    // TODO : RETURN ALL
 
     return {
         txManager,
@@ -197,6 +218,12 @@ export function assembleContainer() {
         authController,
         changePasswordController,
         changeEmailController,
+
+        changeTaskDescController,
+        changeTaskStatusController,
+        changeTaskTitleController,
+        createTaskController,
+        deleteTaskController,
     };
 }
 
