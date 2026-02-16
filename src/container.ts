@@ -75,6 +75,12 @@ import {ChangeStatusController} from "./modules/organization_task/controller/cha
 import {ChangeTitleController} from "./modules/organization_task/controller/change_title_controller.js";
 import {CreateTaskController} from "./modules/organization_task/controller/create_task_controller.js";
 import {DeleteTaskController} from "./modules/organization_task/controller/delete_task_controller.js";
+import {CreateOrgServ} from "./modules/organization/contollers/services/create_organization_serv.js";
+import {DeleteOrganizationServ} from "./modules/organization/contollers/services/delete_organization_serv.js";
+import {RenameOrganizationServ} from "./modules/organization/contollers/services/rename_organization_serv.js";
+import {CreateOrganizationController} from "./modules/organization/contollers/create_organization_controller.js";
+import {DeleteOrganizationController} from "./modules/organization/contollers/delete_organization_controller.js";
+import {RenameOrganizationController} from "./modules/organization/contollers/rename_organization_controller.js";
 
 export function assembleContainer() {
 
@@ -164,6 +170,10 @@ export function assembleContainer() {
     const changeTitleServ = new ChangeTitleServ(txManager);
     const createTaskServ = new CreateTaskServ(txManager);
     const deleteTaskServ = new DeleteTaskServ(txManager);
+    // 3) organisations
+    const createOrganizationServ = new CreateOrgServ(txManager);
+    const deleteOrganizationServ = new DeleteOrganizationServ(txManager);
+    const renameOrganizationServ = new RenameOrganizationServ(txManager)
     // TODO : CONTROLLERS (HTTP management);
     // 1) authentification
     const authController = new AuthController(authService);
@@ -176,6 +186,10 @@ export function assembleContainer() {
     const changeTaskTitleController = new ChangeTitleController(changeTitleServ);
     const createTaskController = new CreateTaskController(createTaskServ);
     const deleteTaskController = new DeleteTaskController(deleteTaskServ);
+    // 4) organisations
+    const createOrganizationController = new CreateOrganizationController(createOrganizationServ);
+    const deleteOrganizationController = new DeleteOrganizationController(deleteOrganizationServ);
+    const renameOrganizationController = new RenameOrganizationController(renameOrganizationServ);
     // TODO : RETURN ALL
 
     return {
@@ -224,6 +238,10 @@ export function assembleContainer() {
         changeTaskTitleController,
         createTaskController,
         deleteTaskController,
+
+        createOrganizationController,
+        deleteOrganizationController,
+        renameOrganizationController,
     };
 }
 

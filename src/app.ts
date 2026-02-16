@@ -19,6 +19,12 @@ import {
     CreateTaskParamsSchema
 } from "./modules/organization_task/controller/create_task_controller.js";
 import {DeleteTaskParamsSchema} from "./modules/organization_task/controller/delete_task_controller.js";
+import {CreateOrgBodySchema} from "./modules/organization/contollers/create_organization_controller.js";
+import {
+    RenameOrgBodySchema,
+    RenameOrgParamsSchema
+} from "./modules/organization/contollers/rename_organization_controller.js";
+import {DeleteOrganizationParamsSchema} from "./modules/organization/contollers/delete_organization_controller.js";
 
 
 export function createApp(dependencies: AppContainer) {
@@ -40,6 +46,7 @@ export function createApp(dependencies: AppContainer) {
     app.use('/org', organizationRouter);
 
     privateRouter.use(createAuthMiddleware(dependencies.jwtTokenService));
+    organizationRouter.use(createAuthMiddleware(dependencies.jwtTokenService));
 
     publicRouter.post('/register',
         validateZodMiddleware(RegisterSchema),
@@ -96,6 +103,22 @@ export function createApp(dependencies: AppContainer) {
     organizationRouter.delete('/:orgId/tasks/:taskId',
         validate_params(DeleteTaskParamsSchema),
         dependencies.deleteTaskController.deleteTaskCont
+    );
+
+    organizationRouter.post("/create",
+        validateZodMiddleware(CreateOrgBodySchema),
+        dependencies.createOrganizationController.createOrganizationCont
+    );
+
+    organizationRouter.patch("/:orgId/rename",
+        validate_params(RenameOrgParamsSchema),
+        validateZodMiddleware(RenameOrgBodySchema),
+        dependencies.renameOrganizationController.renameOrgCont
+    );
+
+    organizationRouter.delete("/:orgId/delete",
+        validate_params(DeleteOrganizationParamsSchema),
+        dependencies.deleteOrganizationController.DeleteOrganizationCont
     );
 
     app.use(loggerMiddleware());
