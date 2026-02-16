@@ -89,6 +89,8 @@ import {FireMemberController} from "./modules/organization_members/controllers/f
 import {HireMemberController} from "./modules/organization_members/controllers/hire_member_controller.js";
 import {GetAuditByIdServ} from "./modules/audit_events/controllers/services/get_audit_by_id_serv.js";
 import {GetFilteredAuditServ} from "./modules/audit_events/controllers/services/get_filtered_audit_serv.js";
+import {GetAuditByOrgIdController} from "./modules/audit_events/controllers/get_audit_by_org_id_controller.js";
+import {GetFilteredAuditController} from "./modules/audit_events/controllers/get_filtered_audit_controller.js";
 
 export function assembleContainer() {
 
@@ -211,6 +213,9 @@ export function assembleContainer() {
     const changeMemberRoleController = new ChangeRoleController(changeMemberRoleServ);
     const fireMemberController = new FireMemberController(fireMemberServ);
     const hireMemberController = new HireMemberController(hireMemberServ);
+    // 6) audit events
+    const getAuditByOrgIdController = new GetAuditByOrgIdController(getAuditByOrgIdServ);
+    const getFilteredAuditController = new GetFilteredAuditController(getFilteredAuditServ);
     // TODO : RETURN ALL
 
     return {
@@ -267,6 +272,9 @@ export function assembleContainer() {
         changeMemberRoleController,
         fireMemberController,
         hireMemberController,
+
+        getAuditByOrgIdController,
+        getFilteredAuditController,
     };
 }
 
