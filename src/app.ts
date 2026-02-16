@@ -25,6 +25,15 @@ import {
     RenameOrgParamsSchema
 } from "./modules/organization/contollers/rename_organization_controller.js";
 import {DeleteOrganizationParamsSchema} from "./modules/organization/contollers/delete_organization_controller.js";
+import {
+    ChangeRoleBodySchema,
+    ChangeRoleParamsSchema
+} from "./modules/organization_members/controllers/change_role_controller.js";
+import {FireMemberParamsSchema} from "./modules/organization_members/controllers/fire_member_controller.js";
+import {
+    HireMemberBodySchema,
+    HireMemberParamsSchema
+} from "./modules/organization_members/controllers/hire_member_controller.js";
 
 
 export function createApp(dependencies: AppContainer) {
@@ -119,6 +128,23 @@ export function createApp(dependencies: AppContainer) {
     organizationRouter.delete("/:orgId/delete",
         validate_params(DeleteOrganizationParamsSchema),
         dependencies.deleteOrganizationController.DeleteOrganizationCont
+    );
+
+    organizationRouter.patch("/:orgId/role/:targetUserId",
+        validate_params(ChangeRoleParamsSchema),
+        validateZodMiddleware(ChangeRoleBodySchema),
+        dependencies.changeMemberRoleController.changeRoleCont
+    );
+
+    organizationRouter.delete("/:orgId/fire/:targetUserId",
+        validate_params(FireMemberParamsSchema),
+        dependencies.fireMemberController.fireMemberCont
+    );
+
+    organizationRouter.post("/:orgId/hire",
+        validate_params(HireMemberParamsSchema),
+        validateZodMiddleware(HireMemberBodySchema),
+        dependencies.hireMemberController.hireMemberCont
     );
 
     app.use(loggerMiddleware());
