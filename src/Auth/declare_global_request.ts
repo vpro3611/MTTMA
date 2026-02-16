@@ -12,3 +12,9 @@ declare global {
 export interface TypedRequest<T> extends Request {
     body: T,
 }
+
+// export type TypedRequest<
+//     Body = unknown,
+//     Params = unknown,
+//     Query = unknown
+// > = Request<Params, unknown, Body, Query>;
