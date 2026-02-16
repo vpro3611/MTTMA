@@ -87,6 +87,8 @@ import {HireMemberServ} from "./modules/organization_members/controllers/service
 import {ChangeRoleController} from "./modules/organization_members/controllers/change_role_controller.js";
 import {FireMemberController} from "./modules/organization_members/controllers/fire_member_controller.js";
 import {HireMemberController} from "./modules/organization_members/controllers/hire_member_controller.js";
+import {GetAuditByIdServ} from "./modules/audit_events/controllers/services/get_audit_by_id_serv.js";
+import {GetFilteredAuditServ} from "./modules/audit_events/controllers/services/get_filtered_audit_serv.js";
 
 export function assembleContainer() {
 
@@ -184,6 +186,11 @@ export function assembleContainer() {
     const changeMemberRoleServ = new ChangeRoleServ(txManager);
     const fireMemberServ = new FireMemberServ(txManager);
     const hireMemberServ = new HireMemberServ(txManager);
+    // 5) audit events
+    const getAuditByOrgIdServ = new GetAuditByIdServ(txManager);
+    const getFilteredAuditServ = new GetFilteredAuditServ(txManager);
+
+
     // TODO : CONTROLLERS (HTTP management);
     // 1) authentification
     const authController = new AuthController(authService);
