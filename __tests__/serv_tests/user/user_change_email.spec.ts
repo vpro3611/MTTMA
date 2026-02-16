@@ -1,8 +1,8 @@
-import { ChangeEmailServ } from "../../src/modules/user/controller/services/change_email_serv.js";
-import { ChangeEmailService } from "../../src/modules/user/application/service/change_email.js";
+import { ChangeEmailServ } from "../../../src/modules/user/controller/services/change_email_serv.js";
+import { ChangeEmailService } from "../../../src/modules/user/application/service/change_email.js";
 
 jest.mock(
-    "../../src/modules/user/application/service/change_email.js",
+    "../../../src/modules/user/application/service/change_email.js",
     () => ({
         ChangeEmailService: jest.fn(),
     })

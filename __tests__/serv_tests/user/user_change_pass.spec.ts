@@ -1,8 +1,8 @@
-import { ChangePassServ } from "../../src/modules/user/controller/services/change_pass_serv.js";
-import { ChangePassService } from "../../src/modules/user/application/service/change_pass.js";
+import { ChangePassServ } from "../../../src/modules/user/controller/services/change_pass_serv.js";
+import { ChangePassService } from "../../../src/modules/user/application/service/change_pass.js";
 
 jest.mock(
-    "../../src/modules/user/application/service/change_pass.js",
+    "../../../src/modules/user/application/service/change_pass.js",
     () => ({
         ChangePassService: jest.fn(),
     })
