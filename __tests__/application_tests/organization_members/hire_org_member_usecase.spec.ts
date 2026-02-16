@@ -13,6 +13,8 @@ import {
 import { UserNotFoundError } from "../../../src/modules/organization_members/errors/organization_members_repo_errors.js";
 import { Email } from "../../../src/modules/user/domain/email.js";
 import { Password } from "../../../src/modules/user/domain/password.js";
+import {UserStatus} from "../../../src/modules/user/domain/user_status.js";
+import {UserIsBannedError} from "../../../src/modules/user/errors/user_domain_error.js";
 
 describe("HireOrgMemberUseCase", () => {
     const ORG_ID = "org-1";
@@ -28,6 +30,7 @@ describe("HireOrgMemberUseCase", () => {
             Email.create("test@mail.com"),
             Password.fromHash("StrongPassword123!")
         );
+
 
     beforeEach(() => {
         orgMemberRepo = {
@@ -190,4 +193,24 @@ describe("HireOrgMemberUseCase", () => {
             OrganizationMemberInsufficientPermissionsError
         );
     });
+
+    it("should throw if user is banned", async () => {
+        const bannedUser = new User(
+            TARGET_ID,
+            Email.create("banned@mail.com"),
+            Password.fromHash("StrongPassword123!"),
+            UserStatus.BANNED,
+            new Date()
+        );
+
+        userRepo.findById.mockResolvedValueOnce(bannedUser);
+        orgMemberRepo.findById.mockResolvedValueOnce(
+            OrganizationMember.hire(ORG_ID, ACTOR_ID, "OWNER")
+        );
+
+        await expect(
+            useCase.execute(ACTOR_ID, ORG_ID, TARGET_ID, "MEMBER")
+        ).rejects.toBeInstanceOf(UserIsBannedError);
+    });
+
 });
