@@ -81,6 +81,12 @@ import {RenameOrganizationServ} from "./modules/organization/contollers/services
 import {CreateOrganizationController} from "./modules/organization/contollers/create_organization_controller.js";
 import {DeleteOrganizationController} from "./modules/organization/contollers/delete_organization_controller.js";
 import {RenameOrganizationController} from "./modules/organization/contollers/rename_organization_controller.js";
+import {ChangeRoleServ} from "./modules/organization_members/controllers/services/change_role_serv.js";
+import {FireMemberServ} from "./modules/organization_members/controllers/services/fire_member_serv.js";
+import {HireMemberServ} from "./modules/organization_members/controllers/services/hire_member_serv.js";
+import {ChangeRoleController} from "./modules/organization_members/controllers/change_role_controller.js";
+import {FireMemberController} from "./modules/organization_members/controllers/fire_member_controller.js";
+import {HireMemberController} from "./modules/organization_members/controllers/hire_member_controller.js";
 
 export function assembleContainer() {
 
@@ -174,6 +180,10 @@ export function assembleContainer() {
     const createOrganizationServ = new CreateOrgServ(txManager);
     const deleteOrganizationServ = new DeleteOrganizationServ(txManager);
     const renameOrganizationServ = new RenameOrganizationServ(txManager)
+    // 4) organization members
+    const changeMemberRoleServ = new ChangeRoleServ(txManager);
+    const fireMemberServ = new FireMemberServ(txManager);
+    const hireMemberServ = new HireMemberServ(txManager);
     // TODO : CONTROLLERS (HTTP management);
     // 1) authentification
     const authController = new AuthController(authService);
@@ -190,6 +200,10 @@ export function assembleContainer() {
     const createOrganizationController = new CreateOrganizationController(createOrganizationServ);
     const deleteOrganizationController = new DeleteOrganizationController(deleteOrganizationServ);
     const renameOrganizationController = new RenameOrganizationController(renameOrganizationServ);
+    // 5) organization members
+    const changeMemberRoleController = new ChangeRoleController(changeMemberRoleServ);
+    const fireMemberController = new FireMemberController(fireMemberServ);
+    const hireMemberController = new HireMemberController(hireMemberServ);
     // TODO : RETURN ALL
 
     return {
@@ -242,6 +256,10 @@ export function assembleContainer() {
         createOrganizationController,
         deleteOrganizationController,
         renameOrganizationController,
+
+        changeMemberRoleController,
+        fireMemberController,
+        hireMemberController,
     };
 }
 
