@@ -37,6 +37,7 @@ import {
 import {GetAuditByOrgIdParamsSchema} from "./modules/audit_events/controllers/get_audit_by_org_id_controller.js";
 import {GetFilteredAuditParamsSchema} from "./modules/audit_events/controllers/get_filtered_audit_controller.js";
 import {validateQuery} from "./middlewares/validateQuery.js";
+import {CheckProfileParamsSchema} from "./modules/user/controller/check_profile_controller.js";
 
 
 export function createApp(dependencies: AppContainer) {
@@ -86,6 +87,11 @@ export function createApp(dependencies: AppContainer) {
     privateRouter.patch('/change_email',
         validateZodMiddleware(ChangeEmailSchema),
         dependencies.changeEmailController.changeEmailCont
+    );
+
+    privateRouter.get('/:targetUserId',
+        validate_params(CheckProfileParamsSchema),
+        dependencies.checkProfileController.checkProfileCont
     );
 
     organizationRouter.patch('/:orgId/tasks/:taskId/description',
