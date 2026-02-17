@@ -1,10 +1,10 @@
 import { Pool } from "pg";
-import { OrganizationRepositoryPG } from "../../src/modules/organization/repository_realization/organization_repository.js";
-import { Organization } from "../../src/modules/organization/domain/organiztion_domain.js";
-import { Name } from "../../src/modules/organization/domain/name.js";
+import { OrganizationRepositoryPG } from "../../../src/modules/organization/repository_realization/organization_repository.js";
+import { Organization } from "../../../src/modules/organization/domain/organiztion_domain.js";
+import { Name } from "../../../src/modules/organization/domain/name.js";
 import {
     OrganizationAlreadyExistsError,
-} from "../../src/modules/organization/errors/organization_repository_errors.js";
+} from "../../../src/modules/organization/errors/organization_repository_errors.js";
 import {randomUUID} from "node:crypto";
 
 describe('OrganizationRepositoryPG (integration)', () => {

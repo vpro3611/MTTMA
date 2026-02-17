@@ -1,5 +1,5 @@
 import { RenameOrganizationServ } from
-        "../../../src/modules/organization/contollers/services/rename_organization_serv.js";
+        "../../../src/modules/organization/controllers/services/rename_organization_serv.js";
 
 import { RenameWithAudit } from
         "../../../src/modules/organization/application/service/rename_with_audit.js";
