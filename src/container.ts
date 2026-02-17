@@ -102,6 +102,12 @@ import {SearchOrganizationUseCase} from "./modules/organization/application/sear
 import {SearchOrganization} from "./modules/organization/application/service/search_organization.js";
 import {SearchOrganizationServ} from "./modules/organization/controllers/services/search_organization_serv.js";
 import {SearchOrganizationController} from "./modules/organization/controllers/search_organization_controller.js";
+import {GetAllMembersUseCase} from "./modules/organization_members/application/get_all_members_use_case.js";
+import {
+    GetAllMembersWithAudit
+} from "./modules/organization_members/application/services/get_all_members_with_audit.js";
+import {GetAllMembersServ} from "./modules/organization_members/controllers/services/get_all_members_serv.js";
+import {GetAllMembersController} from "./modules/organization_members/controllers/get_all_members_controller.js";
 
 export function assembleContainer() {
 
@@ -147,6 +153,7 @@ export function assembleContainer() {
     const changeOrgMemberRoleUC = new ChangeOrgMemberRoleUseCase(organizationMemberRepoPG);
     const fireOrgMemberUC = new FireOrgMemberUseCase(organizationMemberRepoPG);
     const hireOrgMemberUC = new HireOrgMemberUseCase(organizationMemberRepoPG, userRepoPG);
+    const getAllMembersUC = new GetAllMembersUseCase(organizationMemberRepoPG);
     // 4) organizations
     const createOrganizationUC = new CreateOrganizationUseCase(organizationRepoPG, userRepoPG);
     const renameOrganizationUC = new RenameOrganizationUseCase(organizationRepoPG, organizationMemberRepoPG);
@@ -174,6 +181,7 @@ export function assembleContainer() {
     const changeOrgMemberRoleService = new ChangeRoleWithAuditUseCase(changeOrgMemberRoleUC, appendToAuditUC);
     const fireMemberService = new FireMemberWithAuditUseCase(fireOrgMemberUC, appendToAuditUC);
     const hireMemberService = new HireMemberWithAuditUseCase(hireOrgMemberUC, appendToAuditUC);
+    const getAllMembersService = new GetAllMembersWithAudit(getAllMembersUC, appendToAuditUC);
     // 4 organizations
     const createOrganizationService = new CreateOrganizationWithAudit(createOrganizationUC, appendToAuditUC);
     const deleteOrganizationService = new DeleteOrganization(deleteOrganizationUC);
@@ -208,6 +216,7 @@ export function assembleContainer() {
     const changeMemberRoleServ = new ChangeRoleServ(txManager);
     const fireMemberServ = new FireMemberServ(txManager);
     const hireMemberServ = new HireMemberServ(txManager);
+    const getAllMembersServ = new GetAllMembersServ(txManager);
     // 5) audit events
     const getAuditByOrgIdServ = new GetAuditByIdServ(txManager);
     const getFilteredAuditServ = new GetFilteredAuditServ(txManager);
@@ -236,6 +245,7 @@ export function assembleContainer() {
     const changeMemberRoleController = new ChangeRoleController(changeMemberRoleServ);
     const fireMemberController = new FireMemberController(fireMemberServ);
     const hireMemberController = new HireMemberController(hireMemberServ);
+    const getAllMembersController = new GetAllMembersController(getAllMembersServ);
     // 6) audit events
     const getAuditByOrgIdController = new GetAuditByOrgIdController(getAuditByOrgIdServ);
     const getFilteredAuditController = new GetFilteredAuditController(getFilteredAuditServ);
@@ -273,6 +283,7 @@ export function assembleContainer() {
         changeOrgMemberRoleService,
         fireMemberService,
         hireMemberService,
+        getAllMembersService,
 
         createOrganizationService,
         deleteOrganizationService,
@@ -304,6 +315,7 @@ export function assembleContainer() {
         changeMemberRoleController,
         fireMemberController,
         hireMemberController,
+        getAllMembersController,
 
         getAuditByOrgIdController,
         getFilteredAuditController,
