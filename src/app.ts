@@ -38,6 +38,7 @@ import {GetAuditByOrgIdParamsSchema} from "./modules/audit_events/controllers/ge
 import {GetFilteredAuditParamsSchema} from "./modules/audit_events/controllers/get_filtered_audit_controller.js";
 import {validateQuery} from "./middlewares/validateQuery.js";
 import {CheckProfileParamsSchema} from "./modules/user/controller/check_profile_controller.js";
+import {GetAllMembersParamsSchema} from "./modules/organization_members/controllers/get_all_members_controller.js";
 
 
 export function createApp(dependencies: AppContainer) {
@@ -158,6 +159,11 @@ export function createApp(dependencies: AppContainer) {
         validate_params(HireMemberParamsSchema),
         validateZodMiddleware(HireMemberBodySchema),
         dependencies.hireMemberController.hireMemberCont
+    );
+
+    organizationRouter.get("/:orgId/members",
+        validate_params(GetAllMembersParamsSchema),
+        dependencies.getAllMembersController.getAllMembersCont
     );
 
     organizationRouter.get("/:orgId/audit_events/all",
