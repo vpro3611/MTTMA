@@ -9,7 +9,7 @@ export class GetAllMembersWithAudit {
                 private readonly writeAuditUseCase: AppendLogAuditEvents
     ) {};
 
-    executeTx = async (actorId: string, organizationId: string) => {
+    async executeTx (actorId: string, organizationId: string) {
         const membersList = await this.getAllMembersUseCase.execute(actorId, organizationId);
 
         const audit = AuditEvent.create(
