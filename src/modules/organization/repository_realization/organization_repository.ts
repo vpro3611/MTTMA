@@ -7,6 +7,7 @@ import {
     OrganizationAlreadyExistsError,
     OrganizationPersistenceError
 } from "../errors/organization_repository_errors.js";
+import {OrganizationSearchResultDto, SearchOrganizationCriteria} from "../DTO/search_criteria.js";
 
 
 export class OrganizationRepositoryPG implements OrganizationRepository {
@@ -92,6 +93,5 @@ export class OrganizationRepositoryPG implements OrganizationRepository {
             }
             throw new OrganizationPersistenceError();
         }
-
     }
 }
