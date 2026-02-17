@@ -19,12 +19,12 @@ import {
     CreateTaskParamsSchema
 } from "./modules/organization_task/controller/create_task_controller.js";
 import {DeleteTaskParamsSchema} from "./modules/organization_task/controller/delete_task_controller.js";
-import {CreateOrgBodySchema} from "./modules/organization/contollers/create_organization_controller.js";
+import {CreateOrgBodySchema} from "./modules/organization/controllers/create_organization_controller.js";
 import {
     RenameOrgBodySchema,
     RenameOrgParamsSchema
-} from "./modules/organization/contollers/rename_organization_controller.js";
-import {DeleteOrganizationParamsSchema} from "./modules/organization/contollers/delete_organization_controller.js";
+} from "./modules/organization/controllers/rename_organization_controller.js";
+import {DeleteOrganizationParamsSchema} from "./modules/organization/controllers/delete_organization_controller.js";
 import {
     ChangeRoleBodySchema,
     ChangeRoleParamsSchema
@@ -92,6 +92,10 @@ export function createApp(dependencies: AppContainer) {
     privateRouter.get('/:targetUserId',
         validate_params(CheckProfileParamsSchema),
         dependencies.checkProfileController.checkProfileCont
+    );
+
+    privateRouter.get('/organizations',
+        dependencies.searchOrganizationController.searchOrganizationCont
     );
 
     organizationRouter.patch('/:orgId/tasks/:taskId/description',

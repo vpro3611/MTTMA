@@ -75,12 +75,12 @@ import {ChangeStatusController} from "./modules/organization_task/controller/cha
 import {ChangeTitleController} from "./modules/organization_task/controller/change_title_controller.js";
 import {CreateTaskController} from "./modules/organization_task/controller/create_task_controller.js";
 import {DeleteTaskController} from "./modules/organization_task/controller/delete_task_controller.js";
-import {CreateOrgServ} from "./modules/organization/contollers/services/create_organization_serv.js";
-import {DeleteOrganizationServ} from "./modules/organization/contollers/services/delete_organization_serv.js";
-import {RenameOrganizationServ} from "./modules/organization/contollers/services/rename_organization_serv.js";
-import {CreateOrganizationController} from "./modules/organization/contollers/create_organization_controller.js";
-import {DeleteOrganizationController} from "./modules/organization/contollers/delete_organization_controller.js";
-import {RenameOrganizationController} from "./modules/organization/contollers/rename_organization_controller.js";
+import {CreateOrgServ} from "./modules/organization/controllers/services/create_organization_serv.js";
+import {DeleteOrganizationServ} from "./modules/organization/controllers/services/delete_organization_serv.js";
+import {RenameOrganizationServ} from "./modules/organization/controllers/services/rename_organization_serv.js";
+import {CreateOrganizationController} from "./modules/organization/controllers/create_organization_controller.js";
+import {DeleteOrganizationController} from "./modules/organization/controllers/delete_organization_controller.js";
+import {RenameOrganizationController} from "./modules/organization/controllers/rename_organization_controller.js";
 import {ChangeRoleServ} from "./modules/organization_members/controllers/services/change_role_serv.js";
 import {FireMemberServ} from "./modules/organization_members/controllers/services/fire_member_serv.js";
 import {HireMemberServ} from "./modules/organization_members/controllers/services/hire_member_serv.js";
@@ -95,6 +95,13 @@ import {CheckProfileUseCase} from "./modules/user/application/check_profile_use_
 import {CheckProfileService} from "./modules/user/application/service/check_profile.js";
 import {CheckProfileServ} from "./modules/user/controller/services/check_profile_serv.js";
 import {CheckProfileController} from "./modules/user/controller/check_profile_controller.js";
+import {
+    OrganizationRepositorySearch
+} from "./modules/organization/repository_realization/organization_repository_search.js";
+import {SearchOrganizationUseCase} from "./modules/organization/application/search_organization_use_case.js";
+import {SearchOrganization} from "./modules/organization/application/service/search_organization.js";
+import {SearchOrganizationServ} from "./modules/organization/controllers/services/search_organization_serv.js";
+import {SearchOrganizationController} from "./modules/organization/controllers/search_organization_controller.js";
 
 export function assembleContainer() {
 
@@ -118,6 +125,8 @@ export function assembleContainer() {
     const auditEventReader = new AuditEventReaderPG(pool);
     // 7) refresh tokens
     const tokensRepository = new RefreshTokensRepository(pool)
+    // 8) organization search
+    const searchOrganizationPG = new OrganizationRepositorySearch(pool);
 
     // infrastructure services
     const hasher: PasswordHasher = new HasherBcrypt();
@@ -146,6 +155,8 @@ export function assembleContainer() {
     const appendToAuditUC = new AppendLogAuditEvents(auditEventWriter);
     const getOrganizationAuditUC = new GetOrganizationAuditUseCase(auditEventReader, organizationMemberRepoPG);
     const getFilteredAuditUC = new GetFilteredAuditOrgUseCase(auditEventReader, organizationMemberRepoPG);
+    // 6) organization search
+    const searchOrganizationUC = new SearchOrganizationUseCase(searchOrganizationPG, userRepoPG);
 
     // TODO : SERVICES (application services);
     // 1) users
@@ -174,6 +185,8 @@ export function assembleContainer() {
     const jwtTokenService = new JWTTokenService();
     // 7 auth service
     const authService = new AuthService(tokensRepository, jwtTokenService, txManager); // login + register + logout + refresh;
+    // 8 organization search
+    const searchOrganizationService = new SearchOrganization(searchOrganizationUC);
 
 
     // TODO : SERVS (dealing with transactions and PoolClient);
@@ -198,6 +211,8 @@ export function assembleContainer() {
     // 5) audit events
     const getAuditByOrgIdServ = new GetAuditByIdServ(txManager);
     const getFilteredAuditServ = new GetFilteredAuditServ(txManager);
+    // 6) organization search
+    const searchOrganizationServ = new SearchOrganizationServ(txManager);
 
 
     // TODO : CONTROLLERS (HTTP management);
@@ -224,6 +239,11 @@ export function assembleContainer() {
     // 6) audit events
     const getAuditByOrgIdController = new GetAuditByOrgIdController(getAuditByOrgIdServ);
     const getFilteredAuditController = new GetFilteredAuditController(getFilteredAuditServ);
+    // 7) organization search
+    const searchOrganizationController = new SearchOrganizationController(searchOrganizationServ);
+
+
+
     // TODO : RETURN ALL
 
     return {
@@ -258,6 +278,8 @@ export function assembleContainer() {
         deleteOrganizationService,
         renameOrganizationService,
 
+        searchOrganizationService,
+
         getAuditByOrganizationService,
         getFilteredAuditService,
 
@@ -285,6 +307,8 @@ export function assembleContainer() {
 
         getAuditByOrgIdController,
         getFilteredAuditController,
+
+        searchOrganizationController,
     };
 }
 
