@@ -108,6 +108,8 @@ import {
 } from "./modules/organization_members/application/services/get_all_members_with_audit.js";
 import {GetAllMembersServ} from "./modules/organization_members/controllers/services/get_all_members_serv.js";
 import {GetAllMembersController} from "./modules/organization_members/controllers/get_all_members_controller.js";
+import {InvitationRepositoryPG} from "./modules/invitations/repository_realization/invitation_repository_pg.js";
+import {InvitationReadRepositoryPG} from "./modules/invitations/repository_realization/invitation_read_repo_pg.js";
 
 export function assembleContainer() {
 
@@ -133,6 +135,10 @@ export function assembleContainer() {
     const tokensRepository = new RefreshTokensRepository(pool)
     // 8) organization search
     const searchOrganizationPG = new OrganizationRepositorySearch(pool);
+    // 9) invitations (writer)
+    const invitationRepoWriterPG = new InvitationRepositoryPG(pool);
+    // 10) invitations (reader)
+    const invitationRepoReaderPG = new InvitationReadRepositoryPG(pool);
 
     // infrastructure services
     const hasher: PasswordHasher = new HasherBcrypt();
