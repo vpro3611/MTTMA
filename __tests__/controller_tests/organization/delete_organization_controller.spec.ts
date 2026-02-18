@@ -4,7 +4,7 @@ import request from "supertest";
 import {
     DeleteOrganizationController,
     DeleteOrganizationParamsSchema
-} from "../../../src/modules/organization/contollers/delete_organization_controller.js";
+} from "../../../src/modules/organization/controllers/delete_organization_controller.js";
 
 import { validate_params } from
         "../../../src/middlewares/validate_params.js";

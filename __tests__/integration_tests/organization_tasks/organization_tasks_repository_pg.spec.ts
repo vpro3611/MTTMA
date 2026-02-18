@@ -1,8 +1,8 @@
 import { Pool } from "pg";
-import { OrganizationTasksRepositoryPG } from "../../src/modules/organization_task/organization_tasks_repository/org_tasks_repo_realization.js";
-import { TaskTitle } from "../../src/modules/organization_task/domain/task_title.js";
-import { TaskDescription } from "../../src/modules/organization_task/domain/task_description.js";
-import { Task } from "../../src/modules/organization_task/domain/task_domain.js";
+import { OrganizationTasksRepositoryPG } from "../../../src/modules/organization_task/organization_tasks_repository/org_tasks_repo_realization.js";
+import { TaskTitle } from "../../../src/modules/organization_task/domain/task_title.js";
+import { TaskDescription } from "../../../src/modules/organization_task/domain/task_description.js";
+import { Task } from "../../../src/modules/organization_task/domain/task_domain.js";
 
 describe("OrganizationTasksRepositoryPG (integration)", () => {
     let repo: OrganizationTasksRepositoryPG;

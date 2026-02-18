@@ -92,6 +92,5 @@ export class OrganizationRepositoryPG implements OrganizationRepository {
             }
             throw new OrganizationPersistenceError();
         }
-
     }
 }

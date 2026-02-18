@@ -5,4 +5,5 @@ export type UserResponseDto = {
     email: string;
     status: string;
     created_at: Date;
+    password?: string;
 };

@@ -19,12 +19,12 @@ import {
     CreateTaskParamsSchema
 } from "./modules/organization_task/controller/create_task_controller.js";
 import {DeleteTaskParamsSchema} from "./modules/organization_task/controller/delete_task_controller.js";
-import {CreateOrgBodySchema} from "./modules/organization/contollers/create_organization_controller.js";
+import {CreateOrgBodySchema} from "./modules/organization/controllers/create_organization_controller.js";
 import {
     RenameOrgBodySchema,
     RenameOrgParamsSchema
-} from "./modules/organization/contollers/rename_organization_controller.js";
-import {DeleteOrganizationParamsSchema} from "./modules/organization/contollers/delete_organization_controller.js";
+} from "./modules/organization/controllers/rename_organization_controller.js";
+import {DeleteOrganizationParamsSchema} from "./modules/organization/controllers/delete_organization_controller.js";
 import {
     ChangeRoleBodySchema,
     ChangeRoleParamsSchema
@@ -37,6 +37,8 @@ import {
 import {GetAuditByOrgIdParamsSchema} from "./modules/audit_events/controllers/get_audit_by_org_id_controller.js";
 import {GetFilteredAuditParamsSchema} from "./modules/audit_events/controllers/get_filtered_audit_controller.js";
 import {validateQuery} from "./middlewares/validateQuery.js";
+import {CheckProfileParamsSchema} from "./modules/user/controller/check_profile_controller.js";
+import {GetAllMembersParamsSchema} from "./modules/organization_members/controllers/get_all_members_controller.js";
 
 
 export function createApp(dependencies: AppContainer) {
@@ -86,6 +88,15 @@ export function createApp(dependencies: AppContainer) {
     privateRouter.patch('/change_email',
         validateZodMiddleware(ChangeEmailSchema),
         dependencies.changeEmailController.changeEmailCont
+    );
+
+    privateRouter.get('/:targetUserId',
+        validate_params(CheckProfileParamsSchema),
+        dependencies.checkProfileController.checkProfileCont
+    );
+
+    privateRouter.get('/organizations',
+        dependencies.searchOrganizationController.searchOrganizationCont
     );
 
     organizationRouter.patch('/:orgId/tasks/:taskId/description',
@@ -148,6 +159,11 @@ export function createApp(dependencies: AppContainer) {
         validate_params(HireMemberParamsSchema),
         validateZodMiddleware(HireMemberBodySchema),
         dependencies.hireMemberController.hireMemberCont
+    );
+
+    organizationRouter.get("/:orgId/members",
+        validate_params(GetAllMembersParamsSchema),
+        dependencies.getAllMembersController.getAllMembersCont
     );
 
     organizationRouter.get("/:orgId/audit_events/all",

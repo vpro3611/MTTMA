@@ -1,4 +1,4 @@
-import { CreateOrgServ} from "../../../src/modules/organization/contollers/services/create_organization_serv.js";
+import { CreateOrgServ} from "../../../src/modules/organization/controllers/services/create_organization_serv.js";
 
 import { CreateOrganizationWithAudit } from
         "../../../src/modules/organization/application/service/create_with_audit.js";

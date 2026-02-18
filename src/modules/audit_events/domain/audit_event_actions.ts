@@ -18,6 +18,8 @@ export const AuditEventActions = {
 
     ORGANIZATION_CREATED: "ORGANIZATION_CREATED",
     ORGANIZATION_RENAMED: "ORGANIZATION_RENAMED",
+
+    LIST_ALL_MEMBERS: "LIST_ALL_MEMBERS",
 } as const;
 
 export type AuditEventAction = typeof AuditEventActions[keyof typeof AuditEventActions];

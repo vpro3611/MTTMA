@@ -4,7 +4,7 @@ import request from "supertest";
 import {
     CreateOrganizationController,
     CreateOrgBodySchema
-} from "../../../src/modules/organization/contollers/create_organization_controller.js";
+} from "../../../src/modules/organization/controllers/create_organization_controller.js";
 
 import { validateZodMiddleware } from
         "../../../src/middlewares/validate_zod_middleware.js";

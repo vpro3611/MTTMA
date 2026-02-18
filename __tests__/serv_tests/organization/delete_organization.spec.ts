@@ -1,5 +1,5 @@
 import { DeleteOrganizationServ } from
-        "../../../src/modules/organization/contollers/services/delete_organization_serv.js";
+        "../../../src/modules/organization/controllers/services/delete_organization_serv.js";
 
 import { DeleteOrganization } from
         "../../../src/modules/organization/application/service/delete_organization.js";

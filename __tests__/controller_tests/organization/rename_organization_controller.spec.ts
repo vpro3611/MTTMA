@@ -5,7 +5,7 @@ import {
     RenameOrganizationController,
     RenameOrgBodySchema,
     RenameOrgParamsSchema
-} from "../../../src/modules/organization/contollers/rename_organization_controller.js";
+} from "../../../src/modules/organization/controllers/rename_organization_controller.js";
 
 import { validate_params } from
         "../../../src/middlewares/validate_params.js";
