@@ -1,7 +1,6 @@
 import {Invitation} from "../invitation_domain.js";
-import {InvitationStatus} from "../invitation_status.js";
-import {OrgMemsRole} from "../../../organization_members/domain/org_members_role.js";
 import {Filters} from "../../DTO/filters.js";
+import {InvitationView} from "../../DTO/invitation_view.js";
 
 
 export interface InvitationRepoInterface {
@@ -11,3 +10,6 @@ export interface InvitationRepoInterface {
     save(invitation: Invitation): Promise<void>;
 }
 
+export interface InvitationReadRepository {
+    getUserInvitations(userId: string): Promise<InvitationView[]>;
+}
