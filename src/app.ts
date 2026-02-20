@@ -49,6 +49,10 @@ import {
 import {
     GetOrganizationInvitationsParamsSchema
 } from "./modules/invitations/controllers/get_organization_invitations_controller.js";
+import {
+    ViewOrganizationParams,
+    ViewOrganizationParamsSchema
+} from "./modules/organization/controllers/view_organization_controller.js";
 
 
 export function createApp(dependencies: AppContainer) {
@@ -107,6 +111,11 @@ export function createApp(dependencies: AppContainer) {
 
     privateRouter.get('/organizations',
         dependencies.searchOrganizationController.searchOrganizationCont
+    );
+
+    privateRouter.get("/organizations/:orgId",
+        validate_params(ViewOrganizationParamsSchema),
+        dependencies.viewOrganizationController.viewOrganizationCont
     );
 
     privateRouter.patch('/:invitationId/accept',

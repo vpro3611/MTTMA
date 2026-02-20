@@ -142,6 +142,12 @@ import {
 } from "./modules/invitations/controllers/get_organization_invitations_controller.js";
 import {RejectInvitationController} from "./modules/invitations/controllers/reject_invitation_controller.js";
 import {ViewUserInvitationsController} from "./modules/invitations/controllers/view_user_invitations_controller.js";
+import {ViewOrganizationUseCase} from "./modules/organization/application/view_organization_use_case.js";
+import {
+    ViewOrganizationServiceWithAudit
+} from "./modules/organization/application/service/view_organization_service_with_audit.js";
+import {ViewOrganizationServ} from "./modules/organization/controllers/services/view_organization_serv.js";
+import {ViewOrganizationController} from "./modules/organization/controllers/view_organization_controller.js";
 
 export function assembleContainer() {
 
@@ -195,6 +201,7 @@ export function assembleContainer() {
     const createOrganizationUC = new CreateOrganizationUseCase(organizationRepoPG, userRepoPG);
     const renameOrganizationUC = new RenameOrganizationUseCase(organizationRepoPG, organizationMemberRepoPG);
     const deleteOrganizationUC = new DeleteOrganizationUseCase(organizationRepoPG, organizationMemberRepoPG);
+    const viewOrganizationUC = new ViewOrganizationUseCase(organizationRepoPG, userRepoPG);
     // 5) audit events
     const appendToAuditUC = new AppendLogAuditEvents(auditEventWriter);
     const getOrganizationAuditUC = new GetOrganizationAuditUseCase(auditEventReader, organizationMemberRepoPG);
@@ -230,6 +237,7 @@ export function assembleContainer() {
     const createOrganizationService = new CreateOrganizationWithAudit(createOrganizationUC, appendToAuditUC);
     const deleteOrganizationService = new DeleteOrganization(deleteOrganizationUC);
     const renameOrganizationService = new RenameWithAudit(renameOrganizationUC, appendToAuditUC);
+    const viewOrganizationService = new ViewOrganizationServiceWithAudit(viewOrganizationUC, appendToAuditUC);
     // 5 audit events
     const getAuditByOrganizationService = new GetAllAuditWithAudit(getOrganizationAuditUC, appendToAuditUC);
     const getFilteredAuditService = new GetFilterAuditWithAudit(getFilteredAuditUC, appendToAuditUC);
@@ -261,7 +269,8 @@ export function assembleContainer() {
     // 3) organisations
     const createOrganizationServ = new CreateOrgServ(txManager);
     const deleteOrganizationServ = new DeleteOrganizationServ(txManager);
-    const renameOrganizationServ = new RenameOrganizationServ(txManager)
+    const renameOrganizationServ = new RenameOrganizationServ(txManager);
+    const viewOrganizationServ = new ViewOrganizationServ(txManager);
     // 4) organization members
     const changeMemberRoleServ = new ChangeRoleServ(txManager);
     const fireMemberServ = new FireMemberServ(txManager);
@@ -297,6 +306,7 @@ export function assembleContainer() {
     const createOrganizationController = new CreateOrganizationController(createOrganizationServ);
     const deleteOrganizationController = new DeleteOrganizationController(deleteOrganizationServ);
     const renameOrganizationController = new RenameOrganizationController(renameOrganizationServ);
+    const viewOrganizationController = new ViewOrganizationController(viewOrganizationServ);
     // 5) organization members
     const changeMemberRoleController = new ChangeRoleController(changeMemberRoleServ);
     const fireMemberController = new FireMemberController(fireMemberServ);
@@ -373,6 +383,7 @@ export function assembleContainer() {
         createOrganizationController,
         deleteOrganizationController,
         renameOrganizationController,
+        viewOrganizationController,
 
         changeMemberRoleController,
         fireMemberController,
