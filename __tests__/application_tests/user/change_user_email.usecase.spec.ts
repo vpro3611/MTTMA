@@ -4,6 +4,7 @@ import { User } from "../../../src/modules/user/domain/user_domain.js";
 import { Email } from "../../../src/modules/user/domain/email.js";
 import { Password } from "../../../src/modules/user/domain/password.js";
 import {UserNotFound} from "../../../src/modules/user/errors/user_repository_errors.js";
+import {UserStatus} from "../../../src/modules/user/domain/user_status.js";
 
 describe('ChangeUserEmailUseCase', () => {
 
@@ -40,8 +41,8 @@ describe('ChangeUserEmailUseCase', () => {
         expect(userRepository.findById).toHaveBeenCalledWith(user.id);
         expect(userRepository.save).toHaveBeenCalledWith(user);
 
-        expect(result.email.getValue()).toBe('new@example.com');
-        expect(result.status).toBe('active');
+        expect(result.email).toBe('new@example.com');
+        expect(result.status).toBe(UserStatus.ACTIVE);
     });
 
     /**
@@ -86,7 +87,7 @@ describe('ChangeUserEmailUseCase', () => {
             'user-id',
             Email.create('old@example.com'),
             Password.fromHash('hash'),
-            'banned',
+            UserStatus.BANNED,
             new Date()
         );
 

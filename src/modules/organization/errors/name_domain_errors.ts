@@ -1,6 +1,7 @@
+import {ValidationError} from "../../../errors_base/errors_base.js";
 
 
-export class NameDomainError extends Error {
+export class NameDomainError extends ValidationError {
     constructor(message: string) {
         super(message);
         this.name = "NameDomainError";

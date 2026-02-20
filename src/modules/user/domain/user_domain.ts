@@ -1,6 +1,7 @@
 import {Password} from "./password.js";
 import {Email} from "./email.js";
 import {UserIsBannedError} from "../errors/user_domain_error.js";
+import {UserStatus} from "./user_status.js";
 
 
 export class User {
@@ -8,22 +9,29 @@ export class User {
         public readonly id: string,
         private email: Email,
         private password: Password,
-        private status: "active" | "banned" | "suspended",
+        private status: UserStatus,
         private created_at: Date,
     ) {}
 
-    private checkUserStatus = (userStatus: string) => {
-        if (userStatus === "banned") {
+     checkUserStatus = (userStatus: UserStatus) => {
+        if (userStatus === UserStatus.BANNED) {
             throw new UserIsBannedError();
         }
     }
+
+    ensureIsActive = () => {
+        if (this.status !== UserStatus.ACTIVE) {
+            throw new Error("User is not active, cannot perform action");
+        }
+    }
+
 
     static create(email: Email, password: Password) {
         return new User(
             crypto.randomUUID(),
             email,
             password,
-            "active",
+            UserStatus.ACTIVE,
             new Date()
         );
     }

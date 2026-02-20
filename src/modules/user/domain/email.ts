@@ -4,15 +4,30 @@ import {InvalidEmailError, TooLongEmail, TooShortEmail} from "../errors/email_do
 export class Email {
     private constructor(private readonly value: string){}
 
+    private static readonly MAX_LENGTH = 255;
+    private static readonly MIN_LENGTH = 5;
+    private static readonly EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+
+    private static checkMaxLength(email: string) {
+        if (email.length > this.MAX_LENGTH) throw new TooLongEmail(this.MAX_LENGTH);
+    }
+
+    private static checkMinLength(email: string) {
+        if (email.length < this.MIN_LENGTH) throw new TooShortEmail(this.MIN_LENGTH);
+    }
+
+    private static checkEmailRegex(email: string) {
+        if (!this.EMAIL_REGEX.test(email)) throw new InvalidEmailError();
+    }
+
+
     static create(raw: string) {
         const normalized = raw.toLowerCase().trim();
 
-        if (normalized.length < 5) throw new TooShortEmail(5);
-        if (normalized.length > 255) throw new TooLongEmail(255);
-
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-        if (!emailRegex.test(normalized)) throw new InvalidEmailError();
+        this.checkMaxLength(normalized);
+        this.checkMinLength(normalized);
+        this.checkEmailRegex(normalized);
 
         return new Email(normalized);
     }

@@ -7,9 +7,14 @@ import {UserNotFound} from "../errors/user_repository_errors.js";
 export class ChangeUserEmailUseCase {
     constructor(private userRepository: UserRepository){}
 
-    async execute(userId: string, newEmail: string) {
+    private async userExists(userId: string) {
         const exists = await this.userRepository.findById(userId);
         if (!exists) throw new UserNotFound();
+        return exists;
+    }
+
+    async execute(userId: string, newEmail: string) {
+        const exists = await this.userExists(userId);
 
         const newEmailVerified = Email.create(newEmail);
 
@@ -19,7 +24,7 @@ export class ChangeUserEmailUseCase {
 
         const returnUser: UserResponseDto = {
             id: exists.id,
-            email: exists.getEmail(),
+            email: exists.getEmail().getValue(),
             status: exists.getStatus(),
             created_at: exists.getCreatedAt(),
         }

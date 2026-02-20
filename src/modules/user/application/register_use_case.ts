@@ -12,11 +12,15 @@ export class RegisterUseCase {
                 private readonly hasher: PasswordHasher,
     ){}
 
+    private async userExists(email: string) {
+        const exists = await this.userRepository.findByEmail(Email.create(email));
+        if (exists) throw new UserAlreadyExistsError();
+    }
+
     async execute(email: string, plainPass: string) {
         const emailVerified = Email.create(email);
 
-        const existingUser = await this.userRepository.findByEmail(emailVerified);
-        if (existingUser) throw new UserAlreadyExistsError();
+        await this.userExists(emailVerified.getValue());
 
         const verifiedPassword = Password.validatePlain(plainPass);
         const passwordHash = await this.hasher.hash(verifiedPassword);
@@ -27,7 +31,7 @@ export class RegisterUseCase {
 
         const returnUser: UserResponseDto = {
             id: user.id,
-            email: user.getEmail(),
+            email: user.getEmail().getValue(),
             status: user.getStatus(),
             created_at: user.getCreatedAt(),
         }

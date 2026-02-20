@@ -27,6 +27,12 @@ describe('Password (domain)', () => {
             }).toThrow(PasswordDoesNotContainUppercaseLetterError);
         });
 
+        it('should throw error if password has no lowercase letter', () => {
+            expect(() => {
+                Password.validatePlain('PASSWORD1!');
+            }).toThrow(PasswordDoesNotContainUppercaseLetterError);
+        })
+
         it('should throw error if password has no digit', () => {
             expect(() => {
                 Password.validatePlain('Password!sdsada');

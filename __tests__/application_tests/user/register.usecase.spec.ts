@@ -5,6 +5,7 @@ import { User } from "../../../src/modules/user/domain/user_domain.js";
 import { Email } from "../../../src/modules/user/domain/email.js";
 import { Password } from "../../../src/modules/user/domain/password.js";
 import {UserAlreadyExistsError} from "../../../src/modules/user/errors/user_repository_errors.js";
+import {UserStatus} from "../../../src/modules/user/domain/user_status.js";
 
 describe('RegisterUseCase', () => {
 
@@ -40,8 +41,8 @@ describe('RegisterUseCase', () => {
         expect(hasher.hash).toHaveBeenCalledWith('StrongPass1!');
         expect(userRepository.save).toHaveBeenCalledTimes(1);
 
-        expect(result.email.getValue()).toBe('test@example.com');
-        expect(result.status).toBe('active');
+        expect(result.email).toBe('test@example.com');
+        expect(result.status).toBe(UserStatus.ACTIVE);
     });
 
     it('should throw error if user already exists', async () => {

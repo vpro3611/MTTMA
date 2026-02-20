@@ -1,7 +1,7 @@
 import {User} from "../domain/user_domain.js";
 import {UserRepository} from "../domain/ports/user_repo_interface.js";
 import {Email} from "../domain/email.js";
-import {Pool} from "pg";
+import {Pool, PoolClient} from "pg";
 import {Password} from "../domain/password.js";
 import {
     UserAlreadyExistsError,
@@ -9,7 +9,7 @@ import {
 } from "../errors/user_repository_errors.js";
 
 export class UserRepositoryPG implements UserRepository {
-    constructor(private readonly pool: Pool){}
+    constructor(private readonly pool: Pool | PoolClient){}
 
 
     findById = async (id: string): Promise<User | null> => {

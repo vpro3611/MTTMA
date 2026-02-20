@@ -10,13 +10,24 @@ export class ChangePasswordUseCase {
                 private readonly hasher: PasswordHasher,
     ){}
 
-    async execute(userId: string, oldPlain: string, newPlain: string) {
+    private async userExists(userId: string) {
         const exists = await this.userRepository.findById(userId);
         if (!exists) throw new UserNotFound();
+        return exists;
+    }
 
-        const isValid = await this.hasher.compare(oldPlain, exists.getPasswordHash());
+    private async cmpPassword(plain: string, hash: string) {
+        const isValid =  await this.hasher.compare(plain, hash);
+        if (!isValid) {
+            throw new InvalidPasswordError();
+        }
+    }
 
-        if (!isValid) throw new InvalidPasswordError();
+    async execute(userId: string, oldPlain: string, newPlain: string) {
+
+        const exists = await this.userExists(userId);
+
+        const isValid = await this.cmpPassword(oldPlain, exists.getPasswordHash())
 
         const validPass = Password.validatePlain(newPlain);
         const newHash = await this.hasher.hash(validPass);
@@ -27,7 +38,7 @@ export class ChangePasswordUseCase {
 
         const returnUser: UserResponseDto = {
             id: exists.id,
-            email: exists.getEmail(),
+            email: exists.getEmail().getValue(),
             status: exists.getStatus(),
             created_at: exists.getCreatedAt(),
         }

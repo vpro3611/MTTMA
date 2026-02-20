@@ -20,6 +20,8 @@ module.exports = {
     '**/?(*.)+(spec|test).ts'
   ],
 
+  setupFiles: ['dotenv/config'],
+
   clearMocks: true,
   resetMocks: true,
   restoreMocks: true,
