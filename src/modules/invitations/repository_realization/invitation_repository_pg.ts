@@ -2,7 +2,7 @@ import {Invitation} from "../domain/invitation_domain.js";
 import {InvitationRepoInterface} from "../domain/ports/invitation_repo_interface.js";
 import {Pool, PoolClient} from "pg";
 import {Filters} from "../DTO/filters.js";
-import {DatabaseError, ForeignKeyError, UniqueConstraintError} from "../errors/errors.js";
+import {DatabaseError, ForeignKeyError, UniqueConstraintError} from "../errors/repo_errors.js";
 
 
 export class InvitationRepositoryPG implements InvitationRepoInterface {

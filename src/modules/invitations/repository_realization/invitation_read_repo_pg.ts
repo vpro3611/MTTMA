@@ -1,6 +1,6 @@
 import {Pool, PoolClient} from "pg";
 import {InvitationView} from "../DTO/invitation_view.js";
-import {DatabaseError} from "../errors/errors.js";
+import {DatabaseError} from "../errors/repo_errors.js";
 
 
 export class InvitationReadRepositoryPG {
