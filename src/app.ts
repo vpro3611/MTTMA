@@ -39,6 +39,16 @@ import {GetFilteredAuditParamsSchema} from "./modules/audit_events/controllers/g
 import {validateQuery} from "./middlewares/validateQuery.js";
 import {CheckProfileParamsSchema} from "./modules/user/controller/check_profile_controller.js";
 import {GetAllMembersParamsSchema} from "./modules/organization_members/controllers/get_all_members_controller.js";
+import {AcceptInvitationParamsSchema} from "./modules/invitations/controllers/accept_invitation_controller.js";
+import {RejectInvitationParamsSchema} from "./modules/invitations/controllers/reject_invitation_controller.js";
+import {CancelInvitationParamsSchema} from "./modules/invitations/controllers/cancel_invitation_controller.js";
+import {
+    CreateInvitationBodySchema,
+    CreateInvitationParamsSchema
+} from "./modules/invitations/controllers/create_invitation_controller.js";
+import {
+    GetOrganizationInvitationsParamsSchema
+} from "./modules/invitations/controllers/get_organization_invitations_controller.js";
 
 
 export function createApp(dependencies: AppContainer) {
@@ -97,6 +107,20 @@ export function createApp(dependencies: AppContainer) {
 
     privateRouter.get('/organizations',
         dependencies.searchOrganizationController.searchOrganizationCont
+    );
+
+    privateRouter.patch('/:invitationId/accept',
+        validate_params(AcceptInvitationParamsSchema),
+        dependencies.acceptInvitationController.acceptInvitationCont  // ACCEPT INVITATION
+    );
+
+    privateRouter.patch("/:invitationId/reject",
+        validate_params(RejectInvitationParamsSchema),
+        dependencies.rejectInvitationController.rejectInvitationCont // REJECT INVITATION
+    );
+
+    privateRouter.get("/invitations",
+        dependencies.viewUserInvitationsController.viewUserInvitationsCont
     );
 
     organizationRouter.patch('/:orgId/tasks/:taskId/description',
@@ -175,6 +199,22 @@ export function createApp(dependencies: AppContainer) {
         validate_params(GetFilteredAuditParamsSchema),
         // validateQuery(GetFilteredAuditParamsSchema),
         dependencies.getFilteredAuditController.getFilteredAuditCont
+    );
+
+    organizationRouter.post("/:orgId/invite/:invitedUserId",
+        validate_params(CreateInvitationParamsSchema),
+        validateZodMiddleware(CreateInvitationBodySchema),
+        dependencies.createInvitationController.createInvitationCont // CREATE INVITATION FOR TARGET (invitedUserId) USER
+    );
+
+    organizationRouter.get(":/orgId/invitations",
+        validate_params(GetOrganizationInvitationsParamsSchema),
+        dependencies.getOrganizationInvitationsController.getOrganizationInvitationsCont // GET INVITATIONS OF A SPECIFIC ORGANIZATION
+    );
+
+    organizationRouter.patch("/:invitationId/cancel",
+        validate_params(CancelInvitationParamsSchema),
+        dependencies.cancelInvitationController.cancelInvitationCont // CANCEL INVITATION
     );
 
     app.use(loggerMiddleware());

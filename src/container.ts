@@ -110,6 +110,38 @@ import {GetAllMembersServ} from "./modules/organization_members/controllers/serv
 import {GetAllMembersController} from "./modules/organization_members/controllers/get_all_members_controller.js";
 import {InvitationRepositoryPG} from "./modules/invitations/repository_realization/invitation_repository_pg.js";
 import {InvitationReadRepositoryPG} from "./modules/invitations/repository_realization/invitation_read_repo_pg.js";
+import {AcceptInvitationUseCase} from "./modules/invitations/application/accept_invitation_use_case.js";
+import {CancelInvitationUseCase} from "./modules/invitations/application/cancel_invitation_use_case.js";
+import {CreateInvitationUseCase} from "./modules/invitations/application/create_invitation_use_case.js";
+import {
+    GetOrganizationInvitationUseCase
+} from "./modules/invitations/application/get_organization_invitation_use_case.js";
+import {RejectInvitationUseCase} from "./modules/invitations/application/reject_invitation_use_case.js";
+import {ViewUserInvitationsUseCase} from "./modules/invitations/application/view_user_invitations_use_case.js";
+import {AcceptInvitationService} from "./modules/invitations/application/services/accept_invitation_service.js";
+import {CancelInvitationService} from "./modules/invitations/application/services/cancel_invitation_service.js";
+import {CreateInvitationService} from "./modules/invitations/application/services/create_invitation_service.js";
+import {RejectInvitationService} from "./modules/invitations/application/services/reject_invitation_service.js";
+import {
+    GetOrganizationInvitationsService
+} from "./modules/invitations/application/services/get_organization_invitations_service.js";
+import {ViewUserInvitationsService} from "./modules/invitations/application/services/view_user_invitations_service.js";
+import {AcceptInvitationServ} from "./modules/invitations/controllers/services/accept_invitation_serv.js";
+import {CancelInvitationServ} from "./modules/invitations/controllers/services/cancel_invitation_serv.js";
+import {CreateInvitationServ} from "./modules/invitations/controllers/services/create_invitation_serv.js";
+import {
+    GetOrganizationInvitationsServ
+} from "./modules/invitations/controllers/services/get_organization_invitations_serv.js";
+import {RejectInvitationServ} from "./modules/invitations/controllers/services/reject_invitation_serv.js";
+import {ViewUserInvitationsServ} from "./modules/invitations/controllers/services/view_user_invitations_serv.js";
+import {AcceptInvitationController} from "./modules/invitations/controllers/accept_invitation_controller.js";
+import {CancelInvitationController} from "./modules/invitations/controllers/cancel_invitation_controller.js";
+import {CreateInvitationController} from "./modules/invitations/controllers/create_invitation_controller.js";
+import {
+    GetOrganizationInvitationsController
+} from "./modules/invitations/controllers/get_organization_invitations_controller.js";
+import {RejectInvitationController} from "./modules/invitations/controllers/reject_invitation_controller.js";
+import {ViewUserInvitationsController} from "./modules/invitations/controllers/view_user_invitations_controller.js";
 
 export function assembleContainer() {
 
@@ -139,7 +171,6 @@ export function assembleContainer() {
     const invitationRepoWriterPG = new InvitationRepositoryPG(pool);
     // 10) invitations (reader)
     const invitationRepoReaderPG = new InvitationReadRepositoryPG(pool);
-
     // infrastructure services
     const hasher: PasswordHasher = new HasherBcrypt();
 
@@ -170,6 +201,13 @@ export function assembleContainer() {
     const getFilteredAuditUC = new GetFilteredAuditOrgUseCase(auditEventReader, organizationMemberRepoPG);
     // 6) organization search
     const searchOrganizationUC = new SearchOrganizationUseCase(searchOrganizationPG, userRepoPG);
+    // 7) invitations
+    const acceptInvitationUC = new AcceptInvitationUseCase(invitationRepoWriterPG, organizationMemberRepoPG, userRepoPG);
+    const cancelInvitationUC = new CancelInvitationUseCase(invitationRepoWriterPG, organizationMemberRepoPG);
+    const createInvitationUC = new CreateInvitationUseCase(invitationRepoWriterPG, organizationMemberRepoPG, userRepoPG);
+    const getOrganizationInvitationsUC = new GetOrganizationInvitationUseCase(organizationMemberRepoPG, invitationRepoWriterPG);
+    const rejectInvitationUC = new RejectInvitationUseCase(invitationRepoWriterPG, organizationMemberRepoPG, userRepoPG);
+    const viewUserInvitationsUC = new ViewUserInvitationsUseCase(invitationRepoReaderPG, userRepoPG);
 
     // TODO : SERVICES (application services);
     // 1) users
@@ -201,7 +239,13 @@ export function assembleContainer() {
     const authService = new AuthService(tokensRepository, jwtTokenService, txManager); // login + register + logout + refresh;
     // 8 organization search
     const searchOrganizationService = new SearchOrganization(searchOrganizationUC);
-
+    // 9 invitations
+    const acceptInvitationService = new AcceptInvitationService(acceptInvitationUC, appendToAuditUC);
+    const cancelInvitationService = new CancelInvitationService(cancelInvitationUC, appendToAuditUC);
+    const createInvitationService = new CreateInvitationService(createInvitationUC, appendToAuditUC);
+    const getOrganizationInvitationsService = new GetOrganizationInvitationsService(getOrganizationInvitationsUC);
+    const rejectInvitationService = new RejectInvitationService(rejectInvitationUC, appendToAuditUC);
+    const viewUserInvitationsService = new ViewUserInvitationsService(viewUserInvitationsUC);
 
     // TODO : SERVS (dealing with transactions and PoolClient);
     // 1) user
@@ -228,7 +272,13 @@ export function assembleContainer() {
     const getFilteredAuditServ = new GetFilteredAuditServ(txManager);
     // 6) organization search
     const searchOrganizationServ = new SearchOrganizationServ(txManager);
-
+    // 7) invitations
+    const acceptInvitationServ = new AcceptInvitationServ(txManager);
+    const cancelInvitationServ = new CancelInvitationServ(txManager);
+    const createInvitationServ = new CreateInvitationServ(txManager);
+    const getOrganizationInvitationsServ = new GetOrganizationInvitationsServ(txManager);
+    const rejectInvitationServ = new RejectInvitationServ(txManager);
+    const viewUserInvitationsServ = new ViewUserInvitationsServ(txManager);
 
     // TODO : CONTROLLERS (HTTP management);
     // 1) authentification
@@ -257,7 +307,13 @@ export function assembleContainer() {
     const getFilteredAuditController = new GetFilteredAuditController(getFilteredAuditServ);
     // 7) organization search
     const searchOrganizationController = new SearchOrganizationController(searchOrganizationServ);
-
+    // 8) invitations
+    const acceptInvitationController = new AcceptInvitationController(acceptInvitationServ);
+    const cancelInvitationController = new CancelInvitationController(cancelInvitationServ);
+    const createInvitationController = new CreateInvitationController(createInvitationServ);
+    const getOrganizationInvitationsController = new GetOrganizationInvitationsController(getOrganizationInvitationsServ);
+    const rejectInvitationController = new RejectInvitationController(rejectInvitationServ);
+    const viewUserInvitationsController = new ViewUserInvitationsController(viewUserInvitationsServ);
 
 
     // TODO : RETURN ALL
@@ -327,6 +383,13 @@ export function assembleContainer() {
         getFilteredAuditController,
 
         searchOrganizationController,
+
+        acceptInvitationController,
+        cancelInvitationController,
+        createInvitationController,
+        getOrganizationInvitationsController,
+        rejectInvitationController,
+        viewUserInvitationsController,
     };
 }
 
