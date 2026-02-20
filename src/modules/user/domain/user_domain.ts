@@ -19,6 +19,13 @@ export class User {
         }
     }
 
+    ensureIsActive = () => {
+        if (this.status !== UserStatus.ACTIVE) {
+            throw new Error("User is not active, cannot perform action");
+        }
+    }
+
+
     static create(email: Email, password: Password) {
         return new User(
             crypto.randomUUID(),
