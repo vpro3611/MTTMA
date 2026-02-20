@@ -25,6 +25,8 @@ export const AuditEventActions = {
     INVITATION_ACCEPTED: "INVITATION_ACCEPTED",
     INVITATION_REJECTED: "INVITATION_REJECTED",
     INVITATION_CANCELED: "INVITATION_CANCELED",
+
+    ORGANIZATION_VIEWED: "ORGANIZATION_VIEWED",
 } as const;
 
 export type AuditEventAction = typeof AuditEventActions[keyof typeof AuditEventActions];
