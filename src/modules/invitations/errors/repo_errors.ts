@@ -1,29 +1,23 @@
+import {ConflictError, InfrastructureError, ValidationError} from "../../../errors_base/errors_base.js";
 
 
-export class RepositoryError extends Error {
-    constructor(message: string) {
-        super(message);
-        this.name = "RepositoryError";
-    }
-}
-
-export class UniqueConstraintError extends RepositoryError {
+export class UniqueConstraintError extends ConflictError {
     constructor() {
-        super("Unique constraint violation");
+        super("Resource conflict: unique constraint violation");
         this.name = "UniqueConstraintError";
     }
 }
 
-export class ForeignKeyError extends RepositoryError {
+export class ForeignKeyError extends ValidationError {
     constructor() {
-        super("Foreign key error");
+        super("Invalid reference: related entity does not exist");
         this.name = "ForeignKeyError";
     }
 }
 
-export class DatabaseError extends RepositoryError {
+export class DatabaseError extends InfrastructureError {
     constructor() {
-        super("Database error");
+        super("Internal Database error");
         this.name = "DatabaseError";
     }
 }
