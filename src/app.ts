@@ -216,7 +216,7 @@ export function createApp(dependencies: AppContainer) {
         dependencies.createInvitationController.createInvitationCont // CREATE INVITATION FOR TARGET (invitedUserId) USER
     );
 
-    organizationRouter.get(":/orgId/invitations",
+    organizationRouter.get("/:orgId/invitations",
         validate_params(GetOrganizationInvitationsParamsSchema),
         dependencies.getOrganizationInvitationsController.getOrganizationInvitationsCont // GET INVITATIONS OF A SPECIFIC ORGANIZATION
     );
