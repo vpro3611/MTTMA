@@ -31,7 +31,7 @@ describe("Task (domain)", () => {
 
         it("should throw if task is CANCELED", () => {
             const task = createTask();
-            task.changeStatus("CANCELLED");
+            task.changeStatus("CANCELED");
 
             expect(() => {
                 task.rename(TaskTitle.create("New title"));
@@ -59,7 +59,7 @@ describe("Task (domain)", () => {
 
         it("should throw if task is CANCELED", () => {
             const task = createTask();
-            task.changeStatus("CANCELLED");
+            task.changeStatus("CANCELED");
 
             expect(() => {
                 task.changeDescription(
@@ -108,7 +108,7 @@ describe("Task (domain)", () => {
 
         it("should throw if task is CANCELED", () => {
             const task = createTask();
-            task.changeStatus("CANCELLED");
+            task.changeStatus("CANCELED");
 
             expect(() => {
                 task.changeStatus("IN_PROGRESS");
