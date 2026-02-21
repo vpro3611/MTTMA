@@ -71,26 +71,26 @@ export function createApp(dependencies: AppContainer) {
             if (allowedOrigins.includes(origin)) {
                 return callback(null, true);
             }
-            return callback(new Error('Not allowed by CORS'));
+            return callback(null, false);
         },
         credentials: true,
         methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
         allowedHeaders: ['Content-Type', 'Authorization'],
     }));
-    // app.options('*', cors());
+    // app.options('/*', cors());
     app.use(express.json());
     app.use(express.urlencoded({extended: true}));
     app.use(cookieParser())
 
     app.get('/', (req, res) => {
-        res.send('Hello World!').status(200);
+        res.json('Hello World!').status(200);
     })
 
     const publicRouter = express.Router();
     const privateRouter = express.Router();
     const organizationRouter = express.Router();
     app.use('/pub', publicRouter);
-    app.use('/me', privateRouter);
+    app.use('/api', privateRouter);
     app.use('/org', organizationRouter);
 
     privateRouter.use(createAuthMiddleware(dependencies.jwtTokenService));
@@ -114,6 +114,10 @@ export function createApp(dependencies: AppContainer) {
         dependencies.authController.logout
     );
 
+    privateRouter.get('/me',
+        dependencies.getMeController.getMeCont
+    );
+
     privateRouter.patch('/change_pass',
         validateZodMiddleware(ChangePassSchema),
         dependencies.changePasswordController.changePassCont
@@ -123,7 +127,6 @@ export function createApp(dependencies: AppContainer) {
         validateZodMiddleware(ChangeEmailSchema),
         dependencies.changeEmailController.changeEmailCont
     );
-
 
     privateRouter.get('/organizations',
         dependencies.searchOrganizationController.searchOrganizationCont

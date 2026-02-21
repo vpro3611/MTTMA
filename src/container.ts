@@ -153,6 +153,10 @@ import {GetOrgTasksListUseCase} from "./modules/organization_task/application/ge
 import {GetOrgTasksListService} from "./modules/organization_task/application/service/get_org_tasks_list_service.js";
 import {ListTasksServ} from "./modules/organization_task/controller/services/list_tasks_serv.js";
 import {ListTasksController} from "./modules/organization_task/controller/list_tasks_controller.js";
+import {GetMeUseCase} from "./modules/user/application/get_me_use_case.js";
+import {GetMeService} from "./modules/user/application/service/get_me.js";
+import {GetMeServ} from "./modules/user/controller/services/get_me_serv.js";
+import {GetMeController} from "./modules/user/controller/get_me_controller.js";
 
 export function assembleContainer() {
 
@@ -193,6 +197,7 @@ export function assembleContainer() {
     const changeEmailUC = new ChangeUserEmailUseCase(userRepoPG);
     const registerUC = new RegisterUseCase(userRepoPG, hasher);
     const checkProfileUC = new CheckProfileUseCase(userRepoPG);
+    const getMeUC = new GetMeUseCase(userRepoPG);
     // 2) tasks
     const changeTaskDescUC = new ChangeOrgTaskDescriptionUseCase(organizationTaskRepoPG, organizationMemberRepoPG);
     const changeTaskStatusUC = new ChangeOrgTaskStatusUseCase(organizationTaskRepoPG, organizationMemberRepoPG);
@@ -230,6 +235,7 @@ export function assembleContainer() {
     const changePassService = new ChangePassService(changePassUC);
     const registerService = new RegisterService(registerUC);
     const checkProfileService = new CheckProfileService(checkProfileUC);
+    const getMeService = new GetMeService(getMeUC);
     // 2) tasks
     const changeTaskDescService = new ChangeDescWithAudit(changeTaskDescUC, appendToAuditUC);
     const changeTaskStatusService = new ChangeTaskStatusWithAudit(changeTaskStatusUC, appendToAuditUC);
@@ -269,6 +275,7 @@ export function assembleContainer() {
     const changePassServ = new ChangePassServ(txManager);
     const changeEmailServ = new ChangeEmailServ(txManager);
     const checkProfileServ = new CheckProfileServ(txManager);
+    const getMeServ = new GetMeServ(txManager);
     // 2) tasks
     const changeDescServ = new ChangeDescServ(txManager);
     const changeStatusServ = new ChangeStatusServ(txManager);
@@ -306,6 +313,7 @@ export function assembleContainer() {
     const changePasswordController = new ChangePassController(changePassServ);
     const changeEmailController = new ChangeEmailController(changeEmailServ);
     const checkProfileController = new CheckProfileController(checkProfileServ);
+    const getMeController = new GetMeController(getMeServ);
     // 3) tasks
     const changeTaskDescController = new ChangeDescController(changeDescServ);
     const changeTaskStatusController = new ChangeStatusController(changeStatusServ);
@@ -384,6 +392,7 @@ export function assembleContainer() {
         changePasswordController,
         changeEmailController,
         checkProfileController,
+        getMeController,
 
         changeTaskDescController,
         changeTaskStatusController,
