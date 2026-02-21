@@ -148,6 +148,11 @@ import {
 } from "./modules/organization/application/service/view_organization_service_with_audit.js";
 import {ViewOrganizationServ} from "./modules/organization/controllers/services/view_organization_serv.js";
 import {ViewOrganizationController} from "./modules/organization/controllers/view_organization_controller.js";
+import {OrgTaskRepoReader} from "./modules/organization_task/organization_tasks_repository/org_task_repo_reader.js";
+import {GetOrgTasksListUseCase} from "./modules/organization_task/application/get_org_tasks_list_use_case.js";
+import {GetOrgTasksListService} from "./modules/organization_task/application/service/get_org_tasks_list_service.js";
+import {ListTasksServ} from "./modules/organization_task/controller/services/list_tasks_serv.js";
+import {ListTasksController} from "./modules/organization_task/controller/list_tasks_controller.js";
 
 export function assembleContainer() {
 
@@ -177,6 +182,8 @@ export function assembleContainer() {
     const invitationRepoWriterPG = new InvitationRepositoryPG(pool);
     // 10) invitations (reader)
     const invitationRepoReaderPG = new InvitationReadRepositoryPG(pool);
+    // 11) organization tasks (reader)
+    const organizationTasksRepoReaderPG = new OrgTaskRepoReader(pool);
     // infrastructure services
     const hasher: PasswordHasher = new HasherBcrypt();
 
@@ -192,6 +199,7 @@ export function assembleContainer() {
     const changeTaskTitleUC = new ChangeOrgTaskTitleUseCase(organizationTaskRepoPG, organizationMemberRepoPG);
     const createTaskUC = new CreateOrganizationTaskUseCase(organizationTaskRepoPG, organizationMemberRepoPG, organizationRepoPG);
     const deleteTasksUC = new DeleteTaskUseCase(organizationTaskRepoPG, organizationMemberRepoPG);
+    const listTasksUC = new GetOrgTasksListUseCase(organizationMemberRepoPG, organizationTasksRepoReaderPG)
     // 3) organization_members
     const changeOrgMemberRoleUC = new ChangeOrgMemberRoleUseCase(organizationMemberRepoPG);
     const fireOrgMemberUC = new FireOrgMemberUseCase(organizationMemberRepoPG);
@@ -228,6 +236,7 @@ export function assembleContainer() {
     const changeTaskTitleService = new ChangeTitleWithAudit(changeTaskTitleUC, appendToAuditUC);
     const createTaskService = new CreateTaskWithAudit(createTaskUC, appendToAuditUC);
     const deleteTaskService = new DeleteTaskWithAudit(deleteTasksUC, appendToAuditUC);
+    const listOrganizationTasksService = new GetOrgTasksListService(listTasksUC);
     // 3 organization members
     const changeOrgMemberRoleService = new ChangeRoleWithAuditUseCase(changeOrgMemberRoleUC, appendToAuditUC);
     const fireMemberService = new FireMemberWithAuditUseCase(fireOrgMemberUC, appendToAuditUC);
@@ -266,6 +275,7 @@ export function assembleContainer() {
     const changeTitleServ = new ChangeTitleServ(txManager);
     const createTaskServ = new CreateTaskServ(txManager);
     const deleteTaskServ = new DeleteTaskServ(txManager);
+    const listOrganizationTasksServ = new ListTasksServ(txManager);
     // 3) organisations
     const createOrganizationServ = new CreateOrgServ(txManager);
     const deleteOrganizationServ = new DeleteOrganizationServ(txManager);
@@ -302,6 +312,7 @@ export function assembleContainer() {
     const changeTaskTitleController = new ChangeTitleController(changeTitleServ);
     const createTaskController = new CreateTaskController(createTaskServ);
     const deleteTaskController = new DeleteTaskController(deleteTaskServ);
+    const listOrganizationTasksController = new ListTasksController(listOrganizationTasksServ);
     // 4) organisations
     const createOrganizationController = new CreateOrganizationController(createOrganizationServ);
     const deleteOrganizationController = new DeleteOrganizationController(deleteOrganizationServ);
@@ -379,6 +390,7 @@ export function assembleContainer() {
         changeTaskTitleController,
         createTaskController,
         deleteTaskController,
+        listOrganizationTasksController,
 
         createOrganizationController,
         deleteOrganizationController,
