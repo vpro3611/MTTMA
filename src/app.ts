@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import {AppContainer} from "./container.js";
 import {createAuthMiddleware} from "./Auth/auth_middleware/auth_middleware.js";
 import {errorMiddleware} from "./middlewares/error_middleware.js";
@@ -13,7 +14,8 @@ import {
     ChangeDescBodySchema,
     ChangeDescParamsSchema
 } from "./modules/organization_task/controller/change_desc_controller.js";
-import {ChangeTitleParamsSchema} from "./modules/organization_task/controller/change_title_controller.js";
+import {ChangeTitleParamsSchema, ChangeTitleBodySchema} from "./modules/organization_task/controller/change_title_controller.js";
+import {ChangeStatusParamsSchema, ChangeStatusBodySchema} from "./modules/organization_task/controller/change_status_controller.js";
 import {
     CreateTaskBodySchema,
     CreateTaskParamsSchema
@@ -53,11 +55,29 @@ import {
     ViewOrganizationParams,
     ViewOrganizationParamsSchema
 } from "./modules/organization/controllers/view_organization_controller.js";
+import {TaskOrganizationIdParamSchema} from "./modules/organization_task/controller/list_tasks_controller.js";
 
 
 export function createApp(dependencies: AppContainer) {
     const app = express();
-
+    
+    const allowedOrigins = [
+        'http://localhost:5173',
+        'http://localhost:3000',
+    ]
+    app.use(cors({
+        origin: function(origin: any, callback: any) {
+            if (!origin) return callback(null, true);
+            if (allowedOrigins.includes(origin)) {
+                return callback(null, true);
+            }
+            return callback(new Error('Not allowed by CORS'));
+        },
+        credentials: true,
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+        allowedHeaders: ['Content-Type', 'Authorization'],
+    }));
+    // app.options('*', cors());
     app.use(express.json());
     app.use(express.urlencoded({extended: true}));
     app.use(cookieParser())
@@ -104,10 +124,6 @@ export function createApp(dependencies: AppContainer) {
         dependencies.changeEmailController.changeEmailCont
     );
 
-    privateRouter.get('/:targetUserId',
-        validate_params(CheckProfileParamsSchema),
-        dependencies.checkProfileController.checkProfileCont
-    );
 
     privateRouter.get('/organizations',
         dependencies.searchOrganizationController.searchOrganizationCont
@@ -116,6 +132,10 @@ export function createApp(dependencies: AppContainer) {
     privateRouter.get("/organizations/:orgId",
         validate_params(ViewOrganizationParamsSchema),
         dependencies.viewOrganizationController.viewOrganizationCont
+    );
+
+    privateRouter.get("/invitations",
+        dependencies.viewUserInvitationsController.viewUserInvitationsCont
     );
 
     privateRouter.patch('/:invitationId/accept',
@@ -128,8 +148,14 @@ export function createApp(dependencies: AppContainer) {
         dependencies.rejectInvitationController.rejectInvitationCont // REJECT INVITATION
     );
 
-    privateRouter.get("/invitations",
-        dependencies.viewUserInvitationsController.viewUserInvitationsCont
+    privateRouter.get('/:targetUserId',
+        validate_params(CheckProfileParamsSchema),
+        dependencies.checkProfileController.checkProfileCont
+    );
+
+    organizationRouter.get("/:orgId/tasks",
+        validate_params(TaskOrganizationIdParamSchema),
+        dependencies.listOrganizationTasksController.listTasksCont
     );
 
     organizationRouter.patch('/:orgId/tasks/:taskId/description',
@@ -139,14 +165,14 @@ export function createApp(dependencies: AppContainer) {
     );
 
     organizationRouter.patch('/:orgId/tasks/:taskId/status',
-        validate_params(ChangeDescParamsSchema),
-        validateZodMiddleware(ChangeDescBodySchema),
+        validate_params(ChangeStatusParamsSchema),
+        validateZodMiddleware(ChangeStatusBodySchema),
         dependencies.changeTaskStatusController.changeStatusCont
     );
 
     organizationRouter.patch('/:orgId/tasks/:taskId/title',
         validate_params(ChangeTitleParamsSchema),
-        validateZodMiddleware(ChangeDescBodySchema),
+        validateZodMiddleware(ChangeTitleBodySchema),
         dependencies.changeTaskTitleController.changeTitleCont
     );
 
