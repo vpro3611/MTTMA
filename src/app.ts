@@ -128,6 +128,10 @@ export function createApp(dependencies: AppContainer) {
         dependencies.changeEmailController.changeEmailCont
     );
 
+    privateRouter.get('/users',
+        dependencies.getAllUsersController.getAllUsersCont
+    );
+
     privateRouter.get('/organizations',
         dependencies.searchOrganizationController.searchOrganizationCont
     );

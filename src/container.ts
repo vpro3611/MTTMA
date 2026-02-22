@@ -157,6 +157,11 @@ import {GetMeUseCase} from "./modules/user/application/get_me_use_case.js";
 import {GetMeService} from "./modules/user/application/service/get_me.js";
 import {GetMeServ} from "./modules/user/controller/services/get_me_serv.js";
 import {GetMeController} from "./modules/user/controller/get_me_controller.js";
+import {UserRepositoryReaderPg} from "./modules/user/repository_realization/user_repository_reader_pg.js";
+import {GetAllUsersUseCase} from "./modules/user/application/get_all_users_use_case.js";
+import {GetAllUsersService} from "./modules/user/application/service/get_all_users.js";
+import {GetAllUsersServ} from "./modules/user/controller/services/get_all_users_serv.js";
+import {GetAllUsersController} from "./modules/user/controller/get_all_users_controller.js";
 
 export function assembleContainer() {
 
@@ -188,6 +193,8 @@ export function assembleContainer() {
     const invitationRepoReaderPG = new InvitationReadRepositoryPG(pool);
     // 11) organization tasks (reader)
     const organizationTasksRepoReaderPG = new OrgTaskRepoReader(pool);
+    // 12) user (reader)
+    const userRepositoryReadOnly = new UserRepositoryReaderPg(pool);
     // infrastructure services
     const hasher: PasswordHasher = new HasherBcrypt();
 
@@ -198,6 +205,7 @@ export function assembleContainer() {
     const registerUC = new RegisterUseCase(userRepoPG, hasher);
     const checkProfileUC = new CheckProfileUseCase(userRepoPG);
     const getMeUC = new GetMeUseCase(userRepoPG);
+    const getAllUsersUC = new GetAllUsersUseCase(userRepoPG, userRepositoryReadOnly);
     // 2) tasks
     const changeTaskDescUC = new ChangeOrgTaskDescriptionUseCase(organizationTaskRepoPG, organizationMemberRepoPG);
     const changeTaskStatusUC = new ChangeOrgTaskStatusUseCase(organizationTaskRepoPG, organizationMemberRepoPG);
@@ -236,6 +244,7 @@ export function assembleContainer() {
     const registerService = new RegisterService(registerUC);
     const checkProfileService = new CheckProfileService(checkProfileUC);
     const getMeService = new GetMeService(getMeUC);
+    const getAllUsersService = new GetAllUsersService(getAllUsersUC);
     // 2) tasks
     const changeTaskDescService = new ChangeDescWithAudit(changeTaskDescUC, appendToAuditUC);
     const changeTaskStatusService = new ChangeTaskStatusWithAudit(changeTaskStatusUC, appendToAuditUC);
@@ -276,6 +285,7 @@ export function assembleContainer() {
     const changeEmailServ = new ChangeEmailServ(txManager);
     const checkProfileServ = new CheckProfileServ(txManager);
     const getMeServ = new GetMeServ(txManager);
+    const getAllUsersServ = new GetAllUsersServ(txManager);
     // 2) tasks
     const changeDescServ = new ChangeDescServ(txManager);
     const changeStatusServ = new ChangeStatusServ(txManager);
@@ -314,6 +324,7 @@ export function assembleContainer() {
     const changeEmailController = new ChangeEmailController(changeEmailServ);
     const checkProfileController = new CheckProfileController(checkProfileServ);
     const getMeController = new GetMeController(getMeServ);
+    const getAllUsersController = new GetAllUsersController(getAllUsersServ);
     // 3) tasks
     const changeTaskDescController = new ChangeDescController(changeDescServ);
     const changeTaskStatusController = new ChangeStatusController(changeStatusServ);
@@ -393,6 +404,7 @@ export function assembleContainer() {
         changeEmailController,
         checkProfileController,
         getMeController,
+        getAllUsersController,
 
         changeTaskDescController,
         changeTaskStatusController,
