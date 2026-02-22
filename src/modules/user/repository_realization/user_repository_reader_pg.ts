@@ -1,16 +1,19 @@
 import {Pool, PoolClient} from "pg";
 import {UserRepositoryReadOnly} from "../domain/ports/user_repo_interface.js";
 import {User} from "../domain/user_domain.js";
+import {UserStatus} from "../domain/user_status.js";
+import {Password} from "../domain/password.js";
+import {Email} from "../domain/email.js";
 
 
 export class UserRepositoryReaderPg implements UserRepositoryReadOnly{
     constructor(private readonly pool: Pool | PoolClient) {}
 
-    private mapIt(row: any) : User {
+    private mapIt(row: any): User {
         return new User(
             row.id,
-            row.email,
-            row.password,
+            Email.create(row.email),
+            Password.fromHash(row.password),
             row.status,
             row.created_at,
         );
