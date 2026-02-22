@@ -4,9 +4,10 @@ import Profile from "../pages/Profile.vue";
 import UserList from "../pages/UserList.vue";
 import MainLayout from "../layouts/MainLayout.vue";
 import { authStore } from "../stores/auth_store";
+import Dashboard from "../pages/Dashboard.vue";
 
 const routes = [
-    { path: "/", redirect: "/auth" },
+    { path: "/", redirect: "/dashboard" },
 
     {
         path: "/auth",
@@ -19,7 +20,8 @@ const routes = [
         meta: { requiresAuth: true },
         children: [
             { path: "profile/:id", component: Profile },
-            { path: "users", component: UserList }
+            { path: "users", component: UserList },
+            { path: "/dashboard", component: Dashboard}
         ]
     }
 ];
