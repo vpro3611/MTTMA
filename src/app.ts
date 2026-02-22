@@ -96,38 +96,47 @@ export function createApp(dependencies: AppContainer) {
     privateRouter.use(createAuthMiddleware(dependencies.jwtTokenService));
     organizationRouter.use(createAuthMiddleware(dependencies.jwtTokenService));
 
+
+    // TODO : YES
     publicRouter.post('/register',
         validateZodMiddleware(RegisterSchema),
         dependencies.authController.register
     );
 
+    // TODO : YES
     publicRouter.post('/login',
         validateZodMiddleware(LoginSchema),
         dependencies.authController.login
     );
 
+    // TODO : YES
     publicRouter.post('/refresh',
         dependencies.authController.refresh
     );
 
+    // TODO : YES
     privateRouter.post('/logout',
         dependencies.authController.logout
     );
 
+    // TODO : YES
     privateRouter.get('/me',
         dependencies.getMeController.getMeCont
     );
 
+    // TODO : YES
     privateRouter.patch('/change_pass',
         validateZodMiddleware(ChangePassSchema),
         dependencies.changePasswordController.changePassCont
     );
 
+    // TODO : YES
     privateRouter.patch('/change_email',
         validateZodMiddleware(ChangeEmailSchema),
         dependencies.changeEmailController.changeEmailCont
     );
 
+    // TODO : YES
     privateRouter.get('/users',
         dependencies.getAllUsersController.getAllUsersCont
     );
@@ -155,6 +164,7 @@ export function createApp(dependencies: AppContainer) {
         dependencies.rejectInvitationController.rejectInvitationCont // REJECT INVITATION
     );
 
+    // TODO : YES
     privateRouter.get('/:targetUserId',
         validate_params(CheckProfileParamsSchema),
         dependencies.checkProfileController.checkProfileCont
