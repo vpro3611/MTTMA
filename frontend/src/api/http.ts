@@ -1,13 +1,20 @@
-import {authStore} from "../stores/auth_store.ts";
+import { authStore } from "../stores/auth_store";
 
+export async function authorizedFetch(
+    url: string,
+    options: RequestInit = {}
+) {
+    const headers: Record<string, string> = {
+        ...(options.headers as Record<string, string> || {})
+    };
 
-export async function authorizedFetch(url: string, options: RequestInit = {}) {
+    if (authStore.accessToken) {
+        headers.Authorization = `Bearer ${authStore.accessToken}`;
+    }
+
     return fetch(url, {
         ...options,
-        credentials: "include",
-        headers: {
-            ...options.headers,
-            Authorization: authStore.accessToken ? `Bearer ${authStore.accessToken}` : ""
-        }
+        headers,
+        credentials: "include"
     });
 }

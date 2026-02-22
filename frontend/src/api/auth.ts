@@ -12,11 +12,10 @@ export const authApi = {
             body: JSON.stringify({ email, password })
         })
 
-        const data: AuthResponse = await res.json();
+        const data = await res.json();
 
         if (!res.ok) {
-            const error = await res.json()
-            throw new Error(error.message || "Registration failed");
+            throw new Error(data?.message || "Registration failed");
         }
 
         return data;
@@ -30,11 +29,10 @@ export const authApi = {
             body: JSON.stringify({ email, password })
         })
 
-        const data: AuthResponse = await res.json();
+        const data = await res.json();
 
         if (!res.ok) {
-            const error = await res.json()
-            throw new Error(error.message || "Login failed");
+            throw new Error(data?.message || "Login failed");
         }
 
         return data;
