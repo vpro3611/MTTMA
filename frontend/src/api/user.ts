@@ -38,5 +38,16 @@ export const userAPI = {
         }
 
         return data;
+    },
+
+    async getAll(page: number, limit: number): Promise<User[]> {
+        const res = await authorizedFetch(`${UrlConfig.apiBaseUrl}/api/users?page=${page}&limit=${limit}`);
+        const data = await res.json();
+
+        if (!res.ok) {
+            throw new Error(data?.message || "Failed to get users");
+        }
+
+        return data;
     }
 }
