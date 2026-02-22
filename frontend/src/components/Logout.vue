@@ -2,7 +2,10 @@
 
 import {ref} from "vue";
 import {authStore} from "../stores/auth_store.ts";
+import {useRouter} from "vue-router";
 
+
+const router = useRouter();
 const error = ref<string | null>(null);
 const isLoading = ref(false);
 
@@ -16,6 +19,8 @@ const handleLogout = () => {
   } catch (e: any) {
     error.value = e.message;
   } finally {
+    authStore.clearToken();
+    router.replace('/auth');
     isLoading.value = false;
   }
 }
@@ -24,7 +29,7 @@ const handleLogout = () => {
 
 <template>
   <button :disabled="isLoading" @click="handleLogout">
-    {{isLoading ? 'Loading...' : 'Logout'}}
+    {{isLoading ? 'Loging out...' : 'Logout'}}
   </button>
 
   <p v-if="error">{{error}}</p>
