@@ -53,31 +53,48 @@ onUnmounted(() => {
 
 <template>
   <section class="users-page">
-    <header>
-      <h1>Users</h1>
-    </header>
+    <div class="container">
 
-    <div class="users-grid">
-      <article
-          v-for="user in users"
-          :key="user.id"
-          class="user-card"
-          @click="router.push(`/profile/${user.id}`)"
-      >
-        <header>
-          <h2>{{ user.email }}</h2>
-        </header>
+      <header class="page-header">
+        <h1>Users</h1>
+        <p>Browse all registered users</p>
+      </header>
 
-        <div class="user-meta">
-          <p>Status: {{ user.status }}</p>
-          <p>Joined: {{ new Date(user.created_at).toLocaleDateString() }}</p>
+      <div class="users-grid">
+        <article
+            v-for="user in users"
+            :key="user.id"
+            class="user-card"
+            @click="router.push(`/profile/${user.id}`)"
+        >
+          <div class="card-content">
+            <div class="card-main">
+              <h2 class="user-email">{{ user.email }}</h2>
+              <p class="user-status">
+                Status: {{ user.status }}
+              </p>
+            </div>
+
+            <div class="card-meta">
+              <span class="joined-date">
+                Joined:
+                {{ new Date(user.created_at).toLocaleDateString() }}
+              </span>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <footer class="users-footer">
+        <div v-if="isLoading" class="loading">
+          Loading more users...
         </div>
-      </article>
-    </div>
 
-    <footer class="users-footer">
-      <p v-if="isLoading">Loading more users...</p>
-      <p v-if="!hasMore">No more users</p>
-    </footer>
+        <div v-if="!hasMore" class="end">
+          No more users
+        </div>
+      </footer>
+
+    </div>
   </section>
 </template>
