@@ -162,6 +162,11 @@ import {GetAllUsersUseCase} from "./modules/user/application/get_all_users_use_c
 import {GetAllUsersService} from "./modules/user/application/service/get_all_users.js";
 import {GetAllUsersServ} from "./modules/user/controller/services/get_all_users_serv.js";
 import {GetAllUsersController} from "./modules/user/controller/get_all_users_controller.js";
+import {MyOrganizationsRepository} from "./modules/organization/repository_realization/my_organizations_repository.js";
+import {GetMyOrganizationsUseCase} from "./modules/organization/application/get_my_organizations_use_case.js";
+import {GetMyOrganizationService} from "./modules/organization/application/service/get_my_organization_service.js";
+import {GetMyOrgServ} from "./modules/organization/controllers/services/get_my_org_serv.js";
+import {GetMyOrgController} from "./modules/organization/controllers/get_my_org_controller.js";
 
 export function assembleContainer() {
 
@@ -195,6 +200,8 @@ export function assembleContainer() {
     const organizationTasksRepoReaderPG = new OrgTaskRepoReader(pool);
     // 12) user (reader)
     const userRepositoryReadOnly = new UserRepositoryReaderPg(pool);
+    // 13) get my organizations
+    const getMyOrganizationsRepositoryPG = new MyOrganizationsRepository(pool);
     // infrastructure services
     const hasher: PasswordHasher = new HasherBcrypt();
 
@@ -223,6 +230,7 @@ export function assembleContainer() {
     const renameOrganizationUC = new RenameOrganizationUseCase(organizationRepoPG, organizationMemberRepoPG);
     const deleteOrganizationUC = new DeleteOrganizationUseCase(organizationRepoPG, organizationMemberRepoPG);
     const viewOrganizationUC = new ViewOrganizationUseCase(organizationRepoPG, userRepoPG);
+    const getMyOrganizationsUC = new GetMyOrganizationsUseCase(userRepoPG, getMyOrganizationsRepositoryPG);
     // 5) audit events
     const appendToAuditUC = new AppendLogAuditEvents(auditEventWriter);
     const getOrganizationAuditUC = new GetOrganizationAuditUseCase(auditEventReader, organizationMemberRepoPG);
@@ -262,6 +270,7 @@ export function assembleContainer() {
     const deleteOrganizationService = new DeleteOrganization(deleteOrganizationUC);
     const renameOrganizationService = new RenameWithAudit(renameOrganizationUC, appendToAuditUC);
     const viewOrganizationService = new ViewOrganizationServiceWithAudit(viewOrganizationUC, appendToAuditUC);
+    const getMyOrganizationsService = new GetMyOrganizationService(getMyOrganizationsUC);
     // 5 audit events
     const getAuditByOrganizationService = new GetAllAuditWithAudit(getOrganizationAuditUC, appendToAuditUC);
     const getFilteredAuditService = new GetFilterAuditWithAudit(getFilteredAuditUC, appendToAuditUC);
@@ -298,6 +307,7 @@ export function assembleContainer() {
     const deleteOrganizationServ = new DeleteOrganizationServ(txManager);
     const renameOrganizationServ = new RenameOrganizationServ(txManager);
     const viewOrganizationServ = new ViewOrganizationServ(txManager);
+    const getMyOrganizationsServ = new GetMyOrgServ(txManager);
     // 4) organization members
     const changeMemberRoleServ = new ChangeRoleServ(txManager);
     const fireMemberServ = new FireMemberServ(txManager);
@@ -337,6 +347,7 @@ export function assembleContainer() {
     const deleteOrganizationController = new DeleteOrganizationController(deleteOrganizationServ);
     const renameOrganizationController = new RenameOrganizationController(renameOrganizationServ);
     const viewOrganizationController = new ViewOrganizationController(viewOrganizationServ);
+    const getMyOrganizationsController = new GetMyOrgController(getMyOrganizationsServ);
     // 5) organization members
     const changeMemberRoleController = new ChangeRoleController(changeMemberRoleServ);
     const fireMemberController = new FireMemberController(fireMemberServ);
@@ -417,6 +428,7 @@ export function assembleContainer() {
         deleteOrganizationController,
         renameOrganizationController,
         viewOrganizationController,
+        getMyOrganizationsController,
 
         changeMemberRoleController,
         fireMemberController,
