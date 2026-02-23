@@ -7,6 +7,7 @@ import { authStore } from "../stores/auth_store";
 import Dashboard from "../pages/Dashboard.vue";
 import OrganizationsPage from "../pages/OrganizationsPage.vue";
 import OrganizationsView from "../pages/OrganizationsView.vue";
+import MemberProfileView from "../pages/MemberProfileView.vue";
 
 const routes = [
     { path: "/", redirect: "/dashboard" },
@@ -26,7 +27,10 @@ const routes = [
             { path: "dashboard", component: Dashboard},
             { path: "organizations", component: OrganizationsPage},
             { path : "organizations/:orgId", component: OrganizationsView},
-
+            {
+                path: "organizations/:orgId/members/:targetUserId/view",
+                component: MemberProfileView,
+            }
         ]
     }
 ];

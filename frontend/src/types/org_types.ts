@@ -5,3 +5,9 @@ export type OrganizationType = {
     name: string,
     created_at: string,
 }
+
+export type OrganizationWithRole = {
+    orgId: string,
+    name: string,
+    myRole: string,
+}
