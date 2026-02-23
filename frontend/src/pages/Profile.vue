@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useRoute } from "vue-router";
-import { ref, computed, watch } from "vue";
+import { ref, computed, watchEffect } from "vue";
 import { userAPI } from "../api/user";
 import { authStore } from "../stores/auth_store";
 
@@ -14,33 +14,28 @@ const remoteProfile = ref<any>(null);
 const error = ref<string | null>(null);
 const isLoading = ref(false);
 
-/*
-  Определяем:
-  Это мой профиль или чужой?
-*/
 const isOwnProfile = computed(() => {
   return authStore.user?.id === route.params.id;
 });
 
-/*
-  Общий профиль для шаблона:
-  - если свой → берем из store
-  - если чужой → берем из remoteProfile
-*/
 const profile = computed(() => {
-  return isOwnProfile.value ? authStore.user : remoteProfile.value;
+  return isOwnProfile.value
+      ? authStore.user
+      : remoteProfile.value;
 });
 
 /*
-  Загружаем профиль только если:
-  - bootstrap завершён
-  - это НЕ наш профиль
+  watchEffect автоматически:
+  - ждёт реактивные зависимости
+  - перезапускается при изменении route или store
 */
-const loadProfile = async () => {
+watchEffect(async () => {
+  if (authStore.isBootstrapping) return;
   if (!route.params.id) return;
 
   if (isOwnProfile.value) {
-    return; // свой профиль — ничего грузить не нужно
+    remoteProfile.value = null;
+    return;
   }
 
   try {
@@ -55,32 +50,7 @@ const loadProfile = async () => {
   } finally {
     isLoading.value = false;
   }
-};
-
-/*
-  Ждём окончания bootstrap
-*/
-watch(
-    () => authStore.isBootstrapping,
-    async (bootstrapping) => {
-      if (!bootstrapping) {
-        await loadProfile();
-      }
-    },
-    { immediate: true }
-);
-
-/*
-  Если меняется route (переход на другой профиль)
-*/
-watch(
-    () => route.params.id,
-    async () => {
-      if (!authStore.isBootstrapping) {
-        await loadProfile();
-      }
-    }
-);
+});
 </script>
 
 <template>
