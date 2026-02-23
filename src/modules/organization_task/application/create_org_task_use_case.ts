@@ -15,6 +15,7 @@ import {
 import {OrganizationMember} from "../../organization_members/domain/organization_member_domain.js";
 import {TaskPermissionPolicy} from "../domain/policies/task_permission_policy.js";
 import {TaskDto} from "../DTO/return_dto/task_dto.js";
+import {Organization} from "../../organization/domain/organiztion_domain.js";
 
 
 export class CreateOrganizationTaskUseCase {
@@ -39,12 +40,17 @@ export class CreateOrganizationTaskUseCase {
         return assignee;
     }
 
+    private async orgExists(orgId: string): Promise<Organization> {
+        const existingOrg = await this.orgRepo.findById(orgId);
+        if (!existingOrg) throw new OrganizationNotFoundError();
+        return existingOrg;
+    }
+
     execute = async (createOrgTaskDto: CreateOrgTaskDataInputDTO) => {
 
         const toWhoWeAssign = this.parseAssignee(createOrgTaskDto.assignedTo, createOrgTaskDto.createdBy);
 
-       // const existingOrg = await this.orgRepo.findById(createOrgTaskDto.organizationId);
-       // if (!existingOrg) throw new OrganizationNotFoundError();
+        const existingOrg = await this.orgExists(createOrgTaskDto.organizationId);
 
         const creator = await this.creatorExists(createOrgTaskDto.createdBy, createOrgTaskDto.organizationId);
 
