@@ -19,7 +19,7 @@ onMounted(async () => {
   } catch (e) {
     authStore.clearToken();
   } finally {
-    authStore.isBootstrapping = false;
+    authStore.finishBootstrapping();
   }
 });
 </script>

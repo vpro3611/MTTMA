@@ -145,7 +145,8 @@ export function createApp(dependencies: AppContainer) {
         dependencies.searchOrganizationController.searchOrganizationCont
     );
 
-    privateRouter.get("/organizations/:orgId",
+    // TODO : YES
+    privateRouter.get("/view/:orgId",
         validate_params(ViewOrganizationParamsSchema),
         dependencies.viewOrganizationController.viewOrganizationCont
     );
@@ -168,6 +169,11 @@ export function createApp(dependencies: AppContainer) {
     privateRouter.get('/:targetUserId',
         validate_params(CheckProfileParamsSchema),
         dependencies.checkProfileController.checkProfileCont
+    );
+
+    // TODO : YES
+    organizationRouter.get("/my_organizations",
+        dependencies.getMyOrganizationsController.getMyOrgCont
     );
 
     organizationRouter.get("/:orgId/tasks",

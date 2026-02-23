@@ -5,6 +5,8 @@ import UserList from "../pages/UserList.vue";
 import MainLayout from "../layouts/MainLayout.vue";
 import { authStore } from "../stores/auth_store";
 import Dashboard from "../pages/Dashboard.vue";
+import OrganizationsPage from "../pages/OrganizationsPage.vue";
+import OrganizationsView from "../pages/OrganizationsView.vue";
 
 const routes = [
     { path: "/", redirect: "/dashboard" },
@@ -21,7 +23,10 @@ const routes = [
         children: [
             { path: "profile/:id", component: Profile },
             { path: "users", component: UserList },
-            { path: "/dashboard", component: Dashboard}
+            { path: "dashboard", component: Dashboard},
+            { path: "organizations", component: OrganizationsPage},
+            { path : "organizations/:orgId", component: OrganizationsView},
+
         ]
     }
 ];

@@ -23,9 +23,12 @@ const router = useRouter();
         <p>Browse all users</p>
       </article>
 
-      <article class="card">
+      <article
+          class="card"
+          @click="router.push('/organizations')"
+      >
         <h2>Organizations</h2>
-        <p>Coming soon</p>
+        <p>Manage your organizations</p>
       </article>
 
       <article class="card">

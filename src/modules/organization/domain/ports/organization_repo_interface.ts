@@ -12,3 +12,7 @@ export interface OrganizationRepository {
 export interface SearchOrganizationRepository {
     search(criteria: SearchOrganizationCriteria): Promise<OrganizationSearchResultDto[]>;
 }
+
+export interface SelectOrganizationUponMembershit {
+    myOrganizations(actorId: string): Promise<Organization[]>;
+}
