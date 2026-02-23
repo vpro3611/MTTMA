@@ -20,5 +20,9 @@ export const authStore = reactive({
     clearToken() {
         this.accessToken = null;
         this.user = null;
+    },
+
+    finishBootstrapping() {
+        this.isBootstrapping = false;
     }
 });
