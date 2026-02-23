@@ -56,6 +56,8 @@ import {
     ViewOrganizationParamsSchema
 } from "./modules/organization/controllers/view_organization_controller.js";
 import {TaskOrganizationIdParamSchema} from "./modules/organization_task/controller/list_tasks_controller.js";
+import {OrgIdParamsSchema} from "./modules/organization/controllers/get_org_with_role_controller.js";
+import {GetMemberByIdParamsSchema} from "./modules/organization_members/controllers/get_member_by_id_controller.js";
 
 
 export function createApp(dependencies: AppContainer) {
@@ -176,6 +178,12 @@ export function createApp(dependencies: AppContainer) {
         dependencies.getMyOrganizationsController.getMyOrgCont
     );
 
+    // TODO : YES
+    organizationRouter.get("/organizations/:orgId/w_role",
+        validate_params(OrgIdParamsSchema),
+        dependencies.getOrgWithRoleController.getOrgWithRoleCont
+    );
+
     organizationRouter.get("/:orgId/tasks",
         validate_params(TaskOrganizationIdParamSchema),
         dependencies.listOrganizationTasksController.listTasksCont
@@ -199,6 +207,7 @@ export function createApp(dependencies: AppContainer) {
         dependencies.changeTaskTitleController.changeTitleCont
     );
 
+    // TODO : YES
     organizationRouter.post('/:orgId/tasks/create',
         validate_params(CreateTaskParamsSchema),
         validateZodMiddleware(CreateTaskBodySchema),
@@ -210,17 +219,20 @@ export function createApp(dependencies: AppContainer) {
         dependencies.deleteTaskController.deleteTaskCont
     );
 
+    // TODO : YES
     organizationRouter.post("/create",
         validateZodMiddleware(CreateOrgBodySchema),
         dependencies.createOrganizationController.createOrganizationCont
     );
 
+    // TODO : YES
     organizationRouter.patch("/:orgId/rename",
         validate_params(RenameOrgParamsSchema),
         validateZodMiddleware(RenameOrgBodySchema),
         dependencies.renameOrganizationController.renameOrgCont
     );
 
+    // TODO : YES
     organizationRouter.delete("/:orgId/delete",
         validate_params(DeleteOrganizationParamsSchema),
         dependencies.deleteOrganizationController.DeleteOrganizationCont
@@ -243,6 +255,13 @@ export function createApp(dependencies: AppContainer) {
         dependencies.hireMemberController.hireMemberCont
     );
 
+    // TODO : YES
+    organizationRouter.get("/:orgId/members/:targetUserId/view",
+        validate_params(GetMemberByIdParamsSchema),
+        dependencies.getMemberByIdController.getMemberByIdCont
+    );
+
+    // TODO : YES
     organizationRouter.get("/:orgId/members",
         validate_params(GetAllMembersParamsSchema),
         dependencies.getAllMembersController.getAllMembersCont

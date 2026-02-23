@@ -167,6 +167,18 @@ import {GetMyOrganizationsUseCase} from "./modules/organization/application/get_
 import {GetMyOrganizationService} from "./modules/organization/application/service/get_my_organization_service.js";
 import {GetMyOrgServ} from "./modules/organization/controllers/services/get_my_org_serv.js";
 import {GetMyOrgController} from "./modules/organization/controllers/get_my_org_controller.js";
+import {GetOrgWithRoleServ} from "./modules/organization/controllers/services/get_org_with_role_serv.js";
+import {
+    GetOrganizationWithRoleUseCase
+} from "./modules/organization/application/get_organization_with_role_use_case.js";
+import {
+    GetOrganizationWithRoleService
+} from "./modules/organization/application/service/get_organization_with_role_service.js";
+import {GetOrgWithRoleController} from "./modules/organization/controllers/get_org_with_role_controller.js";
+import {GetMemberByIdUseCase} from "./modules/organization_members/application/get_by_id_use_case.js";
+import {GetMemberByIdService} from "./modules/organization_members/application/services/get_by_id_service.js";
+import {GetMemberByIdServ} from "./modules/organization_members/controllers/services/get_member_by_id_serv.js";
+import {GetMemberByIdController} from "./modules/organization_members/controllers/get_member_by_id_controller.js";
 
 export function assembleContainer() {
 
@@ -225,12 +237,14 @@ export function assembleContainer() {
     const fireOrgMemberUC = new FireOrgMemberUseCase(organizationMemberRepoPG);
     const hireOrgMemberUC = new HireOrgMemberUseCase(organizationMemberRepoPG, userRepoPG);
     const getAllMembersUC = new GetAllMembersUseCase(organizationMemberRepoPG);
+    const getMemberByIdUC = new GetMemberByIdUseCase(organizationMemberRepoPG, organizationRepoPG);
     // 4) organizations
     const createOrganizationUC = new CreateOrganizationUseCase(organizationRepoPG, userRepoPG);
     const renameOrganizationUC = new RenameOrganizationUseCase(organizationRepoPG, organizationMemberRepoPG);
     const deleteOrganizationUC = new DeleteOrganizationUseCase(organizationRepoPG, organizationMemberRepoPG);
     const viewOrganizationUC = new ViewOrganizationUseCase(organizationRepoPG, userRepoPG);
     const getMyOrganizationsUC = new GetMyOrganizationsUseCase(userRepoPG, getMyOrganizationsRepositoryPG);
+    const getOrgWithRoleUC = new GetOrganizationWithRoleUseCase(organizationRepoPG, organizationMemberRepoPG);
     // 5) audit events
     const appendToAuditUC = new AppendLogAuditEvents(auditEventWriter);
     const getOrganizationAuditUC = new GetOrganizationAuditUseCase(auditEventReader, organizationMemberRepoPG);
@@ -265,12 +279,14 @@ export function assembleContainer() {
     const fireMemberService = new FireMemberWithAuditUseCase(fireOrgMemberUC, appendToAuditUC);
     const hireMemberService = new HireMemberWithAuditUseCase(hireOrgMemberUC, appendToAuditUC);
     const getAllMembersService = new GetAllMembersWithAudit(getAllMembersUC, appendToAuditUC);
+    const getMemberByIdService = new GetMemberByIdService(getMemberByIdUC);
     // 4 organizations
     const createOrganizationService = new CreateOrganizationWithAudit(createOrganizationUC, appendToAuditUC);
     const deleteOrganizationService = new DeleteOrganization(deleteOrganizationUC);
     const renameOrganizationService = new RenameWithAudit(renameOrganizationUC, appendToAuditUC);
     const viewOrganizationService = new ViewOrganizationServiceWithAudit(viewOrganizationUC, appendToAuditUC);
     const getMyOrganizationsService = new GetMyOrganizationService(getMyOrganizationsUC);
+    const getOrgWithRoleService = new GetOrganizationWithRoleService(getOrgWithRoleUC);
     // 5 audit events
     const getAuditByOrganizationService = new GetAllAuditWithAudit(getOrganizationAuditUC, appendToAuditUC);
     const getFilteredAuditService = new GetFilterAuditWithAudit(getFilteredAuditUC, appendToAuditUC);
@@ -308,11 +324,13 @@ export function assembleContainer() {
     const renameOrganizationServ = new RenameOrganizationServ(txManager);
     const viewOrganizationServ = new ViewOrganizationServ(txManager);
     const getMyOrganizationsServ = new GetMyOrgServ(txManager);
+    const getOrgWithRoleServ = new GetOrgWithRoleServ(txManager);
     // 4) organization members
     const changeMemberRoleServ = new ChangeRoleServ(txManager);
     const fireMemberServ = new FireMemberServ(txManager);
     const hireMemberServ = new HireMemberServ(txManager);
     const getAllMembersServ = new GetAllMembersServ(txManager);
+    const getMemberByIdServ = new GetMemberByIdServ(txManager);
     // 5) audit events
     const getAuditByOrgIdServ = new GetAuditByIdServ(txManager);
     const getFilteredAuditServ = new GetFilteredAuditServ(txManager);
@@ -348,11 +366,13 @@ export function assembleContainer() {
     const renameOrganizationController = new RenameOrganizationController(renameOrganizationServ);
     const viewOrganizationController = new ViewOrganizationController(viewOrganizationServ);
     const getMyOrganizationsController = new GetMyOrgController(getMyOrganizationsServ);
+    const getOrgWithRoleController = new GetOrgWithRoleController(getOrgWithRoleServ);
     // 5) organization members
     const changeMemberRoleController = new ChangeRoleController(changeMemberRoleServ);
     const fireMemberController = new FireMemberController(fireMemberServ);
     const hireMemberController = new HireMemberController(hireMemberServ);
     const getAllMembersController = new GetAllMembersController(getAllMembersServ);
+    const getMemberByIdController = new GetMemberByIdController(getMemberByIdServ);
     // 6) audit events
     const getAuditByOrgIdController = new GetAuditByOrgIdController(getAuditByOrgIdServ);
     const getFilteredAuditController = new GetFilteredAuditController(getFilteredAuditServ);
@@ -429,11 +449,13 @@ export function assembleContainer() {
         renameOrganizationController,
         viewOrganizationController,
         getMyOrganizationsController,
+        getOrgWithRoleController,
 
         changeMemberRoleController,
         fireMemberController,
         hireMemberController,
         getAllMembersController,
+        getMemberByIdController,
 
         getAuditByOrgIdController,
         getFilteredAuditController,
