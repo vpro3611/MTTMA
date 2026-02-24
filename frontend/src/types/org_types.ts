@@ -4,7 +4,7 @@ import type {OrgMemsRole} from "../../../src/modules/organization_members/domain
 export type OrganizationType = {
     id: string,
     name: string,
-    created_at: string,
+    createdAt: string,
 }
 
 export type OrganizationWithRole = {
