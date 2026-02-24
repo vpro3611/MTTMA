@@ -238,18 +238,26 @@ export function createApp(dependencies: AppContainer) {
         dependencies.deleteOrganizationController.DeleteOrganizationCont
     );
 
+    // TODO : YES
     organizationRouter.patch("/:orgId/role/:targetUserId",
         validate_params(ChangeRoleParamsSchema),
         validateZodMiddleware(ChangeRoleBodySchema),
         dependencies.changeMemberRoleController.changeRoleCont
     );
 
+    // TODO : YES
     organizationRouter.delete("/:orgId/fire/:targetUserId",
         validate_params(FireMemberParamsSchema),
         dependencies.fireMemberController.fireMemberCont
     );
 
-    organizationRouter.post("/:orgId/hire",
+    // TODO : YES
+    organizationRouter.get("/my/with_roles",
+        dependencies.getAllOrgsWithRolesController.getAllOrgsWithRolesCont
+    );
+
+    // TODO : YES
+    organizationRouter.post("/:orgId/users/:targetUserId/hire",
         validate_params(HireMemberParamsSchema),
         validateZodMiddleware(HireMemberBodySchema),
         dependencies.hireMemberController.hireMemberCont

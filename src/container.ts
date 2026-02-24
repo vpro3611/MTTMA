@@ -179,6 +179,21 @@ import {GetMemberByIdUseCase} from "./modules/organization_members/application/g
 import {GetMemberByIdService} from "./modules/organization_members/application/services/get_by_id_service.js";
 import {GetMemberByIdServ} from "./modules/organization_members/controllers/services/get_member_by_id_serv.js";
 import {GetMemberByIdController} from "./modules/organization_members/controllers/get_member_by_id_controller.js";
+import {
+    GetAllOrgsWithRolesPG
+} from "./modules/organization_members/organization_members_repository_realization/get_all_orgs_with_roles.js";
+import {
+    GetAllOrganizationsWithRolesUseCase
+} from "./modules/organization_members/application/get_all_organizations_with_roles_use_case.js";
+import {
+    GetAllOrganizationsWithRolesService
+} from "./modules/organization_members/application/services/get_all_organizations_with_roles_service.js";
+import {
+    GetAllOrgsWithRolesServ
+} from "./modules/organization_members/controllers/services/get_all_orgs_with_roles_serv.js";
+import {
+    GetAllOrgsWithRolesController
+} from "./modules/organization_members/controllers/get_all_orgs_with_roles_controller.js";
 
 export function assembleContainer() {
 
@@ -214,6 +229,8 @@ export function assembleContainer() {
     const userRepositoryReadOnly = new UserRepositoryReaderPg(pool);
     // 13) get my organizations
     const getMyOrganizationsRepositoryPG = new MyOrganizationsRepository(pool);
+    // 13) get all organizations with roles
+    const getOrganizationsWithRolesPG = new GetAllOrgsWithRolesPG(pool);
     // infrastructure services
     const hasher: PasswordHasher = new HasherBcrypt();
 
@@ -238,6 +255,7 @@ export function assembleContainer() {
     const hireOrgMemberUC = new HireOrgMemberUseCase(organizationMemberRepoPG, userRepoPG);
     const getAllMembersUC = new GetAllMembersUseCase(organizationMemberRepoPG);
     const getMemberByIdUC = new GetMemberByIdUseCase(organizationMemberRepoPG, organizationRepoPG);
+    const getAllOrgsWithRoleUC = new GetAllOrganizationsWithRolesUseCase(getOrganizationsWithRolesPG, userRepoPG);
     // 4) organizations
     const createOrganizationUC = new CreateOrganizationUseCase(organizationRepoPG, userRepoPG);
     const renameOrganizationUC = new RenameOrganizationUseCase(organizationRepoPG, organizationMemberRepoPG);
@@ -280,6 +298,7 @@ export function assembleContainer() {
     const hireMemberService = new HireMemberWithAuditUseCase(hireOrgMemberUC, appendToAuditUC);
     const getAllMembersService = new GetAllMembersWithAudit(getAllMembersUC, appendToAuditUC);
     const getMemberByIdService = new GetMemberByIdService(getMemberByIdUC);
+    const getAllOrgsWithRolesService = new GetAllOrganizationsWithRolesService(getAllOrgsWithRoleUC);
     // 4 organizations
     const createOrganizationService = new CreateOrganizationWithAudit(createOrganizationUC, appendToAuditUC);
     const deleteOrganizationService = new DeleteOrganization(deleteOrganizationUC);
@@ -331,6 +350,7 @@ export function assembleContainer() {
     const hireMemberServ = new HireMemberServ(txManager);
     const getAllMembersServ = new GetAllMembersServ(txManager);
     const getMemberByIdServ = new GetMemberByIdServ(txManager);
+    const getAllOrgsWithRolesServ = new GetAllOrgsWithRolesServ(txManager);
     // 5) audit events
     const getAuditByOrgIdServ = new GetAuditByIdServ(txManager);
     const getFilteredAuditServ = new GetFilteredAuditServ(txManager);
@@ -373,6 +393,7 @@ export function assembleContainer() {
     const hireMemberController = new HireMemberController(hireMemberServ);
     const getAllMembersController = new GetAllMembersController(getAllMembersServ);
     const getMemberByIdController = new GetMemberByIdController(getMemberByIdServ);
+    const getAllOrgsWithRolesController = new GetAllOrgsWithRolesController(getAllOrgsWithRolesServ);
     // 6) audit events
     const getAuditByOrgIdController = new GetAuditByOrgIdController(getAuditByOrgIdServ);
     const getFilteredAuditController = new GetFilteredAuditController(getFilteredAuditServ);
@@ -456,6 +477,7 @@ export function assembleContainer() {
         hireMemberController,
         getAllMembersController,
         getMemberByIdController,
+        getAllOrgsWithRolesController,
 
         getAuditByOrgIdController,
         getFilteredAuditController,
