@@ -33,6 +33,12 @@ const newStatus = ref<TaskStatus | null>(null);
 const editStatusLoading = ref(false);
 const editStatusError = ref<string | null>(null);
 
+// -------- EDIT TITLE --------
+const isEditingTitle = ref(false);
+const newTitle = ref("");
+const editTitleLoading = ref(false);
+const editTitleError = ref<string | null>(null);
+
 // ---------------- LOAD ----------------
 onMounted(async () => {
   try {
@@ -134,6 +140,38 @@ const handleSaveStatus = async () => {
 const goBack = () => {
   router.push(`/organizations/${orgId}`);
 };
+
+// ---------------- EDIT TITLE ----------------
+const startEditTitle = () => {
+  if (!task.value) return;
+  newTitle.value = task.value.title;
+  isEditingTitle.value = true;
+};
+
+const handleSaveTitle = async () => {
+  if (!task.value || !newTitle.value.trim()) return;
+
+  try {
+    editTitleLoading.value = true;
+    editTitleError.value = null;
+
+    const updated = await orgAPI.changeTaskTitle(
+        orgId,
+        taskId,
+        newTitle.value
+    );
+
+    task.value = updated;
+    isEditingTitle.value = false;
+
+  } catch (e: unknown) {
+    editTitleError.value = errorMessage(e);
+  } finally {
+    editTitleLoading.value = false;
+  }
+};
+
+
 </script>
 
 <template>
@@ -145,7 +183,38 @@ const goBack = () => {
 
   <section v-else-if="task">
 
-    <h2>{{ task.title }}</h2>
+    <h2>
+  <span v-if="!isEditingTitle">
+    {{ task.title }}
+
+    <button
+        v-if="canModify && task.status !== 'COMPLETED' && task.status !== 'CANCELED'"
+        @click="startEditTitle"
+        style="margin-left:10px;"
+    >
+      Edit Title
+    </button>
+  </span>
+
+      <span v-else>
+    <input v-model="newTitle" />
+
+    <button
+        @click="handleSaveTitle"
+        :disabled="editTitleLoading || !newTitle.trim()"
+    >
+      Save
+    </button>
+
+    <button @click="isEditingTitle = false">
+      Cancel
+    </button>
+
+    <p v-if="editTitleError" style="color:red;">
+      {{ editTitleError }}
+    </p>
+  </span>
+    </h2>
 
     <!-- STATUS -->
     <div>
