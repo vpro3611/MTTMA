@@ -34,7 +34,7 @@ export class GetOrganizationWithRoleUseCase {
         return {
             orgId: member.organizationId,
             name: org.getName().getValue(),
-            myRole: member.getRole(),
+            role: member.getRole(),
         }
     }
 
