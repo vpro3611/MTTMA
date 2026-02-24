@@ -8,6 +8,7 @@ import Dashboard from "../pages/Dashboard.vue";
 import OrganizationsPage from "../pages/OrganizationsPage.vue";
 import OrganizationsView from "../pages/OrganizationsView.vue";
 import MemberProfileView from "../pages/MemberProfileView.vue";
+import TaskView from "../pages/TaskView.vue";
 
 const routes = [
     { path: "/", redirect: "/dashboard" },
@@ -30,6 +31,10 @@ const routes = [
             {
                 path: "organizations/:orgId/members/:targetUserId/view",
                 component: MemberProfileView,
+            },
+            {
+                path: "/organizations/:orgId/tasks/:taskId",
+                component: TaskView,
             }
         ]
     }
