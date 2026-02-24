@@ -23,8 +23,8 @@ const handleSubmit = async () => {
     authStore.setToken(data.accessToken, data.user);
     await router.push(`/profile/${data.user.id}`)
     console.log('success');
-  } catch (e: any) {
-    error.value = e.message;
+  } catch (e: unknown) {
+    error.value = e instanceof Error ? e.message : String(e);
   } finally {
     isLoading.value = false;
   }

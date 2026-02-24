@@ -20,8 +20,8 @@ const handleSubmit = async () => {
 
     const updatedUser: User = await userAPI.changePassword(old_password.value, new_password.value);
     authStore.user = updatedUser;
-  } catch (e: any) {
-    error.value = e.message;
+  } catch (e: unknown) {
+    error.value = e instanceof Error ? e.message : String(e);
   } finally {
     isLoading.value = false;
   }
