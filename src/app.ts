@@ -58,6 +58,7 @@ import {
 import {TaskOrganizationIdParamSchema} from "./modules/organization_task/controller/list_tasks_controller.js";
 import {OrgIdParamsSchema} from "./modules/organization/controllers/get_org_with_role_controller.js";
 import {GetMemberByIdParamsSchema} from "./modules/organization_members/controllers/get_member_by_id_controller.js";
+import {FindTaskByIdParamsSchema} from "./modules/organization_task/controller/find_task_by_id_controller.js";
 
 
 export function createApp(dependencies: AppContainer) {
@@ -184,17 +185,26 @@ export function createApp(dependencies: AppContainer) {
         dependencies.getOrgWithRoleController.getOrgWithRoleCont
     );
 
+    // TODO : YES
     organizationRouter.get("/:orgId/tasks",
         validate_params(TaskOrganizationIdParamSchema),
         dependencies.listOrganizationTasksController.listTasksCont
     );
 
+    // TODO : YES
+    organizationRouter.get("/:orgId/tasks/:orgTaskId/view",
+        validate_params(FindTaskByIdParamsSchema),
+        dependencies.findTaskByIdController.findTaskByIdCont
+    );
+
+    // TODO : YES
     organizationRouter.patch('/:orgId/tasks/:taskId/description',
         validate_params(ChangeDescParamsSchema),
         validateZodMiddleware(ChangeDescBodySchema),
         dependencies.changeTaskDescController.changeDescCont
     );
 
+    // TODO : YES
     organizationRouter.patch('/:orgId/tasks/:taskId/status',
         validate_params(ChangeStatusParamsSchema),
         validateZodMiddleware(ChangeStatusBodySchema),

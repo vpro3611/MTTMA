@@ -194,6 +194,10 @@ import {
 import {
     GetAllOrgsWithRolesController
 } from "./modules/organization_members/controllers/get_all_orgs_with_roles_controller.js";
+import {FindTaskByIdUseCase} from "./modules/organization_task/application/find_task_by_id_use_case.js";
+import {FindTaskByIdService} from "./modules/organization_task/application/service/find_task_by_id.js";
+import {FindTaskByIdServ} from "./modules/organization_task/controller/services/find_by_id_serv.js";
+import {FindTaskByIdController} from "./modules/organization_task/controller/find_task_by_id_controller.js";
 
 export function assembleContainer() {
 
@@ -248,7 +252,8 @@ export function assembleContainer() {
     const changeTaskTitleUC = new ChangeOrgTaskTitleUseCase(organizationTaskRepoPG, organizationMemberRepoPG);
     const createTaskUC = new CreateOrganizationTaskUseCase(organizationTaskRepoPG, organizationMemberRepoPG, organizationRepoPG);
     const deleteTasksUC = new DeleteTaskUseCase(organizationTaskRepoPG, organizationMemberRepoPG);
-    const listTasksUC = new GetOrgTasksListUseCase(organizationMemberRepoPG, organizationTasksRepoReaderPG)
+    const listTasksUC = new GetOrgTasksListUseCase(organizationMemberRepoPG, organizationTasksRepoReaderPG);
+    const getTaskByIdUC = new FindTaskByIdUseCase(organizationTaskRepoPG, organizationMemberRepoPG);
     // 3) organization_members
     const changeOrgMemberRoleUC = new ChangeOrgMemberRoleUseCase(organizationMemberRepoPG);
     const fireOrgMemberUC = new FireOrgMemberUseCase(organizationMemberRepoPG);
@@ -292,6 +297,7 @@ export function assembleContainer() {
     const createTaskService = new CreateTaskWithAudit(createTaskUC, appendToAuditUC);
     const deleteTaskService = new DeleteTaskWithAudit(deleteTasksUC, appendToAuditUC);
     const listOrganizationTasksService = new GetOrgTasksListService(listTasksUC);
+    const getTaskByIdService = new FindTaskByIdService(getTaskByIdUC);
     // 3 organization members
     const changeOrgMemberRoleService = new ChangeRoleWithAuditUseCase(changeOrgMemberRoleUC, appendToAuditUC);
     const fireMemberService = new FireMemberWithAuditUseCase(fireOrgMemberUC, appendToAuditUC);
@@ -337,6 +343,7 @@ export function assembleContainer() {
     const createTaskServ = new CreateTaskServ(txManager);
     const deleteTaskServ = new DeleteTaskServ(txManager);
     const listOrganizationTasksServ = new ListTasksServ(txManager);
+    const getTaskByIdServ = new FindTaskByIdServ(txManager);
     // 3) organisations
     const createOrganizationServ = new CreateOrgServ(txManager);
     const deleteOrganizationServ = new DeleteOrganizationServ(txManager);
@@ -380,6 +387,7 @@ export function assembleContainer() {
     const createTaskController = new CreateTaskController(createTaskServ);
     const deleteTaskController = new DeleteTaskController(deleteTaskServ);
     const listOrganizationTasksController = new ListTasksController(listOrganizationTasksServ);
+    const findTaskByIdController = new FindTaskByIdController(getTaskByIdServ);
     // 4) organisations
     const createOrganizationController = new CreateOrganizationController(createOrganizationServ);
     const deleteOrganizationController = new DeleteOrganizationController(deleteOrganizationServ);
@@ -433,6 +441,7 @@ export function assembleContainer() {
         changeTaskTitleService,
         createTaskService,
         deleteTaskService,
+        findTaskByIdController,
 
         changeOrgMemberRoleService,
         fireMemberService,
