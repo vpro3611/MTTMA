@@ -284,6 +284,17 @@ export const organizationsAPI = {
             throw new Error(data?.message || "Failed to change task title");
         }
         return data;
+    },
+
+    async deleteTask(orgId: string, taskId: string) {
+        const res = await authorizedFetch(`${UrlConfig.apiBaseUrl}/org/${orgId}/tasks/${taskId}`, {
+            method: "DELETE"
+        });
+
+        if (!res.ok) {
+            const data = await res.json();
+            throw new Error(data?.message || "Failed to delete task");
+        }
     }
 }
 //import {OrgMemsRole} from "../domain/org_members_role.js";
