@@ -4,7 +4,7 @@ import type {OrganizationType, OrganizationWithRole} from "../types/org_types.ts
 import type {TaskType} from "../types/task_types.ts";
 import type {MemberType} from "../types/member_types.ts";
 import type {OrganizationSearchFilters, OrganizationSearchResult} from "../types/org_search_types.ts";
-import type {AuditType} from "../types/audit_types.ts";
+import type {AuditFilterRequest, AuditType} from "../types/audit_types.ts";
 
 
 export const organizationsAPI = {
@@ -354,6 +354,29 @@ export const organizationsAPI = {
 
     async getAllAuditEvents(orgId: string): Promise<AuditType[]> {
         const res = await authorizedFetch(`${UrlConfig.apiBaseUrl}/org/${orgId}/audit_events/all`, {
+            method: "GET"
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            throw new Error(data?.message || "Failed to get audit events");
+        }
+
+        return data;
+    },
+
+    async getFilteredAuditEvents(orgId: string, filters?: AuditFilterRequest): Promise<AuditType[]> {
+        const params = new URLSearchParams();
+
+        if (filters?.action) params.append("action", filters.action);
+        if (filters?.actorUserId) params.append("actorUserId", filters.actorUserId);
+        if (filters?.from) params.append("from", filters.from);
+        if (filters?.to) params.append("to", filters.to);
+        if (filters?.limit !== undefined) params.append("limit", String(filters.limit));
+        if (filters?.offset !== undefined) params.append("offset", String(filters.offset));
+
+        const res = await authorizedFetch(`${UrlConfig.apiBaseUrl}/org/${orgId}/audit_events/filtered?${params.toString()}`, {
             method: "GET"
         });
 
