@@ -3,6 +3,7 @@ import {authorizedFetch} from "./http.ts";
 import type {OrganizationType, OrganizationWithRole} from "../types/org_types.ts";
 import type {TaskType} from "../types/task_types.ts";
 import type {MemberType} from "../types/member_types.ts";
+import type {OrganizationSearchFilters, OrganizationSearchResult} from "../types/org_search_types.ts";
 
 
 export const organizationsAPI = {
@@ -295,7 +296,51 @@ export const organizationsAPI = {
             const data = await res.json();
             throw new Error(data?.message || "Failed to delete task");
         }
+    },
+
+    async searchOrganizations(filters: OrganizationSearchFilters): Promise<OrganizationSearchResult[]> {
+        const params = new URLSearchParams();
+
+        params.append("query", filters.query);
+
+        if (filters.createdFrom) {
+            params.append("createdFrom", filters.createdFrom);
+        }
+
+        if (filters.createdTo) {
+            params.append("createdTo", filters.createdTo);
+        }
+
+        if (filters.sortBy) {
+            params.append("sortBy", filters.sortBy);
+        }
+
+        if (filters.order) {
+            params.append("order", filters.order);
+        }
+
+        if (filters.limit !== undefined) {
+            params.append("limit", filters.limit.toString());
+        }
+
+        if (filters.offset !== undefined) {
+            params.append("offset", filters.offset.toString());
+        }
+
+        const res = await authorizedFetch(
+            `${UrlConfig.apiBaseUrl}/api/organizations?${params.toString()}`,
+            { method: "GET" }
+        );
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            throw new Error(data?.message || "Failed to search organizations");
+        }
+
+        return data;
     }
+
 }
 //import {OrgMemsRole} from "../domain/org_members_role.js";
 //
