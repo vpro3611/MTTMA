@@ -64,7 +64,7 @@ const prevPage = async () => {
 
 // ---------------- NAVIGATION ----------------
 const goToOrganization = (orgId: string) => {
-  router.push(`/organizations/${orgId}`);
+  router.push(`/organizations/view/${orgId}`);
 };
 </script>
 
