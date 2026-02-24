@@ -269,6 +269,21 @@ export const organizationsAPI = {
         }
 
         return data;
+    },
+
+    async changeTaskTitle(orgId: string, taskId: string, newTitle: string): Promise<TaskType> {
+        const res = await authorizedFetch(`${UrlConfig.apiBaseUrl}/org/${orgId}/tasks/${taskId}/title`, {
+            method: "PATCH",
+            body: JSON.stringify({newTitle}),
+            headers: {"Content-Type": "application/json"}
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            throw new Error(data?.message || "Failed to change task title");
+        }
+        return data;
     }
 }
 //import {OrgMemsRole} from "../domain/org_members_role.js";
