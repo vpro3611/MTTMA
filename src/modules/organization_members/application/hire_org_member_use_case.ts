@@ -11,6 +11,7 @@ import {UserNotFoundError} from "../errors/organization_members_repo_errors.js";
 import {UserResponseDto} from "../../user/DTO/user_response_dto.js";
 import {OrgMemsRole} from "../domain/org_members_role.js";
 import {User} from "../../user/domain/user_domain.js";
+import {UserAlreadyMember} from "../../invitations/errors/application_errors.js";
 
 
 export class HireOrgMemberUseCase {
@@ -38,13 +39,6 @@ export class HireOrgMemberUseCase {
             throw new UserNotFoundError();
         }
 
-        // const response: UserResponseDto = {
-        //     id: user.id,
-        //     email: user.getEmail().getValue(),
-        //     status: user.getStatus(),
-        //     created_at: user.getCreatedAt(),
-        // }
-
         return user;
     }
 
@@ -68,6 +62,13 @@ export class HireOrgMemberUseCase {
         }
     }
 
+    private async checkPotentialNewMember(targetUserId: string, organizationId: string): Promise<void> {
+        const potentialNewMember = await this.orgMemberRepo.findById(targetUserId, organizationId);
+        if (potentialNewMember) {
+            throw new UserAlreadyMember();
+        }
+    }
+
     execute = async (actorUserId: string, organizationId: string, targetUserId: string, role?: OrgMemsRole) => {
         const parsedRole = this.parseRole(role);
 
@@ -78,6 +79,10 @@ export class HireOrgMemberUseCase {
         userExists.checkUserStatus(userExists.getStatus());
 
         const actorMember = await this.actorMemberExists(actorUserId, organizationId);
+
+        await this.checkPotentialNewMember(targetUserId, organizationId);
+
+        this.assertRoleAndActor(parsedRole, actorMember)
 
         const newMember = OrganizationMember.hire(organizationId, userExists.id, parsedRole);
 
