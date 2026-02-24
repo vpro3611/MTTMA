@@ -86,6 +86,7 @@ export class Task {
     }
 
     changeStatus = (newStatus: TaskStatus) => {
+        this.checkTaskStatus(this.status);
         this.assertStatusForChange(newStatus);
         this.status = newStatus;
     }
