@@ -144,6 +144,7 @@ export function createApp(dependencies: AppContainer) {
         dependencies.getAllUsersController.getAllUsersCont
     );
 
+    // TODO : YES
     privateRouter.get('/organizations',
         dependencies.searchOrganizationController.searchOrganizationCont
     );
