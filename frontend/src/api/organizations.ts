@@ -4,6 +4,7 @@ import type {OrganizationType, OrganizationWithRole} from "../types/org_types.ts
 import type {TaskType} from "../types/task_types.ts";
 import type {MemberType} from "../types/member_types.ts";
 import type {OrganizationSearchFilters, OrganizationSearchResult} from "../types/org_search_types.ts";
+import type {AuditType} from "../types/audit_types.ts";
 
 
 export const organizationsAPI = {
@@ -336,6 +337,30 @@ export const organizationsAPI = {
 
         if (!res.ok) {
             throw new Error(data?.message || "Failed to search organizations");
+        }
+
+        return data;
+    },
+
+    /*
+    export type AuditDto = {
+    id: string,
+    actorId: string,
+    organizationId: string,
+    action: string,
+    createdAt: Date,
+}
+     */
+
+    async getAllAuditEvents(orgId: string): Promise<AuditType[]> {
+        const res = await authorizedFetch(`${UrlConfig.apiBaseUrl}/org/${orgId}/audit_events/all`, {
+            method: "GET"
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            throw new Error(data?.message || "Failed to get audit events");
         }
 
         return data;
