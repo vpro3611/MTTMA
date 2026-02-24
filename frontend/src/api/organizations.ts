@@ -186,6 +186,89 @@ export const organizationsAPI = {
         }
 
         return data;
+    },
+
+    async listTasks(orgId: string, filters?: {
+        title?: string,
+        description?: string,
+        status?: "TODO" |  "COMPLETED" | "IN_PROGRESS" | "CANCELED" | undefined
+        assigneeId?: string,
+        creatorId?: string,
+        createdFrom?: string,
+        createdTo?: string,
+        limit?: number,
+        offset?: number,
+
+    }): Promise<TaskType[]> {
+
+        const params = new URLSearchParams();
+
+        if (filters) {
+            Object.entries(filters).forEach(([key, value]) => {
+                if (value !== undefined && value !== null && value !== "") {
+                    params.append(key, String(value));
+                }
+            });
+        }
+
+
+        const res = await authorizedFetch(`${UrlConfig.apiBaseUrl}/org/${orgId}/tasks?${params.toString()}`, {
+            method: "GET"
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            throw new Error(data?.message || "Failed to get tasks");
+        }
+
+        return data;
+    },
+
+    async getTaskById(orgId: string, taskId: string): Promise<TaskType> {
+        const res = await authorizedFetch(`${UrlConfig.apiBaseUrl}/org/${orgId}/tasks/${taskId}/view`, {
+            method: "GET"
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            throw new Error(data?.message || "Failed to get tasks");
+        }
+
+        return data;
+    },
+
+    async changeTaskDescription(orgId: string, taskId: string, description: string): Promise<TaskType> {
+        const res = await authorizedFetch(`${UrlConfig.apiBaseUrl}/org/${orgId}/tasks/${taskId}/description`, {
+            method: "PATCH",
+            body: JSON.stringify({newDesc: description}),
+            headers: {"Content-Type": "application/json"}
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            throw new Error(data?.message || "Failed to change task description");
+        }
+
+        return data;
+    },
+
+    async changeTaskStatus(orgId: string, taskId: string, newStatus: "TODO" | "COMPLETED" | "IN_PROGRESS" | "CANCELED"): Promise<TaskType> {
+        const res = await authorizedFetch(`${UrlConfig.apiBaseUrl}/org/${orgId}/tasks/${taskId}/status`, {
+            method: "PATCH",
+            body: JSON.stringify({newStatus}),
+            headers: {"Content-Type": "application/json"}
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            throw new Error(data?.message || "Failed to change task status");
+        }
+
+        return data;
     }
 }
 //import {OrgMemsRole} from "../domain/org_members_role.js";
