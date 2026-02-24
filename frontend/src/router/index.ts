@@ -10,6 +10,7 @@ import OrganizationsView from "../pages/OrganizationsView.vue";
 import MemberProfileView from "../pages/MemberProfileView.vue";
 import TaskView from "../pages/TaskView.vue";
 import OrganizationSearchView from "../pages/OrganizationSearchView.vue";
+import PublicOrganizationView from "../pages/PublicOrganizationView.vue";
 
 const routes = [
     { path: "/", redirect: "/dashboard" },
@@ -40,6 +41,10 @@ const routes = [
             {
                 path: "/organizations/search",
                 component: OrganizationSearchView,
+            },
+            {
+                path: "/organizations/view/:orgId",
+                component: PublicOrganizationView,
             }
         ]
     }
