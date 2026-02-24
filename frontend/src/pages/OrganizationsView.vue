@@ -225,6 +225,14 @@ const goToTask = (taskId: string) => {
   router.push(`/organizations/${orgId}/tasks/${taskId}`);
 };
 
+const canViewAudit = computed(() => {
+  return org.value?.role === "OWNER" || org.value?.role === "ADMIN";
+});
+
+const goToAudit = () => {
+  router.push(`/organizations/${orgId}/audit`);
+};
+
 </script>
 
 <template>
@@ -237,6 +245,14 @@ const goToTask = (taskId: string) => {
   <section v-else-if="org">
 
     <h1>{{ org.name }}</h1>
+
+    <button
+        v-if="canViewAudit"
+        @click="goToAudit"
+        style="margin-left:15px;"
+    >
+      View Audit
+    </button>
 
     <!-- RENAME -->
     <button v-if="canRename" @click="startEditing">
