@@ -4,6 +4,7 @@ import {OrganizationDoesNotExistError} from "../../organization_task/errors/repo
 import {OrganizationMember} from "../domain/organization_member_domain.js";
 import {OrgMemberDTO} from "../DTO/org_member_dto.js";
 import {ActorNotAMemberError} from "../errors/organization_members_domain_error.js";
+import {OrganizationMemberAlreadyExistsError} from "../errors/organization_members_repo_errors.js";
 
 
 export class GetMemberByIdUseCase {
@@ -22,7 +23,7 @@ export class GetMemberByIdUseCase {
     private async memberExists(memberId: string, orgId: string) {
         const memberExists = await this.membersRepo.findById(memberId, orgId);
         if (!memberExists) {
-            throw new Error();
+            throw new OrganizationMemberAlreadyExistsError();
         }
         return memberExists;
     }
