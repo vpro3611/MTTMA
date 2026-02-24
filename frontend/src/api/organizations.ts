@@ -129,5 +129,70 @@ export const organizationsAPI = {
         }
 
         return data;
+    },
+
+    async changeMemberRole(orgId: string, memberId: string, role: string): Promise<MemberType> {
+        const res = await authorizedFetch(`${UrlConfig.apiBaseUrl}/org/${orgId}/role/${memberId}`, {
+            method: "PATCH",
+            body: JSON.stringify({role}),
+            headers: {"Content-Type": "application/json"}
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            throw new Error(data?.message || "Failed to change member role");
+        }
+
+        return data;
+    },
+
+    async fireMember(orgId: string, targetUserId: string): Promise<void> {
+        const res = await authorizedFetch(`${UrlConfig.apiBaseUrl}/org/${orgId}/fire/${targetUserId}`, {
+            method: "DELETE"
+        });
+
+        if (!res.ok) {
+            const data = await res.json().catch(() => null);
+            throw new Error(data?.message || "Failed to fire member");
+        }
+    },
+
+    async hireMember(orgId: string, targetUserId: string, role?: "ADMIN" | "MEMBER"): Promise<void> {
+        const res = await authorizedFetch(`${UrlConfig.apiBaseUrl}/org/${orgId}/users/${targetUserId}/hire`, {
+            method: "POST",
+            body: JSON.stringify({role}),
+            headers: {"Content-Type": "application/json"}
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            throw new Error(data?.message || "Failed to hire member");
+        }
+
+        return data;
+    },
+
+    async getMyOrganizationsWithRole(): Promise<OrganizationWithRole[]> {
+        const res = await authorizedFetch(`${UrlConfig.apiBaseUrl}/org/my/with_roles`, {
+            method: "GET"
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            throw new Error(data?.message || "Failed to get organizations");
+        }
+
+        return data;
     }
 }
+//import {OrgMemsRole} from "../domain/org_members_role.js";
+//
+//
+// export type AllOrgsWithRoles = {
+//     orgId: string,
+//     name: string,
+//     role: OrgMemsRole,
+//
