@@ -225,7 +225,8 @@ export function createApp(dependencies: AppContainer) {
         dependencies.createTaskController.createTaskCont
     );
 
-    organizationRouter.delete('/:orgId/tasks/:taskId',
+    // TODO : YES
+    organizationRouter.delete('/:orgId/tasks/:orgTaskId',
         validate_params(DeleteTaskParamsSchema),
         dependencies.deleteTaskController.deleteTaskCont
     );
