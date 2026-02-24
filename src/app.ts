@@ -294,6 +294,7 @@ export function createApp(dependencies: AppContainer) {
         dependencies.getAuditByOrgIdController.getAuditByOrgIdCont
     );
 
+    // TODO : YES
     organizationRouter.get("/:orgId/audit_events/filtered",
         validate_params(GetFilteredAuditParamsSchema),
         // validateQuery(GetFilteredAuditParamsSchema),
