@@ -21,6 +21,10 @@ const myRole = ref<Role | null>(null);
 const loading = ref(true);
 const error = ref<string | null>(null);
 
+// -------- DELETE --------
+const deleteLoading = ref(false);
+const deleteError = ref<string | null>(null);
+
 // -------- EDIT DESCRIPTION --------
 const isEditingDesc = ref(false);
 const newDesc = ref("");
@@ -65,17 +69,69 @@ const canModify = computed(() => {
   return myRole.value === "ADMIN" || myRole.value === "OWNER";
 });
 
-// ---------------- STATUS RULES (UI-level only) ----------------
+const canDelete = computed(() => canModify.value);
+
+// ---------------- DELETE ----------------
+const handleDelete = async () => {
+  if (!task.value) return;
+
+  const confirmed = confirm("Are you sure you want to delete this task?");
+  if (!confirmed) return;
+
+  try {
+    deleteLoading.value = true;
+    deleteError.value = null;
+
+    await orgAPI.deleteTask(orgId, taskId);
+
+    router.push(`/organizations/${orgId}`);
+
+  } catch (e: unknown) {
+    deleteError.value = errorMessage(e);
+  } finally {
+    deleteLoading.value = false;
+  }
+};
+
+// ---------------- STATUS RULES ----------------
 const availableStatuses = computed<TaskStatus[]>(() => {
   if (!task.value) return [];
 
   if (task.value.status === "CANCELED") return [];
-  if (task.value.status === "COMPLETED") {
-    return ["COMPLETED"]; // backend не даст вернуть в IN_PROGRESS
-  }
+  if (task.value.status === "COMPLETED") return ["COMPLETED"];
 
   return ["TODO", "IN_PROGRESS", "COMPLETED", "CANCELED"];
 });
+
+// ---------------- EDIT TITLE ----------------
+const startEditTitle = () => {
+  if (!task.value) return;
+  newTitle.value = task.value.title;
+  isEditingTitle.value = true;
+};
+
+const handleSaveTitle = async () => {
+  if (!task.value || !newTitle.value.trim()) return;
+
+  try {
+    editTitleLoading.value = true;
+    editTitleError.value = null;
+
+    const updated = await orgAPI.changeTaskTitle(
+        orgId,
+        taskId,
+        newTitle.value
+    );
+
+    task.value = updated;
+    isEditingTitle.value = false;
+
+  } catch (e: unknown) {
+    editTitleError.value = errorMessage(e);
+  } finally {
+    editTitleLoading.value = false;
+  }
+};
 
 // ---------------- EDIT DESCRIPTION ----------------
 const startEditDesc = () => {
@@ -140,38 +196,6 @@ const handleSaveStatus = async () => {
 const goBack = () => {
   router.push(`/organizations/${orgId}`);
 };
-
-// ---------------- EDIT TITLE ----------------
-const startEditTitle = () => {
-  if (!task.value) return;
-  newTitle.value = task.value.title;
-  isEditingTitle.value = true;
-};
-
-const handleSaveTitle = async () => {
-  if (!task.value || !newTitle.value.trim()) return;
-
-  try {
-    editTitleLoading.value = true;
-    editTitleError.value = null;
-
-    const updated = await orgAPI.changeTaskTitle(
-        orgId,
-        taskId,
-        newTitle.value
-    );
-
-    task.value = updated;
-    isEditingTitle.value = false;
-
-  } catch (e: unknown) {
-    editTitleError.value = errorMessage(e);
-  } finally {
-    editTitleLoading.value = false;
-  }
-};
-
-
 </script>
 
 <template>
@@ -183,37 +207,38 @@ const handleSaveTitle = async () => {
 
   <section v-else-if="task">
 
+    <!-- TITLE -->
     <h2>
-  <span v-if="!isEditingTitle">
-    {{ task.title }}
+      <span v-if="!isEditingTitle">
+        {{ task.title }}
 
-    <button
-        v-if="canModify && task.status !== 'COMPLETED' && task.status !== 'CANCELED'"
-        @click="startEditTitle"
-        style="margin-left:10px;"
-    >
-      Edit Title
-    </button>
-  </span>
+        <button
+            v-if="canModify && task.status !== 'COMPLETED' && task.status !== 'CANCELED'"
+            @click="startEditTitle"
+            style="margin-left:10px;"
+        >
+          Edit Title
+        </button>
+      </span>
 
       <span v-else>
-    <input v-model="newTitle" />
+        <input v-model="newTitle" />
 
-    <button
-        @click="handleSaveTitle"
-        :disabled="editTitleLoading || !newTitle.trim()"
-    >
-      Save
-    </button>
+        <button
+            @click="handleSaveTitle"
+            :disabled="editTitleLoading || !newTitle.trim()"
+        >
+          Save
+        </button>
 
-    <button @click="isEditingTitle = false">
-      Cancel
-    </button>
+        <button @click="isEditingTitle = false">
+          Cancel
+        </button>
 
-    <p v-if="editTitleError" style="color:red;">
-      {{ editTitleError }}
-    </p>
-  </span>
+        <p v-if="editTitleError" style="color:red;">
+          {{ editTitleError }}
+        </p>
+      </span>
     </h2>
 
     <!-- STATUS -->
@@ -297,6 +322,22 @@ const handleSaveTitle = async () => {
         {{ editDescError }}
       </p>
     </div>
+
+    <hr />
+
+    <!-- DELETE BUTTON -->
+    <button
+        v-if="canDelete"
+        @click="handleDelete"
+        :disabled="deleteLoading"
+        style="color:red;"
+    >
+      Delete Task
+    </button>
+
+    <p v-if="deleteError" style="color:red;">
+      {{ deleteError }}
+    </p>
 
     <hr />
 
