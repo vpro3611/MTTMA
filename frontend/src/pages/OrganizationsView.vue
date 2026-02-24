@@ -2,13 +2,16 @@
 import { useRoute, useRouter } from "vue-router";
 import { ref, onMounted, computed } from "vue";
 import { organizationsAPI as orgAPI } from "../api/organizations";
+import type { OrganizationWithRole } from "../types/org_types";
+import type { MemberType } from "../types/member_types";
+import { errorMessage } from "../utils/errorMessage";
 
 const route = useRoute();
 const router = useRouter();
 
 const orgId = route.params.orgId as string;
 
-const org = ref<any>(null);
+const org = ref<OrganizationWithRole | null>(null);
 const loading = ref(true);
 const error = ref<string | null>(null);
 
@@ -24,7 +27,7 @@ const deleteError = ref<string | null>(null);
 
 // ---------------- MEMBERS ----------------
 const showMembers = ref(false);
-const members = ref<any[]>([]);
+const members = ref<MemberType[]>([]);
 const membersLoading = ref(false);
 const membersError = ref<string | null>(null);
 
@@ -40,21 +43,21 @@ const taskError = ref<string | null>(null);
 onMounted(async () => {
   try {
     org.value = await orgAPI.getOrganizationWithRole(orgId);
-  } catch (e: any) {
-    error.value = e.message;
+  } catch (e: unknown) {
+    error.value = errorMessage(e);
   } finally {
     loading.value = false;
   }
 });
 
 // ---------------- PERMISSIONS ----------------
-const canRename = computed(() => org.value?.myRole === "OWNER");
-const canDelete = computed(() => org.value?.myRole === "OWNER");
+const canRename = computed(() => org.value?.role === "OWNER");
+const canDelete = computed(() => org.value?.role === "OWNER");
 
 const canAssignOthers = computed(() => {
   return (
-      org.value?.myRole === "OWNER" ||
-      org.value?.myRole === "ADMIN"
+      org.value?.role === "OWNER" ||
+      org.value?.role === "ADMIN"
   );
 });
 
@@ -65,8 +68,8 @@ const loadMembers = async () => {
     membersError.value = null;
 
     members.value = await orgAPI.getAllMembers(orgId);
-  } catch (e: any) {
-    membersError.value = e.message;
+  } catch (e: unknown) {
+    membersError.value = errorMessage(e);
   } finally {
     membersLoading.value = false;
   }
@@ -90,11 +93,11 @@ const goToMemberProfile = (userId: string) => {
 const assignableMembers = computed(() => {
   if (!org.value) return [];
 
-  if (org.value.myRole === "OWNER") {
+  if (org.value.role === "OWNER") {
     return members.value;
   }
 
-  if (org.value.myRole === "ADMIN") {
+  if (org.value.role === "ADMIN") {
     return members.value.filter(m => m.role === "MEMBER");
   }
 
@@ -103,23 +106,24 @@ const assignableMembers = computed(() => {
 
 // ---------------- RENAME ----------------
 const startEditing = () => {
+  if (!org.value) return;
   newName.value = org.value.name;
   isEditing.value = true;
 };
 
 const handleRename = async () => {
-  if (!newName.value.trim() || newName.value === org.value.name) return;
+  if (!org.value || !newName.value.trim() || newName.value === org.value.name) return;
 
   try {
     renameLoading.value = true;
     renameError.value = null;
 
     const updated = await orgAPI.renameOrganization(orgId, newName.value);
-    org.value.name = updated.name;
+    if (org.value) org.value.name = updated.name;
 
     isEditing.value = false;
-  } catch (e: any) {
-    renameError.value = e.message;
+  } catch (e: unknown) {
+    renameError.value = errorMessage(e);
   } finally {
     renameLoading.value = false;
   }
@@ -138,8 +142,8 @@ const handleDelete = async () => {
 
     await orgAPI.deleteOrganization(orgId);
     router.push("/organizations");
-  } catch (e: any) {
-    deleteError.value = e.message;
+  } catch (e: unknown) {
+    deleteError.value = errorMessage(e);
   } finally {
     deleteLoading.value = false;
   }
@@ -174,8 +178,8 @@ const handleCreateTask = async () => {
     );
 
     isCreatingTask.value = false;
-  } catch (e: any) {
-    taskError.value = e.message;
+  } catch (e: unknown) {
+    taskError.value = errorMessage(e);
   } finally {
     taskLoading.value = false;
   }

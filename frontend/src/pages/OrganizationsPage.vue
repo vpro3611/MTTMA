@@ -2,9 +2,11 @@
 import { ref, onMounted } from "vue";
 import { organizationsAPI as orgAPI } from "../api/organizations";
 import { useRouter } from "vue-router";
+import type { OrganizationType } from "../types/org_types";
+import { errorMessage } from "../utils/errorMessage";
 
 const router = useRouter();
-const organizations = ref<any[]>([]);
+const organizations = ref<OrganizationType[]>([]);
 const name = ref("");
 const isLoading = ref(false);
 const error = ref<string | null>(null);
@@ -27,8 +29,8 @@ const handleCreate = async () => {
     name.value = "";
 
     await router.push(`/organizations/${newOrg.id}`);
-  } catch (e: any) {
-    error.value = e.message;
+  } catch (e: unknown) {
+    error.value = errorMessage(e);
   } finally {
     isLoading.value = false;
   }

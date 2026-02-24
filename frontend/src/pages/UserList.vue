@@ -2,10 +2,11 @@
 import { ref, onMounted, onUnmounted } from "vue";
 import { userAPI } from "../api/user";
 import { useRouter } from "vue-router";
+import type { User } from "../types/auth_types";
 
 const router = useRouter();
 
-const users = ref<any[]>([]);
+const users = ref<User[]>([]);
 const page = ref(1);
 const limit = 10;
 const isLoading = ref(false);
