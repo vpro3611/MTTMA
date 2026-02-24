@@ -15,14 +15,17 @@ export class OrganizationMemberRepositoryPG implements OrganizationMembersReposi
         try {
             await this.pool.query(
                 `
-      INSERT INTO organization_members (
-        organization_id,
-        user_id,
-        role,
-        joined_at
-      )
-      VALUES ($1, $2, $3, $4)
-      `,
+            INSERT INTO organization_members (
+                organization_id,
+                user_id,
+                role,
+                joined_at
+            )
+            VALUES ($1, $2, $3, $4)
+            ON CONFLICT (organization_id, user_id)
+            DO UPDATE SET
+                role = EXCLUDED.role
+            `,
                 [
                     orgMember.organizationId,
                     orgMember.userId,
