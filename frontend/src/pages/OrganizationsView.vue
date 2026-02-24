@@ -4,16 +4,31 @@ import { ref, onMounted, computed } from "vue";
 import { organizationsAPI as orgAPI } from "../api/organizations";
 import type { OrganizationWithRole } from "../types/org_types";
 import type { MemberType } from "../types/member_types";
+import type { TaskType } from "../types/task_types";
 import { errorMessage } from "../utils/errorMessage";
 
 const route = useRoute();
 const router = useRouter();
-
 const orgId = route.params.orgId as string;
 
 const org = ref<OrganizationWithRole | null>(null);
 const loading = ref(true);
 const error = ref<string | null>(null);
+
+// ---------------- TASKS ----------------
+const tasks = ref<TaskType[]>([]);
+const tasksLoading = ref(false);
+const tasksError = ref<string | null>(null);
+
+// FILTER STATE
+const filterTitle = ref("");
+const filterDescription = ref("");
+const filterStatus = ref<"TODO" |  "COMPLETED" | "IN_PROGRESS" | "CANCELED" | undefined>(undefined);
+const createdFrom = ref<string | undefined>(undefined);
+const createdTo = ref<string | undefined>(undefined);
+
+const limit = ref(20);
+const offset = ref(0);
 
 // ---------------- RENAME ----------------
 const isEditing = ref(false);
@@ -39,10 +54,50 @@ const assignedTo = ref<string | undefined>(undefined);
 const taskLoading = ref(false);
 const taskError = ref<string | null>(null);
 
+// ---------------- LOAD TASKS ----------------
+const loadTasks = async () => {
+  try {
+    tasksLoading.value = true;
+    tasksError.value = null;
+
+    tasks.value = await orgAPI.listTasks(orgId, {
+      title: filterTitle.value || undefined,
+      description: filterDescription.value || undefined,
+      status: filterStatus.value || undefined,
+      createdFrom: createdFrom.value || undefined,
+      createdTo: createdTo.value || undefined,
+      limit: limit.value,
+      offset: offset.value
+    });
+
+  } catch (e: unknown) {
+    tasksError.value = errorMessage(e);
+  } finally {
+    tasksLoading.value = false;
+  }
+};
+
+const applyFilters = async () => {
+  offset.value = 0;
+  await loadTasks();
+};
+
+const nextPage = async () => {
+  offset.value += limit.value;
+  await loadTasks();
+};
+
+const prevPage = async () => {
+  if (offset.value === 0) return;
+  offset.value -= limit.value;
+  await loadTasks();
+};
+
 // ---------------- LOAD ORG ----------------
 onMounted(async () => {
   try {
     org.value = await orgAPI.getOrganizationWithRole(orgId);
+    await loadTasks();
   } catch (e: unknown) {
     error.value = errorMessage(e);
   } finally {
@@ -54,19 +109,15 @@ onMounted(async () => {
 const canRename = computed(() => org.value?.role === "OWNER");
 const canDelete = computed(() => org.value?.role === "OWNER");
 
-const canAssignOthers = computed(() => {
-  return (
-      org.value?.role === "OWNER" ||
-      org.value?.role === "ADMIN"
-  );
-});
+const canAssignOthers = computed(() =>
+    org.value?.role === "OWNER" || org.value?.role === "ADMIN"
+);
 
 // ---------------- MEMBERS ----------------
 const loadMembers = async () => {
   try {
     membersLoading.value = true;
     membersError.value = null;
-
     members.value = await orgAPI.getAllMembers(orgId);
   } catch (e: unknown) {
     membersError.value = errorMessage(e);
@@ -77,30 +128,20 @@ const loadMembers = async () => {
 
 const toggleMembers = async () => {
   showMembers.value = !showMembers.value;
-
   if (showMembers.value && members.value.length === 0) {
     await loadMembers();
   }
 };
 
-// переход на профиль участника
-
 const goToMemberProfile = (userId: string) => {
   router.push(`/organizations/${orgId}/members/${userId}/view`);
 };
 
-// ---------------- FILTER FOR DROPDOWN ----------------
 const assignableMembers = computed(() => {
   if (!org.value) return [];
-
-  if (org.value.role === "OWNER") {
-    return members.value;
-  }
-
-  if (org.value.role === "ADMIN") {
+  if (org.value.role === "OWNER") return members.value;
+  if (org.value.role === "ADMIN")
     return members.value.filter(m => m.role === "MEMBER");
-  }
-
   return [];
 });
 
@@ -112,15 +153,14 @@ const startEditing = () => {
 };
 
 const handleRename = async () => {
-  if (!org.value || !newName.value.trim() || newName.value === org.value.name) return;
+  if (!org.value || !newName.value.trim() || newName.value === org.value.name)
+    return;
 
   try {
     renameLoading.value = true;
     renameError.value = null;
-
     const updated = await orgAPI.renameOrganization(orgId, newName.value);
-    if (org.value) org.value.name = updated.name;
-
+    org.value.name = updated.name;
     isEditing.value = false;
   } catch (e: unknown) {
     renameError.value = errorMessage(e);
@@ -131,15 +171,11 @@ const handleRename = async () => {
 
 // ---------------- DELETE ----------------
 const handleDelete = async () => {
-  const confirmed = confirm(
-      "Are you sure you want to delete this organization?"
-  );
-  if (!confirmed) return;
+  if (!confirm("Are you sure you want to delete this organization?")) return;
 
   try {
     deleteLoading.value = true;
     deleteError.value = null;
-
     await orgAPI.deleteOrganization(orgId);
     router.push("/organizations");
   } catch (e: unknown) {
@@ -157,7 +193,6 @@ const startCreateTask = async () => {
   taskError.value = null;
   isCreatingTask.value = true;
 
-  // чтобы dropdown был заполнен
   if (members.value.length === 0) {
     await loadMembers();
   }
@@ -178,12 +213,18 @@ const handleCreateTask = async () => {
     );
 
     isCreatingTask.value = false;
+    await loadTasks();
   } catch (e: unknown) {
     taskError.value = errorMessage(e);
   } finally {
     taskLoading.value = false;
   }
 };
+
+const goToTask = (taskId: string) => {
+  router.push(`/organizations/${orgId}/tasks/${taskId}`);
+};
+
 </script>
 
 <template>
@@ -206,11 +247,7 @@ const handleCreateTask = async () => {
       <input v-model="newName" />
       <button
           @click="handleRename"
-          :disabled="
-          renameLoading ||
-          !newName.trim() ||
-          newName === org.name
-        "
+          :disabled="renameLoading || !newName.trim() || newName === org.name"
       >
         Change
       </button>
@@ -252,12 +289,65 @@ const handleCreateTask = async () => {
             @click="goToMemberProfile(m.userId)"
             style="cursor:pointer;"
         >
-          {{ m.userId }} — {{ m.role }} - {{m.joinedAt}}
+          {{ m.userId }} — {{ m.role }} — {{ m.joinedAt }}
         </li>
       </ul>
     </div>
 
     <hr />
+
+    <hr />
+
+    <h3>Task Filters</h3>
+
+    <div style="margin-bottom:10px;">
+      <input v-model="filterTitle" placeholder="Title" />
+      <input v-model="filterDescription" placeholder="Description" />
+
+      <select v-model="filterStatus">
+        <option :value="undefined">All statuses</option>
+        <option value="TODO">TODO</option>
+        <option value="IN_PROGRESS">IN_PROGRESS</option>
+        <option value="DONE">DONE</option>
+      </select>
+
+      <input type="date" v-model="createdFrom" />
+      <input type="date" v-model="createdTo" />
+
+      <button @click="applyFilters">
+        Apply
+      </button>
+    </div>
+
+    <!-- TASK LIST -->
+    <h2>Tasks</h2>
+
+    <div v-if="tasksLoading">Loading tasks...</div>
+    <div v-else-if="tasksError">{{ tasksError }}</div>
+
+    <ul v-else>
+      <li v-for="t in tasks" :key="t.id" @click="goToTask(t.id)" style="cursor:pointer;">
+        <strong>{{ t.title }}</strong>
+        — {{ t.status }}
+        <br />
+        {{ t.description }}
+        <br />
+        Assigned: {{ t.assignedTo }}
+        <br />
+        Created: {{ new Date(t.createdAt).toLocaleString() }}
+        <hr />
+      </li>
+    </ul>
+
+    <div style="margin-top:10px;">
+      <button @click="prevPage" :disabled="offset === 0">
+        Prev
+      </button>
+
+      <button @click="nextPage">
+        Next
+      </button>
+    </div>
 
     <!-- CREATE TASK -->
     <button @click="startCreateTask">
@@ -274,7 +364,6 @@ const handleCreateTask = async () => {
         <label>Assign to:</label>
         <select v-model="assignedTo">
           <option :value="undefined">Self</option>
-
           <option
               v-for="m in assignableMembers"
               :key="m.userId"
@@ -287,11 +376,7 @@ const handleCreateTask = async () => {
 
       <button
           @click="handleCreateTask"
-          :disabled="
-          taskLoading ||
-          !taskTitle.trim() ||
-          !taskDescription.trim()
-        "
+          :disabled="taskLoading || !taskTitle.trim() || !taskDescription.trim()"
       >
         Create
       </button>
