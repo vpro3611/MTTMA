@@ -162,9 +162,11 @@ export function createApp(dependencies: AppContainer) {
         dependencies.viewUserInvitationsController.viewUserInvitationsCont
     );
 
+    // TODO : YES
     privateRouter.get("/invitations/:invId/view",
         validate_params(GetInvitationByIdParamsSchema),
-        dependencies.getFullUserInvitationController.getInvitationByIdCont)
+        dependencies.getFullUserInvitationController.getInvitationByIdCont
+    );
 
     privateRouter.patch('/:invitationId/accept',
         validate_params(AcceptInvitationParamsSchema),
