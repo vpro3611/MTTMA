@@ -205,6 +205,11 @@ import {GetByIdAndOrgUseCase} from "./modules/invitations/application/get_by_id_
 import {GetByIdAndOrgService} from "./modules/invitations/application/services/get_by_id_and_org_service.js";
 import {GetByIdAndOrgServ} from "./modules/invitations/controllers/services/get_by_id_and_org.js";
 import {GetByIdAndOrgController} from "./modules/invitations/controllers/get_by_id_and_org_controller.js";
+import {UserInvitationRepoPg} from "./modules/invitations/repository_realization/user_invitation_repo_pg.js";
+import {GetInvitationByIdUseCase} from "./modules/invitations/application/get_inv_by_id_use_case.js";
+import {GetInvitationByIdService} from "./modules/invitations/application/services/get_inv_by_id_service.js";
+import {GetInvitationByIdServ} from "./modules/invitations/controllers/services/get_inv_by_id_serv.js";
+import {GetInvitationByIdController} from "./modules/invitations/controllers/get_inv_by_id_controller.js";
 
 export function assembleContainer() {
 
@@ -244,6 +249,8 @@ export function assembleContainer() {
     const getOrganizationsWithRolesPG = new GetAllOrgsWithRolesPG(pool);
     // 14) get invitations by org id and inv id
     const getInvitationByIdAndOrgPG = new InvitationByIdAndOrgRepoPg(pool);
+    // 15) get a specific user invitation with FULL DETAILED INFO
+    const getFullUserInvitationPG = new UserInvitationRepoPg(pool);
     // infrastructure services
     const hasher: PasswordHasher = new HasherBcrypt();
 
@@ -290,7 +297,8 @@ export function assembleContainer() {
     const getOrganizationInvitationsUC = new GetOrganizationInvitationUseCase(organizationMemberRepoPG, invitationRepoWriterPG);
     const rejectInvitationUC = new RejectInvitationUseCase(invitationRepoWriterPG, organizationMemberRepoPG, userRepoPG);
     const viewUserInvitationsUC = new ViewUserInvitationsUseCase(invitationRepoReaderPG, userRepoPG);
-    const getInvitationByIdAndOrgUC = new GetByIdAndOrgUseCase(getInvitationByIdAndOrgPG, organizationRepoPG, organizationMemberRepoPG)
+    const getInvitationByIdAndOrgUC = new GetByIdAndOrgUseCase(getInvitationByIdAndOrgPG, organizationRepoPG, organizationMemberRepoPG);
+    const getFullUserInvitationUC = new GetInvitationByIdUseCase(userRepoPG, getFullUserInvitationPG);
 
     // TODO : SERVICES (application services);
     // 1) users
@@ -339,6 +347,7 @@ export function assembleContainer() {
     const rejectInvitationService = new RejectInvitationService(rejectInvitationUC, appendToAuditUC);
     const viewUserInvitationsService = new ViewUserInvitationsService(viewUserInvitationsUC);
     const getInvitationByIdAndOrgService = new GetByIdAndOrgService(getInvitationByIdAndOrgUC);
+    const getFullUserInvitationService = new GetInvitationByIdService(getFullUserInvitationUC);
 
     // TODO : SERVS (dealing with transactions and PoolClient);
     // 1) user
@@ -382,6 +391,7 @@ export function assembleContainer() {
     const rejectInvitationServ = new RejectInvitationServ(txManager);
     const viewUserInvitationsServ = new ViewUserInvitationsServ(txManager);
     const getInvitationByIdAndOrgServ = new GetByIdAndOrgServ(txManager);
+    const getFullUserInvitationServ = new GetInvitationByIdServ(txManager);
 
     // TODO : CONTROLLERS (HTTP management);
     // 1) authentification
@@ -427,6 +437,7 @@ export function assembleContainer() {
     const rejectInvitationController = new RejectInvitationController(rejectInvitationServ);
     const viewUserInvitationsController = new ViewUserInvitationsController(viewUserInvitationsServ);
     const getInvitationByIdAndOrgController = new GetByIdAndOrgController(getInvitationByIdAndOrgServ);
+    const getFullUserInvitationController = new GetInvitationByIdController(getFullUserInvitationServ); //getFullUserInvitationService
 
 
     // TODO : RETURN ALL
@@ -513,6 +524,7 @@ export function assembleContainer() {
         rejectInvitationController,
         viewUserInvitationsController,
         getInvitationByIdAndOrgController,
+        getFullUserInvitationController,
     };
 }
 

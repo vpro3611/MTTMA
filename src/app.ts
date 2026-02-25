@@ -60,6 +60,7 @@ import {OrgIdParamsSchema} from "./modules/organization/controllers/get_org_with
 import {GetMemberByIdParamsSchema} from "./modules/organization_members/controllers/get_member_by_id_controller.js";
 import {FindTaskByIdParamsSchema} from "./modules/organization_task/controller/find_task_by_id_controller.js";
 import {GetByIdAndOrgParamsSchema} from "./modules/invitations/controllers/get_by_id_and_org_controller.js";
+import {GetInvitationByIdParamsSchema} from "./modules/invitations/controllers/get_inv_by_id_controller.js";
 
 
 export function createApp(dependencies: AppContainer) {
@@ -160,6 +161,10 @@ export function createApp(dependencies: AppContainer) {
     privateRouter.get("/invitations",
         dependencies.viewUserInvitationsController.viewUserInvitationsCont
     );
+
+    privateRouter.get("/invitations/:invId/view",
+        validate_params(GetInvitationByIdParamsSchema),
+        dependencies.getFullUserInvitationController.getInvitationByIdCont)
 
     privateRouter.patch('/:invitationId/accept',
         validate_params(AcceptInvitationParamsSchema),
