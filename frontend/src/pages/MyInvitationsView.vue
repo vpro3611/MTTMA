@@ -37,6 +37,10 @@ const goBack = () => {
   router.push("/dashboard");
 };
 
+const goToInvitation = (invId: string) => {
+  router.push(`/invitations/${invId}/view`);
+};
+
 onMounted(loadInvitations);
 </script>
 
@@ -54,7 +58,7 @@ onMounted(loadInvitations);
       <div v-if="pendingInvitations.length">
         <h2>Pending</h2>
         <ul>
-          <li v-for="inv in pendingInvitations" :key="inv.id">
+          <li v-for="inv in pendingInvitations" :key="inv.id" @click="goToInvitation(inv.id)" style="cursor:pointer;">
             <strong>Organization:</strong> {{ inv.organizationId }}
             <br />
             <strong>Role:</strong> {{ inv.role }}
