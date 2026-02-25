@@ -59,6 +59,7 @@ import {TaskOrganizationIdParamSchema} from "./modules/organization_task/control
 import {OrgIdParamsSchema} from "./modules/organization/controllers/get_org_with_role_controller.js";
 import {GetMemberByIdParamsSchema} from "./modules/organization_members/controllers/get_member_by_id_controller.js";
 import {FindTaskByIdParamsSchema} from "./modules/organization_task/controller/find_task_by_id_controller.js";
+import {GetByIdAndOrgParamsSchema} from "./modules/invitations/controllers/get_by_id_and_org_controller.js";
 
 
 export function createApp(dependencies: AppContainer) {
@@ -314,9 +315,16 @@ export function createApp(dependencies: AppContainer) {
         dependencies.getOrganizationInvitationsController.getOrganizationInvitationsCont // GET INVITATIONS OF A SPECIFIC ORGANIZATION
     );
 
+    // TODO : YES
     organizationRouter.patch("/:invitationId/cancel",
         validate_params(CancelInvitationParamsSchema),
         dependencies.cancelInvitationController.cancelInvitationCont // CANCEL INVITATION
+    );
+
+    // TODO : YES
+    organizationRouter.get("/:orgId/invitations/:invId/view",
+        validate_params(GetByIdAndOrgParamsSchema),
+        dependencies.getInvitationByIdAndOrgController.getByIdAndOrgCont
     );
 
     app.use(loggerMiddleware());
