@@ -156,6 +156,7 @@ export function createApp(dependencies: AppContainer) {
         dependencies.viewOrganizationController.viewOrganizationCont
     );
 
+    // TODO : YES
     privateRouter.get("/invitations",
         dependencies.viewUserInvitationsController.viewUserInvitationsCont
     );
