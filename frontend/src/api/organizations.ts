@@ -439,6 +439,34 @@ export const organizationsAPI = {
         }
 
         return data;
+    },
+
+    async getInvitationById(orgId: string, invitationId: string): Promise<InvitationType> {
+        const res = await authorizedFetch(`${UrlConfig.apiBaseUrl}/org/${orgId}/invitations/${invitationId}/view`, {
+            method: "GET"
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            throw new Error(data?.message || "Failed to get invitation");
+        }
+
+        return data;
+    },
+
+    async cancelInvitation(invitationId: string) {
+        const res = await authorizedFetch(`${UrlConfig.apiBaseUrl}/org/${invitationId}/cancel`, {
+            method: "PATCH"
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            throw new Error(data?.message || "Failed to cancel invitation");
+        }
+
+        return data;
     }
 
 }
