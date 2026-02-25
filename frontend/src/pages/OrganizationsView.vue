@@ -233,6 +233,49 @@ const goToAudit = () => {
   router.push(`/organizations/${orgId}/audit`);
 };
 
+const canViewInvitations = computed(() => {
+  return org.value?.role === "OWNER" || org.value?.role === "ADMIN";
+});
+
+const goToInvitations = () => {
+  router.push(`/organizations/${orgId}/invitations`);
+};
+
+
+const canInvite = computed(() => org.value?.role === "OWNER");
+
+const inviteUserId = ref("");
+const inviteRole = ref<"ADMIN" | "MEMBER">("MEMBER");
+const inviteLoading = ref(false);
+const inviteError = ref<string | null>(null);
+const inviteSuccess = ref<string | null>(null);
+
+
+const handleInvite = async () => {
+  if (!inviteUserId.value.trim()) return;
+
+  try {
+    inviteLoading.value = true;
+    inviteError.value = null;
+    inviteSuccess.value = null;
+
+    await orgAPI.createInvitation(
+        orgId,
+        inviteUserId.value.trim(),
+        inviteRole.value
+    );
+
+    inviteSuccess.value = "Invitation sent successfully";
+    inviteUserId.value = "";
+
+  } catch (e: unknown) {
+    inviteError.value = errorMessage(e);
+  } finally {
+    inviteLoading.value = false;
+  }
+};
+
+
 </script>
 
 <template>
@@ -253,6 +296,46 @@ const goToAudit = () => {
     >
       View Audit
     </button>
+
+    <button
+        v-if="canViewInvitations"
+        @click="goToInvitations"
+        style="margin-left:15px;"
+    >
+      View Invitations
+    </button>
+
+    <!-- INVITE USER -->
+    <div v-if="canInvite">
+      <h3>Invite User</h3>
+
+      <input
+          v-model="inviteUserId"
+          placeholder="User UUID"
+      />
+
+      <select v-model="inviteRole">
+        <option value="MEMBER">MEMBER</option>
+        <option value="ADMIN">ADMIN</option>
+      </select>
+
+      <button
+          @click="handleInvite"
+          :disabled="inviteLoading || !inviteUserId.trim()"
+      >
+        Invite
+      </button>
+
+      <p v-if="inviteError" style="color:red;">
+        {{ inviteError }}
+      </p>
+
+      <p v-if="inviteSuccess" style="color:green;">
+        {{ inviteSuccess }}
+      </p>
+
+      <hr />
+    </div>
 
     <!-- RENAME -->
     <button v-if="canRename" @click="startEditing">
