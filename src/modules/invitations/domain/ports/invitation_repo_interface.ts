@@ -17,3 +17,7 @@ export interface InvitationReadRepository {
 export interface InvitationByIdRepository {
     getByIdAndOrgId(invId: string, orgId: string): Promise<Invitation | null>;
 }
+
+export interface InvitationFullInfoRepository {
+    getFullInfoInvitation(invId: string, actorId: string): Promise<InvitationView | null>;
+}
