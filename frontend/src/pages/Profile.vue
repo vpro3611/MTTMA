@@ -14,6 +14,7 @@ import Logout from "../components/Logout.vue";
 
 type OrgRole = "OWNER" | "ADMIN" | "MEMBER";
 type AssignableRole = Exclude<OrgRole, "OWNER">;
+type OrgUserState = "MEMBER" | "INVITED" | "NONE";
 
 const route = useRoute();
 
@@ -22,10 +23,10 @@ const error = ref<string | null>(null);
 const isLoading = ref(false);
 
 const myOrganizations = ref<OrganizationWithRole[]>([]);
-const membershipMap = ref<Record<string, boolean>>({});
+const orgUserStateMap = ref<Record<string, OrgUserState>>({});
 
-const hireLoading = ref<string | null>(null);
-const hireError = ref<string | null>(null);
+const actionLoading = ref<string | null>(null);
+const actionError = ref<string | null>(null);
 
 const selectedRoles = ref<Record<string, AssignableRole | null>>({});
 
@@ -40,7 +41,7 @@ const profile = computed(() => {
 });
 
 
-// ---------------- LOAD PROFILE + MY ORGS ----------------
+// ---------------- LOAD PROFILE + STATE ----------------
 watchEffect(async () => {
   if (authStore.isBootstrapping) return;
   if (!route.params.id) return;
@@ -59,21 +60,31 @@ watchEffect(async () => {
     remoteProfile.value = await userAPI.getProfile(targetUserId);
     myOrganizations.value = await orgAPI.getMyOrganizationsWithRole();
 
-    // Проверяем, состоит ли пользователь уже в каждой организации
-    const map: Record<string, boolean> = {};
+    const stateMap: Record<string, OrgUserState> = {};
 
     await Promise.all(
         myOrganizations.value.map(async (org) => {
           try {
             await orgAPI.getMemberById(org.orgId, targetUserId);
-            map[org.orgId] = true; // уже участник
+            stateMap[org.orgId] = "MEMBER";
           } catch {
-            map[org.orgId] = false; // не участник
+            try {
+              const invitations = await orgAPI.getAllInvitations(org.orgId, {
+                invited_user_id: targetUserId,
+                status: "PENDING"
+              });
+
+              stateMap[org.orgId] =
+                  invitations.length > 0 ? "INVITED" : "NONE";
+
+            } catch {
+              stateMap[org.orgId] = "NONE";
+            }
           }
         })
     );
 
-    membershipMap.value = map;
+    orgUserStateMap.value = stateMap;
 
   } catch (e: unknown) {
     error.value = errorMessage(e);
@@ -84,7 +95,7 @@ watchEffect(async () => {
 
 
 // ---------------- PERMISSIONS ----------------
-const canHireInOrg = (org: OrganizationWithRole): boolean => {
+const canManageInOrg = (org: OrganizationWithRole): boolean => {
   return org.role === "OWNER" || org.role === "ADMIN";
 };
 
@@ -95,29 +106,44 @@ const availableRoles = (org: OrganizationWithRole): AssignableRole[] => {
 };
 
 
-// ---------------- HIRE ----------------
-const handleHire = async (orgId: string) => {
+// ---------------- ACTION ----------------
+const handleAction = async (
+    orgId: string,
+    mode: "HIRE" | "INVITE"
+) => {
   const role = selectedRoles.value[orgId];
   if (!role) return;
 
   try {
-    hireLoading.value = orgId;
-    hireError.value = null;
+    actionLoading.value = orgId;
+    actionError.value = null;
 
-    await orgAPI.hireMember(
-        orgId,
-        route.params.id as string,
-        role
-    );
+    if (mode === "HIRE") {
+      await orgAPI.hireMember(
+          orgId,
+          route.params.id as string,
+          role
+      );
 
-    // после успешного найма блокируем повторный
-    membershipMap.value[orgId] = true;
+      orgUserStateMap.value[orgId] = "MEMBER";
+    }
+
+    if (mode === "INVITE") {
+      await orgAPI.createInvitation(
+          orgId,
+          route.params.id as string,
+          role
+      );
+
+      orgUserStateMap.value[orgId] = "INVITED";
+    }
+
     selectedRoles.value[orgId] = null;
 
   } catch (e: unknown) {
-    hireError.value = errorMessage(e);
+    actionError.value = errorMessage(e);
   } finally {
-    hireLoading.value = null;
+    actionLoading.value = null;
   }
 };
 </script>
@@ -141,40 +167,43 @@ const handleHire = async (orgId: string) => {
     <div v-if="isOwnProfile">
       <h2>Change email</h2>
       <ChangeEmail />
-
       <h2>Change password</h2>
       <ChangePassword />
-
       <Logout />
     </div>
 
-    <!-- HIRE SECTION -->
+    <!-- MANAGEMENT -->
     <div
         v-if="!isOwnProfile && myOrganizations.length"
         style="margin-top: 40px;"
     >
-      <h3>Hire to Organization</h3>
+      <h3>Manage in Organizations</h3>
 
       <div
           v-for="org in myOrganizations"
           :key="org.orgId"
-          style="margin-bottom: 20px;"
+          style="margin-bottom: 30px;"
       >
 
-        <div v-if="canHireInOrg(org)">
+        <div v-if="canManageInOrg(org)">
           <strong>{{ org.name }}</strong>
 
-          <!-- Если уже участник -->
-          <div v-if="membershipMap[org.orgId]" style="color: gray; margin-top: 5px;">
+          <!-- STATE MACHINE RENDER -->
+          <div v-if="orgUserStateMap[org.orgId] === 'MEMBER'"
+               style="color: gray; margin-top: 5px;">
             Already a member
           </div>
 
-          <!-- Если не участник -->
-          <div v-else style="margin-top: 5px;">
+          <div v-else-if="orgUserStateMap[org.orgId] === 'INVITED'"
+               style="color: gray; margin-top: 5px;">
+            Invitation already sent
+          </div>
+
+          <div v-else style="margin-top: 10px;">
 
             <select
                 v-model="selectedRoles[org.orgId]"
-                :disabled="hireLoading === org.orgId"
+                :disabled="actionLoading === org.orgId"
             >
               <option disabled value="">
                 Select role
@@ -190,14 +219,25 @@ const handleHire = async (orgId: string) => {
             </select>
 
             <button
-                @click="handleHire(org.orgId)"
+                @click="handleAction(org.orgId, 'HIRE')"
                 :disabled="
-                hireLoading === org.orgId ||
-                !selectedRoles[org.orgId]
-              "
+                  actionLoading === org.orgId ||
+                  !selectedRoles[org.orgId]
+                "
                 style="margin-left: 10px;"
             >
               Hire
+            </button>
+
+            <button
+                @click="handleAction(org.orgId, 'INVITE')"
+                :disabled="
+                  actionLoading === org.orgId ||
+                  !selectedRoles[org.orgId]
+                "
+                style="margin-left: 10px;"
+            >
+              Invite
             </button>
 
           </div>
@@ -206,8 +246,8 @@ const handleHire = async (orgId: string) => {
 
       </div>
 
-      <p v-if="hireError" style="color:red;">
-        {{ hireError }}
+      <p v-if="actionError" style="color:red;">
+        {{ actionError }}
       </p>
     </div>
 
