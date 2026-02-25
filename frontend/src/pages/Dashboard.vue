@@ -20,6 +20,11 @@ const goToOrganizations = () => {
 const goToOrgSearch = () => {
   router.push("/organizations/search");
 };
+
+const goToInvitations = () => {
+  router.push("/invitations");
+};
+
 </script>
 
 <template>
@@ -51,9 +56,9 @@ const goToOrgSearch = () => {
         <p>Find organizations by name, date, or size</p>
       </article>
 
-      <article class="card">
+      <article class="card" @click="goToInvitations">
         <h2>Invitations</h2>
-        <p>Coming soon</p>
+        <p>View your invitations</p>
       </article>
 
     </div>
