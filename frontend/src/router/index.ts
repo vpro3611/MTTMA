@@ -12,6 +12,7 @@ import TaskView from "../pages/TaskView.vue";
 import OrganizationSearchView from "../pages/OrganizationSearchView.vue";
 import PublicOrganizationView from "../pages/PublicOrganizationView.vue";
 import OrganizationAuditView from "../pages/OrganizationAuditView.vue";
+import OrganizationInvitationsView from "../pages/OrganizationInvitationsView.vue";
 
 const routes = [
     { path: "/", redirect: "/dashboard" },
@@ -50,7 +51,12 @@ const routes = [
             {
                 path: "organizations/:orgId/audit",
                 component: OrganizationAuditView,
-            }
+            },
+            {
+                path: "/organizations/:orgId/invitations",
+                name: "organization-invitations",
+                component: OrganizationInvitationsView,
+            },
         ]
     }
 ];
