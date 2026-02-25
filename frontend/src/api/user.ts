@@ -2,6 +2,7 @@ import {authorizedFetch} from "./http.ts";
 import {UrlConfig} from "../config.ts";
 import type {User} from "../types/auth_types.ts";
 import type {InvitationType} from "../types/invitation_types.ts";
+import type {InvitationViewType} from "../types/invitation_view.ts";
 
 
 export const userAPI = {
@@ -60,6 +61,19 @@ export const userAPI = {
 
         if (!res.ok) {
             throw new Error(data?.message || "Failed to get invitations");
+        }
+
+        return data;
+    },
+
+    async viewSpecificInvitation(invitationId: string): Promise<InvitationViewType> {
+        const res = await authorizedFetch(`${UrlConfig.apiBaseUrl}/api/invitations/${invitationId}/view`,
+            {method: "GET"});
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            throw new Error(data?.message || "Failed to get invitation");
         }
 
         return data;
