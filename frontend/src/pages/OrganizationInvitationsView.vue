@@ -96,7 +96,9 @@ onMounted(loadInvitations);
     <div v-else-if="error">{{ error }}</div>
 
     <ul v-else>
-      <li v-for="inv in invitations" :key="inv.id">
+      <li v-for="inv in invitations" :key="inv.id" @click="$router.push(`/organizations/${orgId}/invitations/${inv.id}`)"
+      style="cursor:pointer; padding:10px; border:1px solid #ccc; margin-bottom:10px;"
+      >
         <strong>Status:</strong> {{ inv.status }}
         <br />
         Invited User: {{ inv.invitedUserId }}
