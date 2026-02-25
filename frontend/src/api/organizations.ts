@@ -5,6 +5,7 @@ import type {TaskType} from "../types/task_types.ts";
 import type {MemberType} from "../types/member_types.ts";
 import type {OrganizationSearchFilters, OrganizationSearchResult} from "../types/org_search_types.ts";
 import type {AuditFilterRequest, AuditType} from "../types/audit_types.ts";
+import type {InvitationStatus, InvitationType} from "../types/invitation_types.ts";
 
 
 export const organizationsAPI = {
@@ -384,6 +385,57 @@ export const organizationsAPI = {
 
         if (!res.ok) {
             throw new Error(data?.message || "Failed to get audit events");
+        }
+
+        return data;
+    },
+
+    async getAllInvitations(orgId: string, filters?: {
+        invited_user_id?: string,
+        status?: InvitationStatus,
+        createdFrom?: string,
+        createdTo?: string,
+    }): Promise<InvitationType[]> {
+        const params = new URLSearchParams();
+
+        if (filters?.invited_user_id) {
+            params.append("invited_user_id", filters.invited_user_id);
+        }
+        if (filters?.status) {
+            params.append("status", filters.status);
+        }
+
+        if (filters?.createdFrom) {
+            params.append("createdFrom", filters.createdFrom);
+        }
+        if (filters?.createdTo) {
+            params.append("createdTo", filters.createdTo);
+        }
+
+        const res = await authorizedFetch(`${UrlConfig.apiBaseUrl}/org/${orgId}/invitations?${params.toString()}`, {
+            method: "GET"
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            throw new Error(data?.message || "Failed to get invitations");
+        }
+
+        return data;
+    },
+
+    async createInvitation(orgId: string, invitedUserId: string, role?: "ADMIN" | "MEMBER"): Promise<InvitationType> {
+        const res = await authorizedFetch(`${UrlConfig.apiBaseUrl}/org/${orgId}/invite/${invitedUserId}`, {
+            method: "POST",
+            body: JSON.stringify({role}),
+            headers: {"Content-Type": "application/json"}
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            throw new Error(data?.message || "Failed to create invitation");
         }
 
         return data;
