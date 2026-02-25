@@ -15,6 +15,7 @@ import OrganizationAuditView from "../pages/OrganizationAuditView.vue";
 import OrganizationInvitationsView from "../pages/OrganizationInvitationsView.vue";
 import InvitationView from "../pages/InvitationView.vue";
 import MyInvitationsView from "../pages/MyInvitationsView.vue";
+import InvitationFullView from "../pages/InvitationFullView.vue";
 
 const routes = [
     { path: "/", redirect: "/dashboard" },
@@ -66,6 +67,10 @@ const routes = [
             {
                 path: "/invitations",
                 component: MyInvitationsView,
+            },
+            {
+                path: "/invitations/:invId/view",
+                component: InvitationFullView,
             }
         ]
     }
