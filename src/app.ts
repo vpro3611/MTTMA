@@ -301,12 +301,14 @@ export function createApp(dependencies: AppContainer) {
         dependencies.getFilteredAuditController.getFilteredAuditCont
     );
 
+    // TODO : YES
     organizationRouter.post("/:orgId/invite/:invitedUserId",
         validate_params(CreateInvitationParamsSchema),
         validateZodMiddleware(CreateInvitationBodySchema),
         dependencies.createInvitationController.createInvitationCont // CREATE INVITATION FOR TARGET (invitedUserId) USER
     );
 
+    // TODO : YES
     organizationRouter.get("/:orgId/invitations",
         validate_params(GetOrganizationInvitationsParamsSchema),
         dependencies.getOrganizationInvitationsController.getOrganizationInvitationsCont // GET INVITATIONS OF A SPECIFIC ORGANIZATION
