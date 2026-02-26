@@ -4,19 +4,19 @@ import Register from "../components/Register.vue"
 </script>
 
 <template>
-  <div>
-    <h1>Authentication</h1>
+  <section class="container">
+    <header class="page-header">
+      <h1>Welcome</h1>
+      <p>Login or create an account to manage organizations and invitations.</p>
+    </header>
 
-    <div style="display: flex; gap: 40px;">
-      <div>
-        <h2>Login</h2>
+    <div style="display:flex; flex-wrap:wrap; gap:2rem;">
+      <div class="card" style="flex:1 1 260px;">
         <Login />
       </div>
-
-      <div>
-        <h2>Register</h2>
+      <div class="card" style="flex:1 1 260px;">
         <Register />
       </div>
     </div>
-  </div>
+  </section>
 </template>

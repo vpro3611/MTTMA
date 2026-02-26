@@ -167,6 +167,56 @@ import {GetMyOrganizationsUseCase} from "./modules/organization/application/get_
 import {GetMyOrganizationService} from "./modules/organization/application/service/get_my_organization_service.js";
 import {GetMyOrgServ} from "./modules/organization/controllers/services/get_my_org_serv.js";
 import {GetMyOrgController} from "./modules/organization/controllers/get_my_org_controller.js";
+import {GetOrgWithRoleServ} from "./modules/organization/controllers/services/get_org_with_role_serv.js";
+import {
+    GetOrganizationWithRoleUseCase
+} from "./modules/organization/application/get_organization_with_role_use_case.js";
+import {
+    GetOrganizationWithRoleService
+} from "./modules/organization/application/service/get_organization_with_role_service.js";
+import {GetOrgWithRoleController} from "./modules/organization/controllers/get_org_with_role_controller.js";
+import {GetMemberByIdUseCase} from "./modules/organization_members/application/get_by_id_use_case.js";
+import {GetMemberByIdService} from "./modules/organization_members/application/services/get_by_id_service.js";
+import {GetMemberByIdServ} from "./modules/organization_members/controllers/services/get_member_by_id_serv.js";
+import {GetMemberByIdController} from "./modules/organization_members/controllers/get_member_by_id_controller.js";
+import {
+    GetAllOrgsWithRolesPG
+} from "./modules/organization_members/organization_members_repository_realization/get_all_orgs_with_roles.js";
+import {
+    GetAllOrganizationsWithRolesUseCase
+} from "./modules/organization_members/application/get_all_organizations_with_roles_use_case.js";
+import {
+    GetAllOrganizationsWithRolesService
+} from "./modules/organization_members/application/services/get_all_organizations_with_roles_service.js";
+import {
+    GetAllOrgsWithRolesServ
+} from "./modules/organization_members/controllers/services/get_all_orgs_with_roles_serv.js";
+import {
+    GetAllOrgsWithRolesController
+} from "./modules/organization_members/controllers/get_all_orgs_with_roles_controller.js";
+import {FindTaskByIdUseCase} from "./modules/organization_task/application/find_task_by_id_use_case.js";
+import {FindTaskByIdService} from "./modules/organization_task/application/service/find_task_by_id.js";
+import {FindTaskByIdServ} from "./modules/organization_task/controller/services/find_by_id_serv.js";
+import {FindTaskByIdController} from "./modules/organization_task/controller/find_task_by_id_controller.js";
+import {
+    InvitationByIdAndOrgRepoPg
+} from "./modules/invitations/repository_realization/invitation_by_id_and_org_repo_pg.js";
+import {GetByIdAndOrgUseCase} from "./modules/invitations/application/get_by_id_and_org_use_case.js";
+import {GetByIdAndOrgService} from "./modules/invitations/application/services/get_by_id_and_org_service.js";
+import {GetByIdAndOrgServ} from "./modules/invitations/controllers/services/get_by_id_and_org.js";
+import {GetByIdAndOrgController} from "./modules/invitations/controllers/get_by_id_and_org_controller.js";
+import {UserInvitationRepoPg} from "./modules/invitations/repository_realization/user_invitation_repo_pg.js";
+import {GetInvitationByIdUseCase} from "./modules/invitations/application/get_inv_by_id_use_case.js";
+import {GetInvitationByIdService} from "./modules/invitations/application/services/get_inv_by_id_service.js";
+import {GetInvitationByIdServ} from "./modules/invitations/controllers/services/get_inv_by_id_serv.js";
+import {GetInvitationByIdController} from "./modules/invitations/controllers/get_inv_by_id_controller.js";
+import {
+    MembershipRepoPg
+} from "./modules/organization_members/organization_members_repository_realization/membership_repo_pg.js";
+import {CheckMembershipUseCase} from "./modules/organization_members/application/check_membership_use_case.js";
+import {CheckMembershipService} from "./modules/organization_members/application/services/check_membershit_service.js";
+import {CheckMembershipServ} from "./modules/organization_members/controllers/services/check_memberhip_serv.js";
+import {CheckMembershitController} from "./modules/organization_members/controllers/check_membershit_controller.js";
 
 export function assembleContainer() {
 
@@ -202,6 +252,14 @@ export function assembleContainer() {
     const userRepositoryReadOnly = new UserRepositoryReaderPg(pool);
     // 13) get my organizations
     const getMyOrganizationsRepositoryPG = new MyOrganizationsRepository(pool);
+    // 13) get all organizations with roles
+    const getOrganizationsWithRolesPG = new GetAllOrgsWithRolesPG(pool);
+    // 14) get invitations by org id and inv id
+    const getInvitationByIdAndOrgPG = new InvitationByIdAndOrgRepoPg(pool);
+    // 15) get a specific user invitation with FULL DETAILED INFO
+    const getFullUserInvitationPG = new UserInvitationRepoPg(pool);
+    // 16) find relations database (checks whether a user is employed)
+    const checkMembershipPG = new MembershipRepoPg(pool);
     // infrastructure services
     const hasher: PasswordHasher = new HasherBcrypt();
 
@@ -219,18 +277,23 @@ export function assembleContainer() {
     const changeTaskTitleUC = new ChangeOrgTaskTitleUseCase(organizationTaskRepoPG, organizationMemberRepoPG);
     const createTaskUC = new CreateOrganizationTaskUseCase(organizationTaskRepoPG, organizationMemberRepoPG, organizationRepoPG);
     const deleteTasksUC = new DeleteTaskUseCase(organizationTaskRepoPG, organizationMemberRepoPG);
-    const listTasksUC = new GetOrgTasksListUseCase(organizationMemberRepoPG, organizationTasksRepoReaderPG)
+    const listTasksUC = new GetOrgTasksListUseCase(organizationMemberRepoPG, organizationTasksRepoReaderPG);
+    const getTaskByIdUC = new FindTaskByIdUseCase(organizationTaskRepoPG, organizationMemberRepoPG);
     // 3) organization_members
     const changeOrgMemberRoleUC = new ChangeOrgMemberRoleUseCase(organizationMemberRepoPG);
     const fireOrgMemberUC = new FireOrgMemberUseCase(organizationMemberRepoPG);
-    const hireOrgMemberUC = new HireOrgMemberUseCase(organizationMemberRepoPG, userRepoPG);
+    const hireOrgMemberUC = new HireOrgMemberUseCase(organizationMemberRepoPG, userRepoPG, checkMembershipPG);
     const getAllMembersUC = new GetAllMembersUseCase(organizationMemberRepoPG);
+    const getMemberByIdUC = new GetMemberByIdUseCase(organizationMemberRepoPG, organizationRepoPG);
+    const getAllOrgsWithRoleUC = new GetAllOrganizationsWithRolesUseCase(getOrganizationsWithRolesPG, userRepoPG);
+    const checkMembershipUC = new CheckMembershipUseCase(checkMembershipPG, userRepoPG);
     // 4) organizations
     const createOrganizationUC = new CreateOrganizationUseCase(organizationRepoPG, userRepoPG);
     const renameOrganizationUC = new RenameOrganizationUseCase(organizationRepoPG, organizationMemberRepoPG);
     const deleteOrganizationUC = new DeleteOrganizationUseCase(organizationRepoPG, organizationMemberRepoPG);
     const viewOrganizationUC = new ViewOrganizationUseCase(organizationRepoPG, userRepoPG);
     const getMyOrganizationsUC = new GetMyOrganizationsUseCase(userRepoPG, getMyOrganizationsRepositoryPG);
+    const getOrgWithRoleUC = new GetOrganizationWithRoleUseCase(organizationRepoPG, organizationMemberRepoPG);
     // 5) audit events
     const appendToAuditUC = new AppendLogAuditEvents(auditEventWriter);
     const getOrganizationAuditUC = new GetOrganizationAuditUseCase(auditEventReader, organizationMemberRepoPG);
@@ -244,6 +307,8 @@ export function assembleContainer() {
     const getOrganizationInvitationsUC = new GetOrganizationInvitationUseCase(organizationMemberRepoPG, invitationRepoWriterPG);
     const rejectInvitationUC = new RejectInvitationUseCase(invitationRepoWriterPG, organizationMemberRepoPG, userRepoPG);
     const viewUserInvitationsUC = new ViewUserInvitationsUseCase(invitationRepoReaderPG, userRepoPG);
+    const getInvitationByIdAndOrgUC = new GetByIdAndOrgUseCase(getInvitationByIdAndOrgPG, organizationRepoPG, organizationMemberRepoPG);
+    const getFullUserInvitationUC = new GetInvitationByIdUseCase(userRepoPG, getFullUserInvitationPG);
 
     // TODO : SERVICES (application services);
     // 1) users
@@ -260,17 +325,22 @@ export function assembleContainer() {
     const createTaskService = new CreateTaskWithAudit(createTaskUC, appendToAuditUC);
     const deleteTaskService = new DeleteTaskWithAudit(deleteTasksUC, appendToAuditUC);
     const listOrganizationTasksService = new GetOrgTasksListService(listTasksUC);
+    const getTaskByIdService = new FindTaskByIdService(getTaskByIdUC);
     // 3 organization members
     const changeOrgMemberRoleService = new ChangeRoleWithAuditUseCase(changeOrgMemberRoleUC, appendToAuditUC);
     const fireMemberService = new FireMemberWithAuditUseCase(fireOrgMemberUC, appendToAuditUC);
     const hireMemberService = new HireMemberWithAuditUseCase(hireOrgMemberUC, appendToAuditUC);
     const getAllMembersService = new GetAllMembersWithAudit(getAllMembersUC, appendToAuditUC);
+    const getMemberByIdService = new GetMemberByIdService(getMemberByIdUC);
+    const getAllOrgsWithRolesService = new GetAllOrganizationsWithRolesService(getAllOrgsWithRoleUC);
+    const checkMembershipService = new CheckMembershipService(checkMembershipUC);
     // 4 organizations
     const createOrganizationService = new CreateOrganizationWithAudit(createOrganizationUC, appendToAuditUC);
     const deleteOrganizationService = new DeleteOrganization(deleteOrganizationUC);
     const renameOrganizationService = new RenameWithAudit(renameOrganizationUC, appendToAuditUC);
     const viewOrganizationService = new ViewOrganizationServiceWithAudit(viewOrganizationUC, appendToAuditUC);
     const getMyOrganizationsService = new GetMyOrganizationService(getMyOrganizationsUC);
+    const getOrgWithRoleService = new GetOrganizationWithRoleService(getOrgWithRoleUC);
     // 5 audit events
     const getAuditByOrganizationService = new GetAllAuditWithAudit(getOrganizationAuditUC, appendToAuditUC);
     const getFilteredAuditService = new GetFilterAuditWithAudit(getFilteredAuditUC, appendToAuditUC);
@@ -287,6 +357,8 @@ export function assembleContainer() {
     const getOrganizationInvitationsService = new GetOrganizationInvitationsService(getOrganizationInvitationsUC);
     const rejectInvitationService = new RejectInvitationService(rejectInvitationUC, appendToAuditUC);
     const viewUserInvitationsService = new ViewUserInvitationsService(viewUserInvitationsUC);
+    const getInvitationByIdAndOrgService = new GetByIdAndOrgService(getInvitationByIdAndOrgUC);
+    const getFullUserInvitationService = new GetInvitationByIdService(getFullUserInvitationUC);
 
     // TODO : SERVS (dealing with transactions and PoolClient);
     // 1) user
@@ -302,17 +374,22 @@ export function assembleContainer() {
     const createTaskServ = new CreateTaskServ(txManager);
     const deleteTaskServ = new DeleteTaskServ(txManager);
     const listOrganizationTasksServ = new ListTasksServ(txManager);
+    const getTaskByIdServ = new FindTaskByIdServ(txManager);
     // 3) organisations
     const createOrganizationServ = new CreateOrgServ(txManager);
     const deleteOrganizationServ = new DeleteOrganizationServ(txManager);
     const renameOrganizationServ = new RenameOrganizationServ(txManager);
     const viewOrganizationServ = new ViewOrganizationServ(txManager);
     const getMyOrganizationsServ = new GetMyOrgServ(txManager);
+    const getOrgWithRoleServ = new GetOrgWithRoleServ(txManager);
     // 4) organization members
     const changeMemberRoleServ = new ChangeRoleServ(txManager);
     const fireMemberServ = new FireMemberServ(txManager);
     const hireMemberServ = new HireMemberServ(txManager);
     const getAllMembersServ = new GetAllMembersServ(txManager);
+    const getMemberByIdServ = new GetMemberByIdServ(txManager);
+    const getAllOrgsWithRolesServ = new GetAllOrgsWithRolesServ(txManager);
+    const checkMembershipServ = new CheckMembershipServ(txManager);
     // 5) audit events
     const getAuditByOrgIdServ = new GetAuditByIdServ(txManager);
     const getFilteredAuditServ = new GetFilteredAuditServ(txManager);
@@ -325,6 +402,8 @@ export function assembleContainer() {
     const getOrganizationInvitationsServ = new GetOrganizationInvitationsServ(txManager);
     const rejectInvitationServ = new RejectInvitationServ(txManager);
     const viewUserInvitationsServ = new ViewUserInvitationsServ(txManager);
+    const getInvitationByIdAndOrgServ = new GetByIdAndOrgServ(txManager);
+    const getFullUserInvitationServ = new GetInvitationByIdServ(txManager);
 
     // TODO : CONTROLLERS (HTTP management);
     // 1) authentification
@@ -342,17 +421,22 @@ export function assembleContainer() {
     const createTaskController = new CreateTaskController(createTaskServ);
     const deleteTaskController = new DeleteTaskController(deleteTaskServ);
     const listOrganizationTasksController = new ListTasksController(listOrganizationTasksServ);
+    const findTaskByIdController = new FindTaskByIdController(getTaskByIdServ);
     // 4) organisations
     const createOrganizationController = new CreateOrganizationController(createOrganizationServ);
     const deleteOrganizationController = new DeleteOrganizationController(deleteOrganizationServ);
     const renameOrganizationController = new RenameOrganizationController(renameOrganizationServ);
     const viewOrganizationController = new ViewOrganizationController(viewOrganizationServ);
     const getMyOrganizationsController = new GetMyOrgController(getMyOrganizationsServ);
+    const getOrgWithRoleController = new GetOrgWithRoleController(getOrgWithRoleServ);
     // 5) organization members
     const changeMemberRoleController = new ChangeRoleController(changeMemberRoleServ);
     const fireMemberController = new FireMemberController(fireMemberServ);
     const hireMemberController = new HireMemberController(hireMemberServ);
     const getAllMembersController = new GetAllMembersController(getAllMembersServ);
+    const getMemberByIdController = new GetMemberByIdController(getMemberByIdServ);
+    const getAllOrgsWithRolesController = new GetAllOrgsWithRolesController(getAllOrgsWithRolesServ);
+    const checkMembershipController = new CheckMembershitController(checkMembershipServ)
     // 6) audit events
     const getAuditByOrgIdController = new GetAuditByOrgIdController(getAuditByOrgIdServ);
     const getFilteredAuditController = new GetFilteredAuditController(getFilteredAuditServ);
@@ -365,6 +449,8 @@ export function assembleContainer() {
     const getOrganizationInvitationsController = new GetOrganizationInvitationsController(getOrganizationInvitationsServ);
     const rejectInvitationController = new RejectInvitationController(rejectInvitationServ);
     const viewUserInvitationsController = new ViewUserInvitationsController(viewUserInvitationsServ);
+    const getInvitationByIdAndOrgController = new GetByIdAndOrgController(getInvitationByIdAndOrgServ);
+    const getFullUserInvitationController = new GetInvitationByIdController(getFullUserInvitationServ); //getFullUserInvitationService
 
 
     // TODO : RETURN ALL
@@ -392,11 +478,13 @@ export function assembleContainer() {
         changeTaskTitleService,
         createTaskService,
         deleteTaskService,
+        findTaskByIdController,
 
         changeOrgMemberRoleService,
         fireMemberService,
         hireMemberService,
         getAllMembersService,
+        checkMembershipController,
 
         createOrganizationService,
         deleteOrganizationService,
@@ -429,11 +517,14 @@ export function assembleContainer() {
         renameOrganizationController,
         viewOrganizationController,
         getMyOrganizationsController,
+        getOrgWithRoleController,
 
         changeMemberRoleController,
         fireMemberController,
         hireMemberController,
         getAllMembersController,
+        getMemberByIdController,
+        getAllOrgsWithRolesController,
 
         getAuditByOrgIdController,
         getFilteredAuditController,
@@ -446,6 +537,8 @@ export function assembleContainer() {
         getOrganizationInvitationsController,
         rejectInvitationController,
         viewUserInvitationsController,
+        getInvitationByIdAndOrgController,
+        getFullUserInvitationController,
     };
 }
 

@@ -20,6 +20,12 @@ export class ChangeOrgMemberRoleUseCase {
         throw new InvalidOrganizationMemberRoleError()
     }
 
+    private assertAssignedRole(role: OrgMemsRole) {
+        if (role === OrgMemsRole.OWNER) {
+            throw new InvalidOrganizationMemberRoleError();
+        }
+    }
+
     private checkForSelfAssign(actorUserId: string, targetUserId: string) {
         if (actorUserId === targetUserId) throw new CannotPerformActionOnYourselfError();
     }
@@ -44,6 +50,8 @@ export class ChangeOrgMemberRoleUseCase {
         this.checkForSelfAssign(actorUserId, targetUserId);
 
         const targetRoleParsed = this.parseRole(targetRole);
+
+        this.assertAssignedRole(targetRoleParsed);
 
         const actorMember = await this.actorExists(actorUserId, orgId);
 

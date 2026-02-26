@@ -11,9 +11,13 @@ export class InvitationReadRepositoryPG {
             const query = `
                 SELECT 
                     i.id,
+                    i.organization_id AS "organizationId",
+                    o.name AS "organizationName",
+                    i.invited_by_user_id AS "invitedByUserId",
                     i.role,
                     i.status,
-                    o.name AS "organizationName",
+                    i.created_at AS "createdAt",
+                    i.expires_at AS "expiredAt",
                     COALESCE(mc.members_count, 0) AS "membersCount"
                 FROM organization_invitations i
                 JOIN organizations o 
@@ -32,15 +36,29 @@ export class InvitationReadRepositoryPG {
 
             const result = await this.pool.query(query, [userId]);
 
-            return result.rows.map(row => ({
+            return result.rows.map((row: {
+                id: string;
+                organizationId: string;
+                organizationName: string;
+                invitedByUserId: string;
+                role: string;
+                status: string;
+                createdAt: Date | null;
+                expiredAt: Date | null;
+                membersCount: string | number;
+            }) => ({
                 id: row.id,
+                organizationId: row.organizationId,
+                organizationName: row.organizationName,
+                invitedByUserId: row.invitedByUserId,
                 role: row.role,
                 status: row.status,
-                organizationName: row.organizationName,
                 membersCount: Number(row.membersCount),
+                createdAt: row.createdAt ? (row.createdAt instanceof Date ? row.createdAt.toISOString() : String(row.createdAt)) : "",
+                expiredAt: row.expiredAt ? (row.expiredAt instanceof Date ? row.expiredAt.toISOString() : String(row.expiredAt)) : "",
             }));
 
-        } catch (error: any) {
+        } catch (error: unknown) {
             throw new DatabaseError();
         }
     }

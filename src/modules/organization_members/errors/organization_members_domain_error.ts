@@ -1,5 +1,5 @@
 import {OrgMemsRole} from "../domain/org_members_role.js";
-import {AuthorizationError, ValidationError} from "../../../errors_base/errors_base.js";
+import {AuthorizationError, ConflictError, ValidationError} from "../../../errors_base/errors_base.js";
 
 
 export class OrganizationMembersDomainError extends AuthorizationError {
@@ -55,5 +55,12 @@ export class OnlyOwnerCanAssign extends OrganizationMembersDomainError {
     constructor() {
         super("Only OWNER can assign roles to other users");
         this.name = "CannotAssignRoleToTarget";
+    }
+}
+
+export class TargetIsMemberOfOtherOrganization extends ConflictError {
+    constructor() {
+        super("User already belongs to another organization");
+        this.name = "TargetIsMemberOfOtherOrganization";
     }
 }

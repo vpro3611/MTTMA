@@ -18,8 +18,8 @@ export class ChangeRoleWithAuditUseCase {
     }) => {
         const changedRole = await this.alterMemberRole.execute(
             dto.actorUserId,
-            dto.organizationId,
             dto.targetUserId,
+            dto.organizationId,
             dto.role
         );
 

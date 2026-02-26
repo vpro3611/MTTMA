@@ -13,13 +13,19 @@ const goToProfile = () => {
 const goToUsers = () => {
   router.push("/users");
 };
+
+const goToOrgSearch = () => {
+  router.push("/organizations/search");
+};
 </script>
 
 <template>
-  <nav>
+  <nav style="display:flex; justify-content:space-between; padding:10px;">
+
     <div>
       <button @click="goToProfile">My Profile</button>
       <button @click="goToUsers">Users</button>
+      <button @click="goToOrgSearch">Search Organizations</button>
     </div>
 
     <div>
@@ -27,5 +33,6 @@ const goToUsers = () => {
         {{ authStore.user.email }}
       </span>
     </div>
+
   </nav>
 </template>

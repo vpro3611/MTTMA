@@ -6,10 +6,10 @@ import {OrgMemsRole} from "../domain/org_members_role.js";
 
 export const HireMemberParamsSchema = z.object({
     orgId: z.string().uuid(),
+    targetUserId: z.string().uuid(),
 })
 
 export const HireMemberBodySchema = z.object({
-    targetUserId: z.string().uuid(),
     role: z.enum([
         OrgMemsRole.OWNER,
         OrgMemsRole.ADMIN,
@@ -33,9 +33,9 @@ export class HireMemberController {
     hireMemberCont = async (req: Request<HireMemberParams, unknown, HireMemberBody>, res: Response) => {
         const userId = this.extractUserId(req);
 
-        const {targetUserId, role} = req.body;
+        const {role} = req.body;
 
-        const {orgId} = req.params;
+        const {orgId, targetUserId} = req.params;
 
         const dto = {
             actorUserId: userId.sub,

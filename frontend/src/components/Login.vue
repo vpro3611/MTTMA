@@ -23,8 +23,8 @@ const handleSubmit = async () => {
     authStore.setToken(data.accessToken, data.user);
     await router.push(`/profile/${data.user.id}`)
     console.log('success login');
-  } catch (e: any) {
-    error.value = e.message;
+  } catch (e: unknown) {
+    error.value = e instanceof Error ? e.message : String(e);
   } finally {
     isLoading.value = false;
   }
@@ -32,16 +32,24 @@ const handleSubmit = async () => {
 </script>
 
 <template>
-  <h1>Login</h1>
-  <form @submit.prevent="handleSubmit">
-    <input v-model="email" type="email" placeholder="Email"></input>
-    <input v-model="password" type="password" placeholder="Password"></input>
+  <form class="modern-form" @submit.prevent="handleSubmit">
+    <h2 class="modern-form__title">Login</h2>
+
+    <label class="modern-form__field">
+      <span class="modern-form__label">Email</span>
+      <input v-model="email" type="email" placeholder="you@example.com" />
+    </label>
+
+    <label class="modern-form__field">
+      <span class="modern-form__label">Password</span>
+      <input v-model="password" type="password" placeholder="••••••••••" />
+    </label>
 
     <button :disabled="isLoading">
-      {{isLoading ? 'Loading...' : 'Login'}}
+      {{ isLoading ? 'Logging in…' : 'Login' }}
     </button>
 
-    <p v-if="error">{{error}}</p>
+    <p v-if="error" class="modern-form__error">{{ error }}</p>
   </form>
 </template>
 

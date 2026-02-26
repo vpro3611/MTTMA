@@ -53,7 +53,7 @@ export const authApi = {
         return data;
     },
 
-    async me() {
+    async me(): Promise<User | null> {
         const res = await authorizedFetch(`${UrlConfig.apiBaseUrl}/api/me`);
         if (!res.ok) {
             return null;
@@ -61,6 +61,6 @@ export const authApi = {
 
         const data: User = await res.json();
 
-        return data
+        return data;
     }
 }

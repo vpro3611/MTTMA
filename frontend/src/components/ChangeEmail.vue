@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import {ref} from "vue";
-import {userAPI} from "../api/user.ts";
-import {authStore} from "../stores/auth_store.ts";
-import type {User} from "../types/auth_types.ts";
+import { ref } from "vue";
+import { userAPI } from "../api/user.ts";
+import { authStore } from "../stores/auth_store.ts";
+import type { User } from "../types/auth_types.ts";
 
 const email = ref('');
 const error = ref<string | null>(null);
@@ -17,8 +17,8 @@ const handleSubmit = async () => {
     const updatedUser: User  = await userAPI.changeEmail(email.value);
     authStore.setUser(updatedUser);
     console.log('success');
-  } catch (e: any) {
-    error.value = e.message;
+  } catch (e: unknown) {
+    error.value = e instanceof Error ? e.message : String(e);
   } finally {
     isLoading.value = false;
   }
@@ -27,14 +27,19 @@ const handleSubmit = async () => {
 </script>
 
 <template>
-  <form @submit.prevent="handleSubmit">
-    <input v-model="email" type="email" placeholder="Your new email: "></input>
+  <form class="modern-form" @submit.prevent="handleSubmit">
+    <h3 class="modern-form__title">Change email</h3>
+
+    <label class="modern-form__field">
+      <span class="modern-form__label">New email</span>
+      <input v-model="email" type="email" placeholder="you@example.com" />
+    </label>
 
     <button :disabled="isLoading">
-      {{isLoading ? 'Loading...' : 'Change email'}}
+      {{ isLoading ? 'Saving…' : 'Change email' }}
     </button>
 
-    <p v-if="error">{{error}}</p>
+    <p v-if="error" class="modern-form__error">{{ error }}</p>
   </form>
 </template>
 

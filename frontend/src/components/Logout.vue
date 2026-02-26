@@ -16,8 +16,8 @@ const handleLogout = () => {
   try {
     isLoading.value = true;
     authStore.clearToken();
-  } catch (e: any) {
-    error.value = e.message;
+  } catch (e: unknown) {
+    error.value = e instanceof Error ? e.message : String(e);
   } finally {
     authStore.clearToken();
     router.replace('/auth');
