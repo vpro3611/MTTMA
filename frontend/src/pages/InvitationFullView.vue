@@ -89,73 +89,86 @@ onMounted(loadInvitation);
 </script>
 
 <template>
-  <section>
-
+  <section class="container">
     <div v-if="loading">Loading...</div>
     <div v-else-if="error">{{ error }}</div>
 
     <div v-else-if="invitation">
+      <header class="page-header">
+        <h1>Invitation Details</h1>
+        <p>
+          Invitation to {{ invitation.organizationName }} for role
+          <strong>{{ invitation.role }}</strong>.
+        </p>
+      </header>
 
-      <h1>Invitation Details</h1>
+      <article class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">{{ invitation.organizationName }}</h2>
+            <p class="card-subtitle">
+              Org ID: <code>{{ invitation.organizationId }}</code>
+            </p>
+          </div>
+          <span
+            class="pill"
+            :class="{
+              'pill--status-pending': invitation.status === 'PENDING',
+              'pill--status-accepted': invitation.status === 'ACCEPTED',
+              'pill--status-rejected': invitation.status === 'REJECTED',
+              'pill--status-expired': invitation.status === 'EXPIRED',
+              'pill--status-canceled': invitation.status === 'CANCELED'
+            }"
+          >
+            {{ invitation.status }}
+          </span>
+        </div>
 
-      <p><strong>Organization:</strong> {{ invitation.organizationName }}</p>
-      <p><strong>Organization ID:</strong> {{ invitation.organizationId }}</p>
-      <p><strong>Members Count:</strong> {{ invitation.membersCount }}</p>
+        <div class="card-row">
+          <span>Role: <strong>{{ invitation.role }}</strong></span>
+          <span>Invited by: <code>{{ invitation.invitedByUserId }}</code></span>
+        </div>
+        <div class="card-row">
+          <span>
+            Created: {{ new Date(invitation.createdAt).toLocaleString() }}
+          </span>
+          <span>
+            Expires: {{ new Date(invitation.expiredAt).toLocaleString() }}
+          </span>
+        </div>
 
-      <button @click="goToOrganization(invitation.organizationId)">
-        View Organization
-      </button>
-
-      <hr />
-
-      <p><strong>Status:</strong> {{ invitation.status }}</p>
-      <p><strong>Role:</strong> {{ invitation.role }}</p>
-      <p><strong>Invited By:</strong> {{ invitation.invitedByUserId }}</p>
-
-      <p>
-        <strong>Created:</strong>
-        {{ new Date(invitation.createdAt).toLocaleString() }}
-      </p>
-
-      <p>
-        <strong>Expires:</strong>
-        {{ new Date(invitation.expiredAt).toLocaleString() }}
-      </p>
-
-      <hr />
-
-      <!-- ACTION BUTTONS -->
-      <div v-if="isPending">
-
-        <button
+        <div class="page-actions" style="margin-top:1.5rem;">
+          <button
+            v-if="isPending"
             @click="handleAccept"
             :disabled="actionLoading"
-            style="margin-right:10px; background:green; color:white;"
-        >
-          Accept
-        </button>
-
-        <button
+            style="background:#16a34a;"
+          >
+            Accept
+          </button>
+          <button
+            v-if="isPending"
             @click="handleReject"
             :disabled="actionLoading"
-            style="background:red; color:white;"
-        >
-          Reject
+            style="background:#b91c1c;"
+          >
+            Reject
+          </button>
+          <button @click="goToOrganization(invitation.organizationId)">
+            View organization
+          </button>
+        </div>
+
+        <p v-if="actionError" style="color:#fca5a5; margin-top:0.75rem;">
+          {{ actionError }}
+        </p>
+      </article>
+
+      <div style="margin-top:1.5rem;">
+        <button @click="goBack">
+          Back to invitations
         </button>
-
       </div>
-
-      <p v-if="actionError" style="color:red;">
-        {{ actionError }}
-      </p>
-
-      <br />
-
-      <button @click="goBack">
-        Back
-      </button>
-
     </div>
-
   </section>
 </template>

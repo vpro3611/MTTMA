@@ -40,22 +40,48 @@ onMounted(loadOrganizations);
 </script>
 
 <template>
-  <section>
-    <h1>Organizations</h1>
+  <section class="container">
+    <header class="page-header">
+      <h1>My Organizations</h1>
+      <p>Create and manage organizations where you collaborate with others.</p>
+    </header>
 
-    <div>
-      <input v-model="name" placeholder="Organization name" />
-      <button @click="handleCreate">Create</button>
+    <div class="page-actions">
+      <input
+        v-model="name"
+        placeholder="New organization name"
+        style="flex:1; min-width: 220px; padding: 0.6rem 0.8rem; border-radius: 999px; border: 1px solid rgba(255,255,255,0.18); background: rgba(0,0,0,0.35); color: inherit;"
+      />
+      <button @click="handleCreate" :disabled="isLoading">
+        {{ isLoading ? "Creating..." : "Create organization" }}
+      </button>
     </div>
 
-    <div>
+    <p v-if="error" style="color:#fca5a5; margin-bottom:1rem;">
+      {{ error }}
+    </p>
+
+    <div v-if="organizations.length" class="grid-cards">
       <article
-          v-for="org in organizations"
-          :key="org.id"
-          @click="router.push(`/organizations/${org.id}`)"
+        v-for="org in organizations"
+        :key="org.id"
+        class="card card--clickable"
+        @click="router.push(`/organizations/${org.id}`)"
       >
-        <h2>{{ org.name }}</h2>
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">{{ org.name }}</h2>
+            <p class="card-subtitle">
+              Created {{ new Date(org.createdAt).toLocaleDateString() }}
+            </p>
+          </div>
+          <span class="pill pill--soft">ORG</span>
+        </div>
       </article>
     </div>
+
+    <p v-else style="margin-top:1.5rem; color:#aaaaaa;">
+      You don’t have any organizations yet. Create your first one above.
+    </p>
   </section>
 </template>
