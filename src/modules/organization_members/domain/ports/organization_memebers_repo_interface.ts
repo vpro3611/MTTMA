@@ -12,3 +12,7 @@ export interface OrganizationMembersRepository {
 export interface OrganizationMembersRepositoryReadOnly {
     findAllMembersWithRoleByUserId(userId: string): Promise<AllOrgsWithRoles[]>;
 }
+
+export interface CheckForMembership {
+    findRelations(userId: string) : Promise<boolean>;
+}
