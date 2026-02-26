@@ -103,5 +103,20 @@ export const userAPI = {
         }
 
         return data;
+    },
+
+    async checkMembership(userId: string) {
+        const res = await authorizedFetch(`${UrlConfig.apiBaseUrl}/api/users/${userId}/membership_check`, {
+            method: "GET"
+        });
+
+        const data = await res.json();
+        // hasOrganizations : boolean
+
+        if (!res.ok) {
+            throw new Error(data?.message || "Failed to check membership");
+        }
+
+        return data;
     }
 }
