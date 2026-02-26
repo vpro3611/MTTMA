@@ -27,14 +27,19 @@ const handleSubmit = async () => {
 </script>
 
 <template>
-  <form @submit.prevent="handleSubmit">
-    <input v-model="email" type="email" placeholder="Your new email: "></input>
+  <form class="modern-form" @submit.prevent="handleSubmit">
+    <h3 class="modern-form__title">Change email</h3>
+
+    <label class="modern-form__field">
+      <span class="modern-form__label">New email</span>
+      <input v-model="email" type="email" placeholder="you@example.com" />
+    </label>
 
     <button :disabled="isLoading">
-      {{isLoading ? 'Loading...' : 'Change email'}}
+      {{ isLoading ? 'Saving…' : 'Change email' }}
     </button>
 
-    <p v-if="error">{{error}}</p>
+    <p v-if="error" class="modern-form__error">{{ error }}</p>
   </form>
 </template>
 

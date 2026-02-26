@@ -29,15 +29,24 @@ const handleSubmit = async () => {
 </script>
 
 <template>
-  <form @submit.prevent="handleSubmit">
-    <input v-model="old_password" type="password" placeholder="Your old password: "></input>
-    <input v-model="new_password" type="password" placeholder="Your new password: "></input>
+  <form class="modern-form" @submit.prevent="handleSubmit">
+    <h3 class="modern-form__title">Change password</h3>
+
+    <label class="modern-form__field">
+      <span class="modern-form__label">Current password</span>
+      <input v-model="old_password" type="password" placeholder="••••••••••" />
+    </label>
+
+    <label class="modern-form__field">
+      <span class="modern-form__label">New password</span>
+      <input v-model="new_password" type="password" placeholder="Minimum 10 characters" />
+    </label>
 
     <button :disabled="isLoading">
-      {{isLoading ? 'Loading...' : 'Change password'}}
+      {{ isLoading ? 'Saving…' : 'Change password' }}
     </button>
 
-    <p v-if="error">{{error}}</p>
+    <p v-if="error" class="modern-form__error">{{ error }}</p>
   </form>
 </template>
 

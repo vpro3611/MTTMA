@@ -179,6 +179,23 @@ button:focus-visible {
   }
 }
 
+/* Black theme override */
+
+:root[data-theme="black"] {
+  background-color: #050505;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+:root[data-theme="black"] .main-content {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+:root[data-theme="black"] .sidebar,
+:root[data-theme="black"] .card,
+:root[data-theme="black"] .user-card {
+  background: rgba(0, 0, 0, 0.9);
+}
+
 /* -------- App layout -------- */
 
 .app-layout {
@@ -344,5 +361,52 @@ section ul {
 
 section li {
   margin-bottom: 0.75rem;
+}
+
+/* -------- Modern form -------- */
+
+.modern-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.modern-form__title {
+  margin: 0 0 0.5rem;
+  font-size: 1.3rem;
+}
+
+.modern-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.modern-form__label {
+  font-size: 0.85rem;
+  color: #bbbbbb;
+}
+
+.modern-form input,
+.modern-form textarea,
+.modern-form select {
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  padding: 0.55rem 0.8rem;
+  background: rgba(0, 0, 0, 0.4);
+  color: inherit;
+  font: inherit;
+}
+
+.modern-form input:focus,
+.modern-form textarea:focus,
+.modern-form select:focus {
+  outline: 2px solid #646cff;
+  outline-offset: 1px;
+}
+
+.modern-form__error {
+  color: #fca5a5;
+  font-size: 0.85rem;
 }
 
