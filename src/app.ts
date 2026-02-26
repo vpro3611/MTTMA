@@ -66,7 +66,9 @@ import {MembershipParamsSchema} from "./modules/organization_members/controllers
 
 export function createApp(dependencies: AppContainer) {
     const app = express();
-    
+
+    app.use(loggerMiddleware());
+
     const allowedOrigins = [
         'http://localhost:5173',
         'http://localhost:3000',
@@ -344,7 +346,7 @@ export function createApp(dependencies: AppContainer) {
         dependencies.getInvitationByIdAndOrgController.getByIdAndOrgCont
     );
 
-    app.use(loggerMiddleware());
+
     app.use(errorMiddleware());
 
     return app;
