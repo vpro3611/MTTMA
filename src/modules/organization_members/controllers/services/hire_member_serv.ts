@@ -8,6 +8,7 @@ import {HireOrgMemberUseCase} from "../../application/hire_org_member_use_case.j
 import {UserRepositoryPG} from "../../../user/repository_realization/user_repository_pg.js";
 import {HireMemberWithAuditUseCase} from "../../application/services/hire_member_with_audit_use_case.js";
 import {OrgMemsRole} from "../../domain/org_members_role.js";
+import {MembershipRepoPg} from "../../organization_members_repository_realization/membership_repo_pg.js";
 
 
 export class HireMemberServ {
@@ -24,8 +25,8 @@ export class HireMemberServ {
             const userRepo = new UserRepositoryPG(client);
             const auditRepo = new AuditEventsRepositoryPg(client);
             const writeAudit = new AppendLogAuditEvents(auditRepo);
-
-            const hireMemberUC = new HireOrgMemberUseCase(orgMemRepo, userRepo);
+            const checkRelationsRepo = new MembershipRepoPg(client);
+            const hireMemberUC = new HireOrgMemberUseCase(orgMemRepo, userRepo, checkRelationsRepo);
 
             const hireMemberProxy = new HireMemberWithAuditUseCase(hireMemberUC, writeAudit);
 

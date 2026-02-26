@@ -10,7 +10,7 @@ import {DeleteOrganization} from "../../application/service/delete_organization.
 export class DeleteOrganizationServ {
     constructor(private readonly txManager: TransactionManager) {}
 
-    deleteOrgS = async (orgId: string, actorId: string) => {
+    deleteOrgS = async (actorId: string, orgId: string) => {
         return await this.txManager.runInTransaction(async (client) => {
             const orgRepo = new OrganizationRepositoryPG(client);
             const orgMemberRepo = new OrganizationMemberRepositoryPG(client);
@@ -19,7 +19,7 @@ export class DeleteOrganizationServ {
 
             const deleteOrganizationProxy = new DeleteOrganization(deleteOrganizationUC);
 
-            return await deleteOrganizationProxy.executeTx(orgId, actorId);
+            return await deleteOrganizationProxy.executeTx(actorId, orgId);
         });
     }
 }

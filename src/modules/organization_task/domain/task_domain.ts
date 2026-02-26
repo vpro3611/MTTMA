@@ -40,6 +40,28 @@ export class Task {
         }
     }
 
+    static restore(props: {
+        id: string;
+        organizationId: string;
+        title: string;
+        description: string ;
+        status: TaskStatus;
+        assignedTo: string ;
+        createdBy: string;
+        createdAt: Date;
+    }) {
+        return new Task(
+            props.id,
+            props.organizationId,
+            TaskTitle.create(props.title),
+            TaskDescription.create(props.description),
+            props.status,
+            props.assignedTo,
+            props.createdBy,
+            props.createdAt
+        );
+    }
+
     static create(organizationId: string, title: TaskTitle, description: TaskDescription, assignedTo: string, createdBy: string) {
         return new Task(
             crypto.randomUUID(),
@@ -64,6 +86,7 @@ export class Task {
     }
 
     changeStatus = (newStatus: TaskStatus) => {
+        this.checkTaskStatus(this.status);
         this.assertStatusForChange(newStatus);
         this.status = newStatus;
     }

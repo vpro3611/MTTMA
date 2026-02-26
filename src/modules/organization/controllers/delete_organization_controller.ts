@@ -24,7 +24,7 @@ export class DeleteOrganizationController {
 
         const {orgId} = req.params;
 
-        const result = await this.deleteOrgServ.deleteOrgS(orgId, userId.sub);
+        const result = await this.deleteOrgServ.deleteOrgS(userId.sub, orgId);
 
         return res.status(204).send();
     }

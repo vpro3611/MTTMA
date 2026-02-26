@@ -13,6 +13,7 @@ import {InvalidTaskStatusError, TaskNotFoundError} from "../errors/application_e
 import {OrganizationMember} from "../../organization_members/domain/organization_member_domain.js";
 import {TaskPermissionPolicy} from "../domain/policies/task_permission_policy.js";
 import {TaskDto} from "../DTO/return_dto/task_dto.js";
+import {OrgMemsRole} from "../../organization_members/domain/org_members_role.js";
 
 
 export class ChangeOrgTaskStatusUseCase {
@@ -25,7 +26,7 @@ export class ChangeOrgTaskStatusUseCase {
             status === "TODO" ||
             status === "IN_PROGRESS" ||
             status === "COMPLETED" ||
-            status === "CANCELLED"
+            status === "CANCELED"
         ) {
             return status;
         }
@@ -63,13 +64,16 @@ export class ChangeOrgTaskStatusUseCase {
 
         const task = await this.taskExists(statusDto.orgTaskId, statusDto.orgId);
 
-        const assignee = await this.assigneeExists(task.getAssignedTo(), statusDto.orgId);
+        const assignedTo = task.getAssignedTo();
+        const assigneeRole = assignedTo
+            ? (await this.assigneeExists(assignedTo, statusDto.orgId)).getRole()
+            : OrgMemsRole.MEMBER;
 
         TaskPermissionPolicy.canChangeTaskElements(
             orgMember.getRole(),
             statusDto.actorId,
             task.getCreatedBy(),
-            assignee.getRole()
+            assigneeRole
         );
 
         const parsedStatus = this.parseStatus(statusDto.newStatus);

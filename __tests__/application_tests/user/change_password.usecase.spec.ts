@@ -20,7 +20,8 @@ describe('ChangePasswordUseCase', () => {
             findById: jest.fn(),
             findByEmail: jest.fn(),
             save: jest.fn(),
-        };
+            listAll: jest.fn(),
+        } as unknown as jest.Mocked<UserRepository>;
 
         hasher = {
             hash: jest.fn(),

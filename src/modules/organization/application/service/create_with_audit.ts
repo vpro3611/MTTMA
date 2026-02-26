@@ -9,7 +9,7 @@ export class CreateOrganizationWithAudit {
                 private readonly auditEvents: AppendLogAuditEvents
     ) {};
 
-    executeTx = async (name: string, actorId: string) => {
+    async executeTx (name: string, actorId: string) {
         const organization = await this.organization.execute(name, actorId);
 
         const audit = AuditEvent.create(
