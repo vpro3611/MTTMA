@@ -25,6 +25,8 @@ const isLoading = ref(false);
 const myOrganizations = ref<OrganizationWithRole[]>([]);
 const orgUserStateMap = ref<Record<string, OrgUserState>>({});
 
+const isMemberOfAnyOrg = ref<boolean>(false);
+
 const actionLoading = ref<string | null>(null);
 const actionError = ref<string | null>(null);
 
@@ -59,6 +61,10 @@ watchEffect(async () => {
 
     remoteProfile.value = await userAPI.getProfile(targetUserId);
     myOrganizations.value = await orgAPI.getMyOrganizationsWithRole();
+
+    // 🔥 Новый вызов membership-check
+    const membershipStatus = await userAPI.checkMembership(targetUserId);
+    isMemberOfAnyOrg.value = membershipStatus.hasOrganizations === true;
 
     const stateMap: Record<string, OrgUserState> = {};
 
@@ -105,6 +111,17 @@ const availableRoles = (org: OrganizationWithRole): AssignableRole[] => {
   return [];
 };
 
+// 🔥 Новая логика для Hire
+const canHireTarget = (orgId: string): boolean => {
+  if (orgUserStateMap.value[orgId] !== "NONE") return false;
+  if (isMemberOfAnyOrg.value) return false;
+  return true;
+};
+
+const canInviteTarget = (orgId: string): boolean => {
+  return orgUserStateMap.value[orgId] === "NONE";
+};
+
 
 // ---------------- ACTION ----------------
 const handleAction = async (
@@ -126,6 +143,7 @@ const handleAction = async (
       );
 
       orgUserStateMap.value[orgId] = "MEMBER";
+      isMemberOfAnyOrg.value = true;
     }
 
     if (mode === "INVITE") {
@@ -148,7 +166,6 @@ const handleAction = async (
 };
 </script>
 
-
 <template>
   <div v-if="error">
     {{ error }}
@@ -163,7 +180,6 @@ const handleAction = async (
     <h1>{{ profile.email }}</h1>
     <p>Status: {{ profile.status }}</p>
 
-    <!-- OWN PROFILE -->
     <div v-if="isOwnProfile">
       <h2>Change email</h2>
       <ChangeEmail />
@@ -172,7 +188,6 @@ const handleAction = async (
       <Logout />
     </div>
 
-    <!-- MANAGEMENT -->
     <div
         v-if="!isOwnProfile && myOrganizations.length"
         style="margin-top: 40px;"
@@ -188,7 +203,6 @@ const handleAction = async (
         <div v-if="canManageInOrg(org)">
           <strong>{{ org.name }}</strong>
 
-          <!-- STATE MACHINE RENDER -->
           <div v-if="orgUserStateMap[org.orgId] === 'MEMBER'"
                style="color: gray; margin-top: 5px;">
             Already a member
@@ -218,7 +232,9 @@ const handleAction = async (
               </option>
             </select>
 
+            <!-- HIRE -->
             <button
+                v-if="canHireTarget(org.orgId)"
                 @click="handleAction(org.orgId, 'HIRE')"
                 :disabled="
                   actionLoading === org.orgId ||
@@ -229,7 +245,9 @@ const handleAction = async (
               Hire
             </button>
 
+            <!-- INVITE -->
             <button
+                v-if="canInviteTarget(org.orgId)"
                 @click="handleAction(org.orgId, 'INVITE')"
                 :disabled="
                   actionLoading === org.orgId ||
