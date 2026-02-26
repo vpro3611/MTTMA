@@ -13,3 +13,11 @@ export interface InvitationRepoInterface {
 export interface InvitationReadRepository {
     getUserInvitations(userId: string): Promise<InvitationView[]>;
 }
+
+export interface InvitationByIdRepository {
+    getByIdAndOrgId(invId: string, orgId: string): Promise<Invitation | null>;
+}
+
+export interface InvitationFullInfoRepository {
+    getFullInfoInvitation(invId: string, actorId: string): Promise<InvitationView | null>;
+}

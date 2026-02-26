@@ -4,26 +4,27 @@ import { PasswordHasher } from "../../../src/modules/user/application/ports/pass
 import { User } from "../../../src/modules/user/domain/user_domain.js";
 import { Email } from "../../../src/modules/user/domain/email.js";
 import { Password } from "../../../src/modules/user/domain/password.js";
-import {UserAlreadyExistsError} from "../../../src/modules/user/errors/user_repository_errors.js";
-import {UserStatus} from "../../../src/modules/user/domain/user_status.js";
+import { UserAlreadyExistsError } from "../../../src/modules/user/errors/user_repository_errors.js";
+import { UserStatus } from "../../../src/modules/user/domain/user_status.js";
 
 describe('RegisterUseCase', () => {
 
-    let userRepository: jest.Mocked<UserRepository>;
-    let hasher: jest.Mocked<PasswordHasher>;
-    let useCase: RegisterUseCase;
+    let userRepository!: jest.Mocked<UserRepository>;
+    let hasher!: jest.Mocked<PasswordHasher>;
+    let useCase!: RegisterUseCase;
 
     beforeEach(() => {
         userRepository = {
             findByEmail: jest.fn(),
             findById: jest.fn(),
             save: jest.fn(),
-        };
+            listAll: jest.fn(),
+        } as jest.Mocked<UserRepository>;
 
         hasher = {
             hash: jest.fn(),
             compare: jest.fn(),
-        };
+        } as jest.Mocked<PasswordHasher>;
 
         useCase = new RegisterUseCase(userRepository, hasher);
     });
@@ -37,7 +38,9 @@ describe('RegisterUseCase', () => {
             'StrongPass1!'
         );
 
-        expect(userRepository.findByEmail).toHaveBeenCalledTimes(1);
+        expect(userRepository.findByEmail).toHaveBeenCalledWith(
+            expect.any(Email)
+        );
         expect(hasher.hash).toHaveBeenCalledWith('StrongPass1!');
         expect(userRepository.save).toHaveBeenCalledTimes(1);
 

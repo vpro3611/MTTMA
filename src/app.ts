@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import {AppContainer} from "./container.js";
 import {createAuthMiddleware} from "./Auth/auth_middleware/auth_middleware.js";
 import {errorMiddleware} from "./middlewares/error_middleware.js";
@@ -13,7 +14,8 @@ import {
     ChangeDescBodySchema,
     ChangeDescParamsSchema
 } from "./modules/organization_task/controller/change_desc_controller.js";
-import {ChangeTitleParamsSchema} from "./modules/organization_task/controller/change_title_controller.js";
+import {ChangeTitleParamsSchema, ChangeTitleBodySchema} from "./modules/organization_task/controller/change_title_controller.js";
+import {ChangeStatusParamsSchema, ChangeStatusBodySchema} from "./modules/organization_task/controller/change_status_controller.js";
 import {
     CreateTaskBodySchema,
     CreateTaskParamsSchema
@@ -53,180 +55,298 @@ import {
     ViewOrganizationParams,
     ViewOrganizationParamsSchema
 } from "./modules/organization/controllers/view_organization_controller.js";
+import {TaskOrganizationIdParamSchema} from "./modules/organization_task/controller/list_tasks_controller.js";
+import {OrgIdParamsSchema} from "./modules/organization/controllers/get_org_with_role_controller.js";
+import {GetMemberByIdParamsSchema} from "./modules/organization_members/controllers/get_member_by_id_controller.js";
+import {FindTaskByIdParamsSchema} from "./modules/organization_task/controller/find_task_by_id_controller.js";
+import {GetByIdAndOrgParamsSchema} from "./modules/invitations/controllers/get_by_id_and_org_controller.js";
+import {GetInvitationByIdParamsSchema} from "./modules/invitations/controllers/get_inv_by_id_controller.js";
+import {MembershipParamsSchema} from "./modules/organization_members/controllers/check_membershit_controller.js";
 
 
 export function createApp(dependencies: AppContainer) {
     const app = express();
 
+    app.use(loggerMiddleware());
+
+    const allowedOrigins = [
+        'http://localhost:5173',
+        'http://localhost:3000',
+    ]
+    app.use(cors({
+        origin: function(origin: any, callback: any) {
+            if (!origin) return callback(null, true);
+            if (allowedOrigins.includes(origin)) {
+                return callback(null, true);
+            }
+            return callback(null, false);
+        },
+        credentials: true,
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+        allowedHeaders: ['Content-Type', 'Authorization'],
+    }));
+    // app.options('/*', cors());
     app.use(express.json());
     app.use(express.urlencoded({extended: true}));
     app.use(cookieParser())
 
     app.get('/', (req, res) => {
-        res.send('Hello World!').status(200);
+        res.json('Hello World!').status(200);
     })
 
     const publicRouter = express.Router();
     const privateRouter = express.Router();
     const organizationRouter = express.Router();
     app.use('/pub', publicRouter);
-    app.use('/me', privateRouter);
+    app.use('/api', privateRouter);
     app.use('/org', organizationRouter);
 
     privateRouter.use(createAuthMiddleware(dependencies.jwtTokenService));
     organizationRouter.use(createAuthMiddleware(dependencies.jwtTokenService));
 
+
+    // TODO : YES
     publicRouter.post('/register',
         validateZodMiddleware(RegisterSchema),
         dependencies.authController.register
     );
 
+    // TODO : YES
     publicRouter.post('/login',
         validateZodMiddleware(LoginSchema),
         dependencies.authController.login
     );
 
+    // TODO : YES
     publicRouter.post('/refresh',
         dependencies.authController.refresh
     );
 
+    // TODO : YES
     privateRouter.post('/logout',
         dependencies.authController.logout
     );
 
+    // TODO : YES
+    privateRouter.get('/me',
+        dependencies.getMeController.getMeCont
+    );
+
+    // TODO : YES
     privateRouter.patch('/change_pass',
         validateZodMiddleware(ChangePassSchema),
         dependencies.changePasswordController.changePassCont
     );
 
+    // TODO : YES
     privateRouter.patch('/change_email',
         validateZodMiddleware(ChangeEmailSchema),
         dependencies.changeEmailController.changeEmailCont
     );
 
-    privateRouter.get('/:targetUserId',
-        validate_params(CheckProfileParamsSchema),
-        dependencies.checkProfileController.checkProfileCont
+    // TODO : YES
+    privateRouter.get('/users',
+        dependencies.getAllUsersController.getAllUsersCont
     );
 
+    // TODO : YES
     privateRouter.get('/organizations',
         dependencies.searchOrganizationController.searchOrganizationCont
     );
 
-    privateRouter.get("/organizations/:orgId",
+    // TODO : YES
+    privateRouter.get("/view/:orgId",
         validate_params(ViewOrganizationParamsSchema),
         dependencies.viewOrganizationController.viewOrganizationCont
     );
 
+    // TODO : YES
+    privateRouter.get("/invitations",
+        dependencies.viewUserInvitationsController.viewUserInvitationsCont
+    );
+
+    // TODO : YES
+    privateRouter.get("/invitations/:invId/view",
+        validate_params(GetInvitationByIdParamsSchema),
+        dependencies.getFullUserInvitationController.getInvitationByIdCont
+    );
+
+    // TODO : YES
     privateRouter.patch('/:invitationId/accept',
         validate_params(AcceptInvitationParamsSchema),
         dependencies.acceptInvitationController.acceptInvitationCont  // ACCEPT INVITATION
     );
 
+    // TODO : YES
     privateRouter.patch("/:invitationId/reject",
         validate_params(RejectInvitationParamsSchema),
         dependencies.rejectInvitationController.rejectInvitationCont // REJECT INVITATION
     );
 
-    privateRouter.get("/invitations",
-        dependencies.viewUserInvitationsController.viewUserInvitationsCont
+    // TODO : YES
+    privateRouter.get("/users/:userId/membership_check",
+        validate_params(MembershipParamsSchema),
+        dependencies.checkMembershipController.checkMembershipCont
     );
 
+    // TODO : YES
+    privateRouter.get('/:targetUserId',
+        validate_params(CheckProfileParamsSchema),
+        dependencies.checkProfileController.checkProfileCont
+    );
+
+    // TODO : YES
+    organizationRouter.get("/my_organizations",
+        dependencies.getMyOrganizationsController.getMyOrgCont
+    );
+
+    // TODO : YES
+    organizationRouter.get("/organizations/:orgId/w_role",
+        validate_params(OrgIdParamsSchema),
+        dependencies.getOrgWithRoleController.getOrgWithRoleCont
+    );
+
+    // TODO : YES
+    organizationRouter.get("/:orgId/tasks",
+        validate_params(TaskOrganizationIdParamSchema),
+        dependencies.listOrganizationTasksController.listTasksCont
+    );
+
+    // TODO : YES
+    organizationRouter.get("/:orgId/tasks/:orgTaskId/view",
+        validate_params(FindTaskByIdParamsSchema),
+        dependencies.findTaskByIdController.findTaskByIdCont
+    );
+
+    // TODO : YES
     organizationRouter.patch('/:orgId/tasks/:taskId/description',
         validate_params(ChangeDescParamsSchema),
         validateZodMiddleware(ChangeDescBodySchema),
         dependencies.changeTaskDescController.changeDescCont
     );
 
+    // TODO : YES
     organizationRouter.patch('/:orgId/tasks/:taskId/status',
-        validate_params(ChangeDescParamsSchema),
-        validateZodMiddleware(ChangeDescBodySchema),
+        validate_params(ChangeStatusParamsSchema),
+        validateZodMiddleware(ChangeStatusBodySchema),
         dependencies.changeTaskStatusController.changeStatusCont
     );
 
+    // TODO : YES
     organizationRouter.patch('/:orgId/tasks/:taskId/title',
         validate_params(ChangeTitleParamsSchema),
-        validateZodMiddleware(ChangeDescBodySchema),
+        validateZodMiddleware(ChangeTitleBodySchema),
         dependencies.changeTaskTitleController.changeTitleCont
     );
 
+    // TODO : YES
     organizationRouter.post('/:orgId/tasks/create',
         validate_params(CreateTaskParamsSchema),
         validateZodMiddleware(CreateTaskBodySchema),
         dependencies.createTaskController.createTaskCont
     );
 
-    organizationRouter.delete('/:orgId/tasks/:taskId',
+    // TODO : YES
+    organizationRouter.delete('/:orgId/tasks/:orgTaskId',
         validate_params(DeleteTaskParamsSchema),
         dependencies.deleteTaskController.deleteTaskCont
     );
 
+    // TODO : YES
     organizationRouter.post("/create",
         validateZodMiddleware(CreateOrgBodySchema),
         dependencies.createOrganizationController.createOrganizationCont
     );
 
+    // TODO : YES
     organizationRouter.patch("/:orgId/rename",
         validate_params(RenameOrgParamsSchema),
         validateZodMiddleware(RenameOrgBodySchema),
         dependencies.renameOrganizationController.renameOrgCont
     );
 
+    // TODO : YES
     organizationRouter.delete("/:orgId/delete",
         validate_params(DeleteOrganizationParamsSchema),
         dependencies.deleteOrganizationController.DeleteOrganizationCont
     );
 
+    // TODO : YES
     organizationRouter.patch("/:orgId/role/:targetUserId",
         validate_params(ChangeRoleParamsSchema),
         validateZodMiddleware(ChangeRoleBodySchema),
         dependencies.changeMemberRoleController.changeRoleCont
     );
 
+    // TODO : YES
     organizationRouter.delete("/:orgId/fire/:targetUserId",
         validate_params(FireMemberParamsSchema),
         dependencies.fireMemberController.fireMemberCont
     );
 
-    organizationRouter.post("/:orgId/hire",
+    // TODO : YES
+    organizationRouter.get("/my/with_roles",
+        dependencies.getAllOrgsWithRolesController.getAllOrgsWithRolesCont
+    );
+
+    // TODO : YES
+    organizationRouter.post("/:orgId/users/:targetUserId/hire",
         validate_params(HireMemberParamsSchema),
         validateZodMiddleware(HireMemberBodySchema),
         dependencies.hireMemberController.hireMemberCont
     );
 
+    // TODO : YES
+    organizationRouter.get("/:orgId/members/:targetUserId/view",
+        validate_params(GetMemberByIdParamsSchema),
+        dependencies.getMemberByIdController.getMemberByIdCont
+    );
+
+    // TODO : YES
     organizationRouter.get("/:orgId/members",
         validate_params(GetAllMembersParamsSchema),
         dependencies.getAllMembersController.getAllMembersCont
     );
 
+    // TODO : YES
     organizationRouter.get("/:orgId/audit_events/all",
         validate_params(GetAuditByOrgIdParamsSchema),
         dependencies.getAuditByOrgIdController.getAuditByOrgIdCont
     );
 
+    // TODO : YES
     organizationRouter.get("/:orgId/audit_events/filtered",
         validate_params(GetFilteredAuditParamsSchema),
         // validateQuery(GetFilteredAuditParamsSchema),
         dependencies.getFilteredAuditController.getFilteredAuditCont
     );
 
+    // TODO : YES
     organizationRouter.post("/:orgId/invite/:invitedUserId",
         validate_params(CreateInvitationParamsSchema),
         validateZodMiddleware(CreateInvitationBodySchema),
         dependencies.createInvitationController.createInvitationCont // CREATE INVITATION FOR TARGET (invitedUserId) USER
     );
 
-    organizationRouter.get(":/orgId/invitations",
+    // TODO : YES
+    organizationRouter.get("/:orgId/invitations",
         validate_params(GetOrganizationInvitationsParamsSchema),
         dependencies.getOrganizationInvitationsController.getOrganizationInvitationsCont // GET INVITATIONS OF A SPECIFIC ORGANIZATION
     );
 
+    // TODO : YES
     organizationRouter.patch("/:invitationId/cancel",
         validate_params(CancelInvitationParamsSchema),
         dependencies.cancelInvitationController.cancelInvitationCont // CANCEL INVITATION
     );
 
-    app.use(loggerMiddleware());
+    // TODO : YES
+    organizationRouter.get("/:orgId/invitations/:invId/view",
+        validate_params(GetByIdAndOrgParamsSchema),
+        dependencies.getInvitationByIdAndOrgController.getByIdAndOrgCont
+    );
+
+
     app.use(errorMiddleware());
 
     return app;

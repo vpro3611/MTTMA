@@ -1,21 +1,26 @@
-import {OrganizationMembersRepository} from "../domain/ports/organization_memebers_repo_interface.js";
+import {
+    CheckForMembership,
+    OrganizationMembersRepository
+} from "../domain/ports/organization_memebers_repo_interface.js";
 import {OrganizationMember} from "../domain/organization_member_domain.js";
 import {
     ActorNotAMemberError,
     CannotAssignRole, CannotPerformActionOnYourselfError,
-    InvalidOrganizationMemberRoleError, OnlyOwnerCanAssign, OrganizationMemberInsufficientPermissionsError
+    InvalidOrganizationMemberRoleError, OnlyOwnerCanAssign, OrganizationMemberInsufficientPermissionsError,
+    TargetIsMemberOfOtherOrganization
 } from "../errors/organization_members_domain_error.js";
 import {OrgMemberDTO} from "../DTO/org_member_dto.js";
 import {UserRepository} from "../../user/domain/ports/user_repo_interface.js";
 import {UserNotFoundError} from "../errors/organization_members_repo_errors.js";
-import {UserResponseDto} from "../../user/DTO/user_response_dto.js";
 import {OrgMemsRole} from "../domain/org_members_role.js";
 import {User} from "../../user/domain/user_domain.js";
+import {UserAlreadyMember} from "../../invitations/errors/application_errors.js";
 
 
 export class HireOrgMemberUseCase {
     constructor(private readonly orgMemberRepo: OrganizationMembersRepository,
                 private readonly userRepo: UserRepository,
+                private readonly membershipRepo: CheckForMembership
     ) {}
 
     private parseRole(role?: string): OrgMemsRole | undefined {
@@ -37,13 +42,6 @@ export class HireOrgMemberUseCase {
         if (!user) {
             throw new UserNotFoundError();
         }
-
-        // const response: UserResponseDto = {
-        //     id: user.id,
-        //     email: user.getEmail().getValue(),
-        //     status: user.getStatus(),
-        //     created_at: user.getCreatedAt(),
-        // }
 
         return user;
     }
@@ -68,6 +66,20 @@ export class HireOrgMemberUseCase {
         }
     }
 
+    private async checkPotentialNewMember(targetUserId: string, organizationId: string): Promise<void> {
+        const potentialNewMember = await this.orgMemberRepo.findById(targetUserId, organizationId);
+        if (potentialNewMember) {
+            throw new UserAlreadyMember();
+        }
+    }
+
+    private async checkForMembership(userId: string): Promise<void> {
+        const result: boolean = await this.membershipRepo.findRelations(userId);
+        if (result) {
+            throw new TargetIsMemberOfOtherOrganization();
+        }
+    }
+
     execute = async (actorUserId: string, organizationId: string, targetUserId: string, role?: OrgMemsRole) => {
         const parsedRole = this.parseRole(role);
 
@@ -78,6 +90,12 @@ export class HireOrgMemberUseCase {
         userExists.checkUserStatus(userExists.getStatus());
 
         const actorMember = await this.actorMemberExists(actorUserId, organizationId);
+
+        await this.checkPotentialNewMember(targetUserId, organizationId);
+
+        await this.checkForMembership(targetUserId);
+
+        this.assertRoleAndActor(parsedRole, actorMember)
 
         const newMember = OrganizationMember.hire(organizationId, userExists.id, parsedRole);
 

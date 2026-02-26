@@ -16,7 +16,8 @@ describe('ChangeUserEmailUseCase', () => {
             findById: jest.fn(),
             findByEmail: jest.fn(), // даже если не используется — интерфейс требует
             save: jest.fn(),
-        };
+            listAll: jest.fn(),
+        } as unknown as jest.Mocked<UserRepository>;
 
         useCase = new ChangeUserEmailUseCase(userRepository);
     });
