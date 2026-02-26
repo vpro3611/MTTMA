@@ -210,6 +210,13 @@ import {GetInvitationByIdUseCase} from "./modules/invitations/application/get_in
 import {GetInvitationByIdService} from "./modules/invitations/application/services/get_inv_by_id_service.js";
 import {GetInvitationByIdServ} from "./modules/invitations/controllers/services/get_inv_by_id_serv.js";
 import {GetInvitationByIdController} from "./modules/invitations/controllers/get_inv_by_id_controller.js";
+import {
+    MembershipRepoPg
+} from "./modules/organization_members/organization_members_repository_realization/membership_repo_pg.js";
+import {CheckMembershipUseCase} from "./modules/organization_members/application/check_membership_use_case.js";
+import {CheckMembershipService} from "./modules/organization_members/application/services/check_membershit_service.js";
+import {CheckMembershipServ} from "./modules/organization_members/controllers/services/check_memberhip_serv.js";
+import {CheckMembershitController} from "./modules/organization_members/controllers/check_membershit_controller.js";
 
 export function assembleContainer() {
 
@@ -251,6 +258,8 @@ export function assembleContainer() {
     const getInvitationByIdAndOrgPG = new InvitationByIdAndOrgRepoPg(pool);
     // 15) get a specific user invitation with FULL DETAILED INFO
     const getFullUserInvitationPG = new UserInvitationRepoPg(pool);
+    // 16) find relations database (checks whether a user is employed)
+    const checkMembershipPG = new MembershipRepoPg(pool);
     // infrastructure services
     const hasher: PasswordHasher = new HasherBcrypt();
 
@@ -273,10 +282,11 @@ export function assembleContainer() {
     // 3) organization_members
     const changeOrgMemberRoleUC = new ChangeOrgMemberRoleUseCase(organizationMemberRepoPG);
     const fireOrgMemberUC = new FireOrgMemberUseCase(organizationMemberRepoPG);
-    const hireOrgMemberUC = new HireOrgMemberUseCase(organizationMemberRepoPG, userRepoPG);
+    const hireOrgMemberUC = new HireOrgMemberUseCase(organizationMemberRepoPG, userRepoPG, checkMembershipPG);
     const getAllMembersUC = new GetAllMembersUseCase(organizationMemberRepoPG);
     const getMemberByIdUC = new GetMemberByIdUseCase(organizationMemberRepoPG, organizationRepoPG);
     const getAllOrgsWithRoleUC = new GetAllOrganizationsWithRolesUseCase(getOrganizationsWithRolesPG, userRepoPG);
+    const checkMembershipUC = new CheckMembershipUseCase(checkMembershipPG, userRepoPG);
     // 4) organizations
     const createOrganizationUC = new CreateOrganizationUseCase(organizationRepoPG, userRepoPG);
     const renameOrganizationUC = new RenameOrganizationUseCase(organizationRepoPG, organizationMemberRepoPG);
@@ -323,6 +333,7 @@ export function assembleContainer() {
     const getAllMembersService = new GetAllMembersWithAudit(getAllMembersUC, appendToAuditUC);
     const getMemberByIdService = new GetMemberByIdService(getMemberByIdUC);
     const getAllOrgsWithRolesService = new GetAllOrganizationsWithRolesService(getAllOrgsWithRoleUC);
+    const checkMembershipService = new CheckMembershipService(checkMembershipUC);
     // 4 organizations
     const createOrganizationService = new CreateOrganizationWithAudit(createOrganizationUC, appendToAuditUC);
     const deleteOrganizationService = new DeleteOrganization(deleteOrganizationUC);
@@ -378,6 +389,7 @@ export function assembleContainer() {
     const getAllMembersServ = new GetAllMembersServ(txManager);
     const getMemberByIdServ = new GetMemberByIdServ(txManager);
     const getAllOrgsWithRolesServ = new GetAllOrgsWithRolesServ(txManager);
+    const checkMembershipServ = new CheckMembershipServ(txManager);
     // 5) audit events
     const getAuditByOrgIdServ = new GetAuditByIdServ(txManager);
     const getFilteredAuditServ = new GetFilteredAuditServ(txManager);
@@ -424,6 +436,7 @@ export function assembleContainer() {
     const getAllMembersController = new GetAllMembersController(getAllMembersServ);
     const getMemberByIdController = new GetMemberByIdController(getMemberByIdServ);
     const getAllOrgsWithRolesController = new GetAllOrgsWithRolesController(getAllOrgsWithRolesServ);
+    const checkMembershipController = new CheckMembershitController(checkMembershipServ)
     // 6) audit events
     const getAuditByOrgIdController = new GetAuditByOrgIdController(getAuditByOrgIdServ);
     const getFilteredAuditController = new GetFilteredAuditController(getFilteredAuditServ);
@@ -471,6 +484,7 @@ export function assembleContainer() {
         fireMemberService,
         hireMemberService,
         getAllMembersService,
+        checkMembershipController,
 
         createOrganizationService,
         deleteOrganizationService,

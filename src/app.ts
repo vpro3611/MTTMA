@@ -61,6 +61,7 @@ import {GetMemberByIdParamsSchema} from "./modules/organization_members/controll
 import {FindTaskByIdParamsSchema} from "./modules/organization_task/controller/find_task_by_id_controller.js";
 import {GetByIdAndOrgParamsSchema} from "./modules/invitations/controllers/get_by_id_and_org_controller.js";
 import {GetInvitationByIdParamsSchema} from "./modules/invitations/controllers/get_inv_by_id_controller.js";
+import {MembershipParamsSchema} from "./modules/organization_members/controllers/check_membershit_controller.js";
 
 
 export function createApp(dependencies: AppContainer) {
@@ -178,6 +179,12 @@ export function createApp(dependencies: AppContainer) {
     privateRouter.patch("/:invitationId/reject",
         validate_params(RejectInvitationParamsSchema),
         dependencies.rejectInvitationController.rejectInvitationCont // REJECT INVITATION
+    );
+
+    // TODO : YES
+    privateRouter.get("/users/:userId/membership_check",
+        validate_params(MembershipParamsSchema),
+        dependencies.checkMembershipController.checkMembershipCont
     );
 
     // TODO : YES
