@@ -168,11 +168,13 @@ export function createApp(dependencies: AppContainer) {
         dependencies.getFullUserInvitationController.getInvitationByIdCont
     );
 
+    // TODO : YES
     privateRouter.patch('/:invitationId/accept',
         validate_params(AcceptInvitationParamsSchema),
         dependencies.acceptInvitationController.acceptInvitationCont  // ACCEPT INVITATION
     );
 
+    // TODO : YES
     privateRouter.patch("/:invitationId/reject",
         validate_params(RejectInvitationParamsSchema),
         dependencies.rejectInvitationController.rejectInvitationCont // REJECT INVITATION
