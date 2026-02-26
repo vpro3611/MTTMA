@@ -32,16 +32,24 @@ const handleSubmit = async () => {
 </script>
 
 <template>
-  <h1>Register</h1>
-  <form @submit.prevent="handleSubmit">
-    <input v-model="email" type="email" placeholder="Email"></input>
-    <input v-model="password" type="password" placeholder="Password"></input>
+  <form class="modern-form" @submit.prevent="handleSubmit">
+    <h2 class="modern-form__title">Register</h2>
+
+    <label class="modern-form__field">
+      <span class="modern-form__label">Email</span>
+      <input v-model="email" type="email" placeholder="you@example.com" />
+    </label>
+
+    <label class="modern-form__field">
+      <span class="modern-form__label">Password</span>
+      <input v-model="password" type="password" placeholder="Minimum 10 characters" />
+    </label>
 
     <button :disabled="isLoading">
-      {{isLoading ? 'Loading...' : 'Register'}}
+      {{ isLoading ? 'Creating account…' : 'Register' }}
     </button>
 
-   <p v-if="error">{{error}}</p>
+    <p v-if="error" class="modern-form__error">{{ error }}</p>
   </form>
 </template>
 

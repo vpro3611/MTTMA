@@ -95,23 +95,41 @@ onMounted(loadInvitations);
     <div v-if="loading">Loading...</div>
     <div v-else-if="error">{{ error }}</div>
 
-    <ul v-else>
-      <li v-for="inv in invitations" :key="inv.id" @click="$router.push(`/organizations/${orgId}/invitations/${inv.id}`)"
-      style="cursor:pointer; padding:10px; border:1px solid #ccc; margin-bottom:10px;"
+    <div v-else class="grid-cards">
+      <article
+        v-for="inv in invitations"
+        :key="inv.id"
+        class="card card--clickable"
+        @click="$router.push(`/organizations/${orgId}/invitations/${inv.id}`)"
       >
-        <strong>Status:</strong> {{ inv.status }}
-        <br />
-        Invited User: {{ inv.invitedUserId }}
-        <br />
-        Invited By: {{ inv.invitedByUserId }}
-        <br />
-        Role: {{ inv.role }}
-        <br />
-        Created: {{ new Date(inv.createdAt).toLocaleString() }}
-        <br />
-        Expired: {{ new Date(inv.expiredAt).toLocaleString() }}
-        <hr />
-      </li>
-    </ul>
+        <div class="card-header">
+          <div>
+            <h3 class="card-title">Invited user {{ inv.invitedUserId }}</h3>
+            <p class="card-subtitle">
+              Created {{ new Date(inv.createdAt).toLocaleString() }}
+            </p>
+          </div>
+          <span
+            class="pill"
+            :class="{
+              'pill--status-pending': inv.status === 'PENDING',
+              'pill--status-accepted': inv.status === 'ACCEPTED',
+              'pill--status-rejected': inv.status === 'REJECTED',
+              'pill--status-expired': inv.status === 'EXPIRED',
+              'pill--status-canceled': inv.status === 'CANCELED'
+            }"
+          >
+            {{ inv.status }}
+          </span>
+        </div>
+        <div class="card-row">
+          <span>Role: <strong>{{ inv.role }}</strong></span>
+          <span>Invited by: <code>{{ inv.invitedByUserId }}</code></span>
+        </div>
+        <div class="card-row">
+          <span>Expires: {{ new Date(inv.expiredAt).toLocaleString() }}</span>
+        </div>
+      </article>
+    </div>
   </section>
 </template>

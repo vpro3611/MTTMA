@@ -279,13 +279,17 @@ const handleInvite = async () => {
 </script>
 
 <template>
-  <section v-if="loading">Loading...</section>
+  <section class="container" v-if="loading">Loading...</section>
 
-  <section v-else-if="error">
+  <section class="container" v-else-if="error">
     {{ error }}
   </section>
 
-  <section v-else-if="org">
+  <section class="container" v-else-if="org">
+
+    <button @click="router.push('/organizations')" style="margin-bottom:1rem;">
+      ← Back to organizations
+    </button>
 
     <h1>{{ org.name }}</h1>
 

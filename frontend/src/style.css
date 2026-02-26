@@ -36,26 +36,127 @@ h1 {
 }
 
 button {
-  border-radius: 8px;
+  border-radius: 999px;
   border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
+  padding: 0.55em 1.4em;
+  font-size: 0.95rem;
   font-weight: 500;
   font-family: inherit;
   background-color: #1a1a1a;
   cursor: pointer;
-  transition: border-color 0.25s;
+  transition: background-color 0.15s ease-out, border-color 0.15s ease-out,
+    transform 0.1s ease-out, box-shadow 0.15s ease-out;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
 }
 button:hover {
   border-color: #646cff;
+  background-color: #222;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.45);
 }
 button:focus,
 button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  outline: 3px solid #646cff;
+  outline-offset: 2px;
 }
 
+/* -------- Generic cards & tags -------- */
+
 .card {
-  padding: 2em;
+  background: rgba(0, 0, 0, 0.45);
+  border-radius: 18px;
+  padding: 1.4rem 1.6rem;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  text-align: left;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
+}
+
+.card--clickable {
+  cursor: pointer;
+  transition: transform 0.12s ease-out, box-shadow 0.12s ease-out,
+    border-color 0.12s ease-out;
+}
+
+.card--clickable:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.5);
+  border-color: #646cff;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.card-title {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.card-subtitle {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #bbbbbb;
+}
+
+.card-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 0.4rem;
+  font-size: 0.9rem;
+}
+
+.card-row span {
+  color: #bbbbbb;
+}
+
+.grid-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.4rem;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.pill--soft {
+  border: none;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.pill--status-pending {
+  background: rgba(250, 204, 21, 0.12);
+  border-color: rgba(250, 204, 21, 0.35);
+}
+
+.pill--status-accepted {
+  background: rgba(34, 197, 94, 0.12);
+  border-color: rgba(34, 197, 94, 0.4);
+}
+
+.pill--status-rejected,
+.pill--status-canceled {
+  background: rgba(248, 113, 113, 0.12);
+  border-color: rgba(248, 113, 113, 0.4);
+}
+
+.pill--status-expired {
+  background: rgba(148, 163, 184, 0.12);
+  border-color: rgba(148, 163, 184, 0.4);
 }
 
 #app {
@@ -77,3 +178,235 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+/* Black theme override */
+
+:root[data-theme="black"] {
+  background-color: #050505;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+:root[data-theme="black"] .main-content {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+:root[data-theme="black"] .sidebar,
+:root[data-theme="black"] .card,
+:root[data-theme="black"] .user-card {
+  background: rgba(0, 0, 0, 0.9);
+}
+
+/* -------- App layout -------- */
+
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+  gap: 2rem;
+}
+
+.sidebar {
+  padding: 1.5rem 1rem;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  min-width: 220px;
+}
+
+.sidebar h2 {
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+.sidebar nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.sidebar button {
+  width: 100%;
+  justify-content: center;
+}
+
+.main-content {
+  flex: 1;
+  padding: 1.5rem;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.25);
+  text-align: left;
+}
+
+/* -------- Generic page layout -------- */
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem;
+}
+
+.page-header {
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.page-header h1 {
+  margin: 0 0 0.25rem;
+  font-size: 2.2rem;
+}
+
+.page-header p {
+  margin: 0;
+  color: #aaaaaa;
+}
+
+.page-actions {
+  margin: 1rem 0 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+/* -------- Dashboard -------- */
+
+.dashboard {
+  text-align: left;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.dashboard .card {
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.45);
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition: transform 0.12s ease-out, box-shadow 0.12s ease-out,
+    border-color 0.12s ease-out;
+  text-align: left;
+}
+
+.dashboard .card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.4);
+  border-color: #646cff;
+}
+
+/* -------- Users page -------- */
+
+.users-page {
+  text-align: left;
+}
+
+.users-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.25rem;
+  margin-top: 1.25rem;
+}
+
+.user-card {
+  background: rgba(0, 0, 0, 0.45);
+  border-radius: 14px;
+  padding: 1.1rem 1.2rem;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+  transition: transform 0.12s ease-out, box-shadow 0.12s ease-out,
+    border-color 0.12s ease-out;
+}
+
+.user-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.45);
+  border-color: #646cff;
+}
+
+.user-email {
+  margin: 0 0 0.25rem;
+  font-size: 1.1rem;
+}
+
+.user-status {
+  margin: 0;
+  color: #bbbbbb;
+}
+
+.card-meta {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: #999999;
+}
+
+.users-footer {
+  margin-top: 1.5rem;
+  text-align: center;
+  color: #aaaaaa;
+}
+
+.users-footer .loading {
+  margin-bottom: 0.5rem;
+}
+
+/* -------- Simple section lists (invitations, org members, etc.) -------- */
+
+section ul {
+  list-style: none;
+  padding: 0;
+}
+
+section li {
+  margin-bottom: 0.75rem;
+}
+
+/* -------- Modern form -------- */
+
+.modern-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.modern-form__title {
+  margin: 0 0 0.5rem;
+  font-size: 1.3rem;
+}
+
+.modern-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.modern-form__label {
+  font-size: 0.85rem;
+  color: #bbbbbb;
+}
+
+.modern-form input,
+.modern-form textarea,
+.modern-form select {
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  padding: 0.55rem 0.8rem;
+  background: rgba(0, 0, 0, 0.4);
+  color: inherit;
+  font: inherit;
+}
+
+.modern-form input:focus,
+.modern-form textarea:focus,
+.modern-form select:focus {
+  outline: 2px solid #646cff;
+  outline-offset: 1px;
+}
+
+.modern-form__error {
+  color: #fca5a5;
+  font-size: 0.85rem;
+}
+
