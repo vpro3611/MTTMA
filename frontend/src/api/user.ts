@@ -77,5 +77,31 @@ export const userAPI = {
         }
 
         return data;
+    },
+
+    async acceptInvitation(invitationId: string): Promise<InvitationType> {
+        const res = await authorizedFetch(`${UrlConfig.apiBaseUrl}/api/${invitationId}/accept`,
+            {method: "PATCH"});
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            throw new Error(data?.message || "Failed to accept invitation");
+        }
+
+        return data;
+    },
+
+    async rejectInvitation(invitationId: string): Promise<InvitationType> {
+        const res = await authorizedFetch(`${UrlConfig.apiBaseUrl}/api/${invitationId}/reject`,
+            {method: "PATCH"});
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            throw new Error(data?.message || "Failed to reject invitation");
+        }
+
+        return data;
     }
 }
