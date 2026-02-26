@@ -77,3 +77,171 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+/* -------- App layout -------- */
+
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+  gap: 2rem;
+}
+
+.sidebar {
+  padding: 1.5rem 1rem;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  min-width: 220px;
+}
+
+.sidebar h2 {
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+.sidebar nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.sidebar button {
+  width: 100%;
+  justify-content: center;
+}
+
+.main-content {
+  flex: 1;
+  padding: 1.5rem;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.25);
+  text-align: left;
+}
+
+/* -------- Generic page layout -------- */
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem;
+}
+
+.page-header {
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.page-header h1 {
+  margin: 0 0 0.25rem;
+  font-size: 2.2rem;
+}
+
+.page-header p {
+  margin: 0;
+  color: #aaaaaa;
+}
+
+.page-actions {
+  margin: 1rem 0 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+/* -------- Dashboard -------- */
+
+.dashboard {
+  text-align: left;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.dashboard .card {
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.45);
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition: transform 0.12s ease-out, box-shadow 0.12s ease-out,
+    border-color 0.12s ease-out;
+  text-align: left;
+}
+
+.dashboard .card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.4);
+  border-color: #646cff;
+}
+
+/* -------- Users page -------- */
+
+.users-page {
+  text-align: left;
+}
+
+.users-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.25rem;
+  margin-top: 1.25rem;
+}
+
+.user-card {
+  background: rgba(0, 0, 0, 0.45);
+  border-radius: 14px;
+  padding: 1.1rem 1.2rem;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+  transition: transform 0.12s ease-out, box-shadow 0.12s ease-out,
+    border-color 0.12s ease-out;
+}
+
+.user-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.45);
+  border-color: #646cff;
+}
+
+.user-email {
+  margin: 0 0 0.25rem;
+  font-size: 1.1rem;
+}
+
+.user-status {
+  margin: 0;
+  color: #bbbbbb;
+}
+
+.card-meta {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: #999999;
+}
+
+.users-footer {
+  margin-top: 1.5rem;
+  text-align: center;
+  color: #aaaaaa;
+}
+
+.users-footer .loading {
+  margin-bottom: 0.5rem;
+}
+
+/* -------- Simple section lists (invitations, org members, etc.) -------- */
+
+section ul {
+  list-style: none;
+  padding: 0;
+}
+
+section li {
+  margin-bottom: 0.75rem;
+}
+
