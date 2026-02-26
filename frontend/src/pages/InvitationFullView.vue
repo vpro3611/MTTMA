@@ -32,6 +32,10 @@ const goBack = () => {
   router.push("/invitations");
 };
 
+const goToOrganization = (orgId: string) => {
+  router.push(`/organizations/view/${orgId}`);
+}
+
 onMounted(loadInvitation);
 </script>
 
@@ -45,9 +49,10 @@ onMounted(loadInvitation);
 
       <h1>Invitation Details</h1>
 
-      <p><strong>Organization:</strong> {{ invitation.organizationName }}</p>
+      <p><strong>Organization:</strong> {{ invitation.organizationName }} </p>
       <p><strong>Organization ID:</strong> {{ invitation.organizationId }}</p>
       <p><strong>Members Count:</strong> {{ invitation.membersCount }}</p>
+      <button @click="goToOrganization(invitation.organizationId)">View Organization</button>
       <hr />
 
       <p><strong>Status:</strong> {{ invitation.status }}</p>
