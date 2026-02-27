@@ -1,6 +1,6 @@
 import { Pool } from "pg";
 import crypto from "crypto";
-import { UserRepositoryReaderPg } from "../../../src/modules/user/repository_realization/user_repository_reader_pg.js";
+import { UserRepositoryReaderPg } from "../../../backend/src/modules/user/repository_realization/user_repository_reader_pg.js";
 
 describe("UserRepositoryReaderPg (integration)", () => {
 

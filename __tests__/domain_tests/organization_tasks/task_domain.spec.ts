@@ -1,11 +1,11 @@
-import { Task } from "../../../src/modules/organization_task/domain/task_domain.js";
-import { TaskTitle } from "../../../src/modules/organization_task/domain/task_title.js";
-import { TaskDescription } from "../../../src/modules/organization_task/domain/task_description.js";
+import { Task } from "../../../backend/src/modules/organization_task/domain/task_domain.js";
+import { TaskTitle } from "../../../backend/src/modules/organization_task/domain/task_title.js";
+import { TaskDescription } from "../../../backend/src/modules/organization_task/domain/task_description.js";
 import {
     CannotChangeCancelledError,
     CannotChangeCompletedError,
     UnchangeableDueToStatusError,
-} from "../../../src/modules/organization_task/errors/task_domain_errors.js";
+} from "../../../backend/src/modules/organization_task/errors/task_domain_errors.js";
 
 describe("Task (domain)", () => {
     const ORG_ID = "org-1";

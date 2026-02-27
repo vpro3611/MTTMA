@@ -1,7 +1,7 @@
 import express from "express";
 import request from "supertest";
-import { SearchOrganizationController } from "../../../src/modules/organization/controllers/search_organization_controller.js";
-import { errorMiddleware } from "../../../src/middlewares/error_middleware.js";
+import { SearchOrganizationController } from "../../../backend/src/modules/organization/controllers/search_organization_controller.js";
+import { errorMiddleware } from "../../../backend/src/middlewares/error_middleware.js";
 
 describe("SearchOrganizationController (HTTP)", () => {
 

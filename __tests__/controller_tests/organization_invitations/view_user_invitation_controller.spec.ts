@@ -2,10 +2,10 @@ import express from "express";
 import request from "supertest";
 
 import { ViewUserInvitationsController } from
-        "../../../src/modules/invitations/controllers/view_user_invitations_controller.js";
+        "../../../backend/src/modules/invitations/controllers/view_user_invitations_controller.js";
 
 import { errorMiddleware } from
-        "../../../src/middlewares/error_middleware.js";
+        "../../../backend/src/middlewares/error_middleware.js";
 
 describe("ViewUserInvitationsController (HTTP integration)", () => {
 

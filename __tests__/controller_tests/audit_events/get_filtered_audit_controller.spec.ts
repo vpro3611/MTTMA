@@ -1,8 +1,8 @@
 import express from "express";
 import request from "supertest";
-import { GetFilteredAuditController } from "../../../src/modules/audit_events/controllers/get_filtered_audit_controller.js";
-import { errorMiddleware } from "../../../src/middlewares/error_middleware.js";
-import { AuditEventActions } from "../../../src/modules/audit_events/domain/audit_event_actions.js";
+import { GetFilteredAuditController } from "../../../backend/src/modules/audit_events/controllers/get_filtered_audit_controller.js";
+import { errorMiddleware } from "../../../backend/src/middlewares/error_middleware.js";
+import { AuditEventActions } from "../../../backend/src/modules/audit_events/domain/audit_event_actions.js";
 
 describe("GetFilteredAuditController (HTTP integration)", () => {
 

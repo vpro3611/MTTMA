@@ -1,4 +1,4 @@
-import { CheckProfileService } from "../../../src/modules/user/application/service/check_profile.js";
+import { CheckProfileService } from "../../../backend/src/modules/user/application/service/check_profile.js";
 
 describe("CheckProfileService", () => {
 

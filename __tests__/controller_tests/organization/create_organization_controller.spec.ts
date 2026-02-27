@@ -4,13 +4,13 @@ import request from "supertest";
 import {
     CreateOrganizationController,
     CreateOrgBodySchema
-} from "../../../src/modules/organization/controllers/create_organization_controller.js";
+} from "../../../backend/src/modules/organization/controllers/create_organization_controller.js";
 
 import { validateZodMiddleware } from
-        "../../../src/middlewares/validate_zod_middleware.js";
+        "../../../backend/src/middlewares/validate_zod_middleware.js";
 
 import { errorMiddleware } from
-        "../../../src/middlewares/error_middleware.js";
+        "../../../backend/src/middlewares/error_middleware.js";
 
 describe("CreateOrganizationController (HTTP integration)", () => {
 

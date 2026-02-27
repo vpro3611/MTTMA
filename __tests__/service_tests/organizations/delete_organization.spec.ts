@@ -1,4 +1,4 @@
-import {DeleteOrganization} from "../../../src/modules/organization/application/service/delete_organization.js";
+import {DeleteOrganization} from "../../../backend/src/modules/organization/application/service/delete_organization.js";
 
 describe("DeleteOrganization (unit)", () => {
 

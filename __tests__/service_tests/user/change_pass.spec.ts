@@ -1,8 +1,8 @@
 import { ChangePassService } from
-        "../../../src/modules/user/application/service/change_pass.js";
+        "../../../backend/src/modules/user/application/service/change_pass.js";
 
 import { ChangePasswordUseCase } from
-        "../../../src/modules/user/application/change_pass_use_case.js";
+        "../../../backend/src/modules/user/application/change_pass_use_case.js";
 
 describe("ChangePassService (transactional)", () => {
 

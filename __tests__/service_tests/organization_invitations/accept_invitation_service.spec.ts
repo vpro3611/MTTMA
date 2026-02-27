@@ -1,6 +1,6 @@
-import { AcceptInvitationService } from "../../../src/modules/invitations/application/services/accept_invitation_service.js";
-import { AuditEventActions } from "../../../src/modules/audit_events/domain/audit_event_actions.js";
-import { AuditEvent } from "../../../src/modules/audit_events/domain/audit_event_domain.js";
+import { AcceptInvitationService } from "../../../backend/src/modules/invitations/application/services/accept_invitation_service.js";
+import { AuditEventActions } from "../../../backend/src/modules/audit_events/domain/audit_event_actions.js";
+import { AuditEvent } from "../../../backend/src/modules/audit_events/domain/audit_event_domain.js";
 
 describe("AcceptInvitationService", () => {
 

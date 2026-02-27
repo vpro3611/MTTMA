@@ -1,5 +1,5 @@
-import { ViewUserInvitationsUseCase } from "../../../src/modules/invitations/application/view_user_invitations_use_case.js";
-import { UserDoesNotExistError } from "../../../src/modules/organization_task/errors/repository_errors.js";
+import { ViewUserInvitationsUseCase } from "../../../backend/src/modules/invitations/application/view_user_invitations_use_case.js";
+import { UserDoesNotExistError } from "../../../backend/src/modules/organization_task/errors/repository_errors.js";
 
 describe("ViewUserInvitationsUseCase", () => {
 

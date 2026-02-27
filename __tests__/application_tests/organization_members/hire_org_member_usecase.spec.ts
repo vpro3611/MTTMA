@@ -1,20 +1,20 @@
-import { HireOrgMemberUseCase } from "../../../src/modules/organization_members/application/hire_org_member_use_case.js";
-import { OrganizationMember } from "../../../src/modules/organization_members/domain/organization_member_domain.js";
-import { OrganizationMembersRepository } from "../../../src/modules/organization_members/domain/ports/organization_memebers_repo_interface.js";
-import { UserRepository } from "../../../src/modules/user/domain/ports/user_repo_interface.js";
-import { User } from "../../../src/modules/user/domain/user_domain.js";
+import { HireOrgMemberUseCase } from "../../../backend/src/modules/organization_members/application/hire_org_member_use_case.js";
+import { OrganizationMember } from "../../../backend/src/modules/organization_members/domain/organization_member_domain.js";
+import { OrganizationMembersRepository } from "../../../backend/src/modules/organization_members/domain/ports/organization_memebers_repo_interface.js";
+import { UserRepository } from "../../../backend/src/modules/user/domain/ports/user_repo_interface.js";
+import { User } from "../../../backend/src/modules/user/domain/user_domain.js";
 import {
     ActorNotAMemberError,
     CannotAssignRole,
     CannotPerformActionOnYourselfError,
     OnlyOwnerCanAssign,
     OrganizationMemberInsufficientPermissionsError,
-} from "../../../src/modules/organization_members/errors/organization_members_domain_error.js";
-import { UserNotFoundError } from "../../../src/modules/organization_members/errors/organization_members_repo_errors.js";
-import { Email } from "../../../src/modules/user/domain/email.js";
-import { Password } from "../../../src/modules/user/domain/password.js";
-import {UserStatus} from "../../../src/modules/user/domain/user_status.js";
-import {UserIsBannedError} from "../../../src/modules/user/errors/user_domain_error.js";
+} from "../../../backend/src/modules/organization_members/errors/organization_members_domain_error.js";
+import { UserNotFoundError } from "../../../backend/src/modules/organization_members/errors/organization_members_repo_errors.js";
+import { Email } from "../../../backend/src/modules/user/domain/email.js";
+import { Password } from "../../../backend/src/modules/user/domain/password.js";
+import {UserStatus} from "../../../backend/src/modules/user/domain/user_status.js";
+import {UserIsBannedError} from "../../../backend/src/modules/user/errors/user_domain_error.js";
 
 describe("HireOrgMemberUseCase", () => {
     const ORG_ID = "org-1";

@@ -1,8 +1,8 @@
-import { ChangeDescServ } from "../../../src/modules/organization_task/controller/services/change_desc_serv.js";
-import { ChangeDescWithAudit } from "../../../src/modules/organization_task/application/service/change_desc_with_audit.js";
+import { ChangeDescServ } from "../../../backend/src/modules/organization_task/controller/services/change_desc_serv.js";
+import { ChangeDescWithAudit } from "../../../backend/src/modules/organization_task/application/service/change_desc_with_audit.js";
 
 jest.mock(
-    "../../../src/modules/organization_task/application/service/change_desc_with_audit.js",
+    "../../../backend/src/modules/organization_task/application/service/change_desc_with_audit.js",
     () => ({
         ChangeDescWithAudit: jest.fn(),
     })

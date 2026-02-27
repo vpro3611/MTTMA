@@ -1,8 +1,8 @@
 import { AppendLogAuditEvents } from
-        "../../../src/modules/audit_events/application/append_log_audit_events.js";
+        "../../../backend/src/modules/audit_events/application/append_log_audit_events.js";
 
 import { AuditEvent } from
-        "../../../src/modules/audit_events/domain/audit_event_domain.js";
+        "../../../backend/src/modules/audit_events/domain/audit_event_domain.js";
 
 describe("AppendLogAuditEvents (unit)", () => {
 

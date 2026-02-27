@@ -1,4 +1,4 @@
-import { SearchOrganization } from "../../../src/modules/organization/application/service/search_organization.js";
+import { SearchOrganization } from "../../../backend/src/modules/organization/application/service/search_organization.js";
 
 describe("SearchOrganization (service proxy)", () => {
 

@@ -4,13 +4,13 @@ import request from "supertest";
 import {
     DeleteOrganizationController,
     DeleteOrganizationParamsSchema
-} from "../../../src/modules/organization/controllers/delete_organization_controller.js";
+} from "../../../backend/src/modules/organization/controllers/delete_organization_controller.js";
 
 import { validate_params } from
-        "../../../src/middlewares/validate_params.js";
+        "../../../backend/src/middlewares/validate_params.js";
 
 import { errorMiddleware } from
-        "../../../src/middlewares/error_middleware.js";
+        "../../../backend/src/middlewares/error_middleware.js";
 
 describe("DeleteOrganizationController (HTTP integration)", () => {
 

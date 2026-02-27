@@ -1,8 +1,8 @@
 import { CreateOrganizationWithAudit } from
-        "../../../src/modules/organization/application/service/create_with_audit.js";
+        "../../../backend/src/modules/organization/application/service/create_with_audit.js";
 
 import { AuditEventActions } from
-        "../../../src/modules/audit_events/domain/audit_event_actions.js";
+        "../../../backend/src/modules/audit_events/domain/audit_event_actions.js";
 
 describe("CreateOrganizationWithAudit (unit)", () => {
 

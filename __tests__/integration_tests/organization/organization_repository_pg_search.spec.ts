@@ -1,6 +1,6 @@
 
-import { OrganizationRepositorySearch } from "../../../src/modules/organization/repository_realization/organization_repository_search.js";
-import { SearchOrganizationCriteria } from "../../../src/modules/organization/DTO/search_criteria.js";
+import { OrganizationRepositorySearch } from "../../../backend/src/modules/organization/repository_realization/organization_repository_search.js";
+import { SearchOrganizationCriteria } from "../../../backend/src/modules/organization/DTO/search_criteria.js";
 
 describe("OrganizationRepositorySearch.search", () => {
 

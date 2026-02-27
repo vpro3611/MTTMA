@@ -1,14 +1,14 @@
 import { ChangeTitleWithAudit } from
-        "../../../src/modules/organization_task/application/service/change_title_with_audit.js";
+        "../../../backend/src/modules/organization_task/application/service/change_title_with_audit.js";
 
 import { ChangeOrgTaskTitleUseCase } from
-        "../../../src/modules/organization_task/application/change_org_task_title_use_case.js";
+        "../../../backend/src/modules/organization_task/application/change_org_task_title_use_case.js";
 
 import { AppendLogAuditEvents } from
-        "../../../src/modules/audit_events/application/append_log_audit_events.js";
+        "../../../backend/src/modules/audit_events/application/append_log_audit_events.js";
 
 import { AuditEventActions } from
-        "../../../src/modules/audit_events/domain/audit_event_actions.js";
+        "../../../backend/src/modules/audit_events/domain/audit_event_actions.js";
 
 describe("ChangeTitleWithAudit (transactional)", () => {
 

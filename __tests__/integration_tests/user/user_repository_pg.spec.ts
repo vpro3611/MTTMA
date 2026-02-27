@@ -1,9 +1,9 @@
 import { Pool } from "pg";
-import { UserRepositoryPG } from "../../../src/modules/user/repository_realization/user_repository_pg.js";
-import { User } from "../../../src/modules/user/domain/user_domain.js";
-import { Email } from "../../../src/modules/user/domain/email.js";
-import { Password } from "../../../src/modules/user/domain/password.js";
-import {UserStatus} from "../../../src/modules/user/domain/user_status.js";
+import { UserRepositoryPG } from "../../../backend/src/modules/user/repository_realization/user_repository_pg.js";
+import { User } from "../../../backend/src/modules/user/domain/user_domain.js";
+import { Email } from "../../../backend/src/modules/user/domain/email.js";
+import { Password } from "../../../backend/src/modules/user/domain/password.js";
+import {UserStatus} from "../../../backend/src/modules/user/domain/user_status.js";
 
 describe('UserRepositoryPG (integration)', () => {
 

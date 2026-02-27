@@ -1,11 +1,11 @@
 import { RenameOrganizationServ } from
-        "../../../src/modules/organization/controllers/services/rename_organization_serv.js";
+        "../../../backend/src/modules/organization/controllers/services/rename_organization_serv.js";
 
 import { RenameWithAudit } from
-        "../../../src/modules/organization/application/service/rename_with_audit.js";
+        "../../../backend/src/modules/organization/application/service/rename_with_audit.js";
 
 jest.mock(
-    "../../../src/modules/organization/application/service/rename_with_audit.js",
+    "../../../backend/src/modules/organization/application/service/rename_with_audit.js",
     () => ({
         RenameWithAudit: jest.fn(),
     })

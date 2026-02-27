@@ -1,5 +1,5 @@
-import { CheckProfileUseCase } from "../../../src/modules/user/application/check_profile_use_case.js";
-import { UserNotFound } from "../../../src/modules/user/errors/user_repository_errors.js";
+import { CheckProfileUseCase } from "../../../backend/src/modules/user/application/check_profile_use_case.js";
+import { UserNotFound } from "../../../backend/src/modules/user/errors/user_repository_errors.js";
 
 describe("CheckProfileUseCase", () => {
 

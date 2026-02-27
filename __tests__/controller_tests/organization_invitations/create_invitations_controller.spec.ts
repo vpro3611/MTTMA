@@ -5,19 +5,19 @@ import {
     CreateInvitationController,
     CreateInvitationParamsSchema,
     CreateInvitationBodySchema
-} from "../../../src/modules/invitations/controllers/create_invitation_controller.js";
+} from "../../../backend/src/modules/invitations/controllers/create_invitation_controller.js";
 
 import { validate_params } from
-        "../../../src/middlewares/validate_params.js";
+        "../../../backend/src/middlewares/validate_params.js";
 
 import { validateZodMiddleware } from
-        "../../../src/middlewares/validate_zod_middleware.js";
+        "../../../backend/src/middlewares/validate_zod_middleware.js";
 
 import { errorMiddleware } from
-        "../../../src/middlewares/error_middleware.js";
+        "../../../backend/src/middlewares/error_middleware.js";
 
 import { OrgMemsRole } from
-        "../../../src/modules/organization_members/domain/org_members_role.js";
+        "../../../backend/src/modules/organization_members/domain/org_members_role.js";
 
 describe("CreateInvitationController (HTTP integration)", () => {
 

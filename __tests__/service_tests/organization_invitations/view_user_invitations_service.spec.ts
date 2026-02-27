@@ -1,4 +1,4 @@
-import { ViewUserInvitationsService } from "../../../src/modules/invitations/application/services/view_user_invitations_service.js";
+import { ViewUserInvitationsService } from "../../../backend/src/modules/invitations/application/services/view_user_invitations_service.js";
 
 describe("ViewUserInvitationsService", () => {
 

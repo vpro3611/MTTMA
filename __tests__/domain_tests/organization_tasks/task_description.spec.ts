@@ -1,8 +1,8 @@
-import { TaskDescription } from "../../../src/modules/organization_task/domain/task_description.js";
+import { TaskDescription } from "../../../backend/src/modules/organization_task/domain/task_description.js";
 import {
     TaskDescriptionTooLongError,
     TaskDescriptionTooShortError,
-} from "../../../src/modules/organization_task/errors/task_description_errors.js";
+} from "../../../backend/src/modules/organization_task/errors/task_description_errors.js";
 
 describe("TaskDescription (domain)", () => {
 

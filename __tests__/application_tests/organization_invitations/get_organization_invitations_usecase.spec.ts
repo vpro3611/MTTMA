@@ -1,5 +1,5 @@
-import { GetOrganizationInvitationUseCase } from "../../../src/modules/invitations/application/get_organization_invitation_use_case.js";
-import { ActorNotAMemberError } from "../../../src/modules/organization_members/errors/organization_members_domain_error.js";
+import { GetOrganizationInvitationUseCase } from "../../../backend/src/modules/invitations/application/get_organization_invitation_use_case.js";
+import { ActorNotAMemberError } from "../../../backend/src/modules/organization_members/errors/organization_members_domain_error.js";
 
 describe("GetOrganizationInvitationUseCase", () => {
 

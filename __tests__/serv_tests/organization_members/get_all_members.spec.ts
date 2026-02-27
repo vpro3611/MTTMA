@@ -1,5 +1,5 @@
-import { GetAllMembersServ } from "../../../src/modules/organization_members/controllers/services/get_all_members_serv.js";
-import { GetAllMembersWithAudit } from "../../../src/modules/organization_members/application/services/get_all_members_with_audit.js";
+import { GetAllMembersServ } from "../../../backend/src/modules/organization_members/controllers/services/get_all_members_serv.js";
+import { GetAllMembersWithAudit } from "../../../backend/src/modules/organization_members/application/services/get_all_members_with_audit.js";
 
 describe("GetAllMembersServ (spy version)", () => {
 

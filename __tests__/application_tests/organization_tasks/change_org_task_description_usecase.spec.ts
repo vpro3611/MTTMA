@@ -1,24 +1,24 @@
 import { ChangeOrgTaskDescriptionUseCase } from
-        "../../../src/modules/organization_task/application/change_org_task_description_use_case.js";
+        "../../../backend/src/modules/organization_task/application/change_org_task_description_use_case.js";
 
 import {
     ActorNotAMemberError,
     OrganizationMemberInsufficientPermissionsError,
     TargetNotAMemberError
-} from "../../../src/modules/organization_members/errors/organization_members_domain_error.js";
+} from "../../../backend/src/modules/organization_members/errors/organization_members_domain_error.js";
 
 import { TaskNotFoundError } from
-        "../../../src/modules/organization_task/errors/application_errors.js";
+        "../../../backend/src/modules/organization_task/errors/application_errors.js";
 
 import { OrganizationMember } from
-        "../../../src/modules/organization_members/domain/organization_member_domain.js";
+        "../../../backend/src/modules/organization_members/domain/organization_member_domain.js";
 
 import { Task } from
-        "../../../src/modules/organization_task/domain/task_domain.js";
+        "../../../backend/src/modules/organization_task/domain/task_domain.js";
 
 import { TaskDescription } from
-        "../../../src/modules/organization_task/domain/task_description.js";
-import { TaskTitle } from "../../../src/modules/organization_task/domain/task_title.js";
+        "../../../backend/src/modules/organization_task/domain/task_description.js";
+import { TaskTitle } from "../../../backend/src/modules/organization_task/domain/task_title.js";
 import {create} from "node:domain";
 
 describe("ChangeOrgTaskDescriptionUseCase (application)", () => {

@@ -1,11 +1,11 @@
 import { ChangeOrgMemberRoleUseCase } from
-        "../../../src/modules/organization_members/application/change_role_org_member_use_case.js";
+        "../../../backend/src/modules/organization_members/application/change_role_org_member_use_case.js";
 
 import { OrganizationMember } from
-        "../../../src/modules/organization_members/domain/organization_member_domain.js";
+        "../../../backend/src/modules/organization_members/domain/organization_member_domain.js";
 
 import { OrganizationMembersRepository } from
-        "../../../src/modules/organization_members/domain/ports/organization_memebers_repo_interface.js";
+        "../../../backend/src/modules/organization_members/domain/ports/organization_memebers_repo_interface.js";
 
 import {
     ActorNotAMemberError,
@@ -14,7 +14,7 @@ import {
     OrganizationMemberInsufficientPermissionsError,
     InvalidOrganizationMemberRoleError
 } from
-        "../../../src/modules/organization_members/errors/organization_members_domain_error.js";
+        "../../../backend/src/modules/organization_members/errors/organization_members_domain_error.js";
 
 
 describe("ChangeOrgMemberRoleUseCase", () => {

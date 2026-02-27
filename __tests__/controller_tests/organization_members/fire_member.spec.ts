@@ -6,13 +6,13 @@ import request from "supertest";
 import {
     FireMemberController,
     FireMemberParamsSchema
-} from "../../../src/modules/organization_members/controllers/fire_member_controller.js";
+} from "../../../backend/src/modules/organization_members/controllers/fire_member_controller.js";
 
 import { validate_params } from
-        "../../../src/middlewares/validate_params.js";
+        "../../../backend/src/middlewares/validate_params.js";
 
 import { errorMiddleware } from
-        "../../../src/middlewares/error_middleware.js";
+        "../../../backend/src/middlewares/error_middleware.js";
 
 describe("FireMemberController (HTTP integration)", () => {
 

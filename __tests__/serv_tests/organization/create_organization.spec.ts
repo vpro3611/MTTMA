@@ -1,8 +1,8 @@
 import { Pool } from "pg";
 import crypto from "crypto";
 
-import { CreateOrgServ } from "../../../src/modules/organization/controllers/services/create_organization_serv.js";
-import { TransactionManagerPg } from "../../../src/modules/transaction_manager/transaction_manager_pg.js";
+import { CreateOrgServ } from "../../../backend/src/modules/organization/controllers/services/create_organization_serv.js";
+import { TransactionManagerPg } from "../../../backend/src/modules/transaction_manager/transaction_manager_pg.js";
 
 describe("CreateOrgServ (integration)", () => {
 

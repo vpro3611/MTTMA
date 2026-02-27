@@ -1,10 +1,10 @@
 import request from "supertest";
 import express from "express";
 import cookieParser from "cookie-parser";
-import { AuthController } from "../../../src/Auth/auth_controller/auth_controller.js";
-import { errorMiddleware } from "../../../src/middlewares/error_middleware.js";
-import { validateZodMiddleware } from "../../../src/middlewares/validate_zod_middleware.js";
-import { RegisterSchema, LoginSchema } from "../../../src/Auth/auth_controller/auth_controller.js";
+import { AuthController } from "../../../backend/src/Auth/auth_controller/auth_controller.js";
+import { errorMiddleware } from "../../../backend/src/middlewares/error_middleware.js";
+import { validateZodMiddleware } from "../../../backend/src/middlewares/validate_zod_middleware.js";
+import { RegisterSchema, LoginSchema } from "../../../backend/src/Auth/auth_controller/auth_controller.js";
 
 describe("AuthController (HTTP integration with Zod)", () => {
 

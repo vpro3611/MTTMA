@@ -1,5 +1,5 @@
-import { Organization } from "../../../src/modules/organization/domain/organiztion_domain.js";
-import { Name } from "../../../src/modules/organization/domain/name.js";
+import { Organization } from "../../../backend/src/modules/organization/domain/organiztion_domain.js";
+import { Name } from "../../../backend/src/modules/organization/domain/name.js";
 
 describe('Organization (domain)', () => {
 

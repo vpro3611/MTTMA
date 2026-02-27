@@ -1,8 +1,8 @@
 import express from "express";
 import request from "supertest";
-import { ChangeEmailController, ChangeEmailSchema } from "../../../src/modules/user/controller/change_email_controller.js";
-import { errorMiddleware } from "../../../src/middlewares/error_middleware.js";
-import { validateZodMiddleware } from "../../../src/middlewares/validate_zod_middleware.js";
+import { ChangeEmailController, ChangeEmailSchema } from "../../../backend/src/modules/user/controller/change_email_controller.js";
+import { errorMiddleware } from "../../../backend/src/middlewares/error_middleware.js";
+import { validateZodMiddleware } from "../../../backend/src/middlewares/validate_zod_middleware.js";
 
 describe("ChangeEmailController (HTTP integration with Zod)", () => {
 

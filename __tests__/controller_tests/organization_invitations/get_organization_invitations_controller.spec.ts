@@ -5,16 +5,16 @@ import {
     GetOrganizationInvitationsController,
     GetOrganizationInvitationsParamsSchema,
     invitationFiltersQuerySchema
-} from "../../../src/modules/invitations/controllers/get_organization_invitations_controller.js";
+} from "../../../backend/src/modules/invitations/controllers/get_organization_invitations_controller.js";
 
 import { validate_params } from
-        "../../../src/middlewares/validate_params.js";
+        "../../../backend/src/middlewares/validate_params.js";
 
 import { errorMiddleware } from
-        "../../../src/middlewares/error_middleware.js";
+        "../../../backend/src/middlewares/error_middleware.js";
 
 import { InvitationStatus } from
-        "../../../src/modules/invitations/domain/invitation_status.js";
+        "../../../backend/src/modules/invitations/domain/invitation_status.js";
 
 describe("GetOrganizationInvitationsController (HTTP integration)", () => {
 

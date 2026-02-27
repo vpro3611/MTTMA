@@ -1,4 +1,4 @@
-import {GetAllAuditWithAudit} from "../../../src/modules/audit_events/application/service/get_audit_byId_with_audit.js";
+import {GetAllAuditWithAudit} from "../../../backend/src/modules/audit_events/application/service/get_audit_byId_with_audit.js";
 
 describe("GetAllAuditWithAudit", () => {
 

@@ -1,5 +1,5 @@
-import { GetAllMembersUseCase } from "../../../src/modules/organization_members/application/get_all_members_use_case.js";
-import { ActorNotAMemberError } from "../../../src/modules/organization_members/errors/organization_members_domain_error.js";
+import { GetAllMembersUseCase } from "../../../backend/src/modules/organization_members/application/get_all_members_use_case.js";
+import { ActorNotAMemberError } from "../../../backend/src/modules/organization_members/errors/organization_members_domain_error.js";
 
 describe("GetAllMembersUseCase", () => {
 

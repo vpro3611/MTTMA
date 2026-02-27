@@ -5,16 +5,16 @@ import {
     ChangeRoleController,
     ChangeRoleBodySchema,
     ChangeRoleParamsSchema
-} from "../../../src/modules/organization_members/controllers/change_role_controller.js";
+} from "../../../backend/src/modules/organization_members/controllers/change_role_controller.js";
 
 import { validate_params } from
-        "../../../src/middlewares/validate_params.js";
+        "../../../backend/src/middlewares/validate_params.js";
 
 import { validateZodMiddleware } from
-        "../../../src/middlewares/validate_zod_middleware.js";
+        "../../../backend/src/middlewares/validate_zod_middleware.js";
 
 import { errorMiddleware } from
-        "../../../src/middlewares/error_middleware.js";
+        "../../../backend/src/middlewares/error_middleware.js";
 
 describe("ChangeRoleController (HTTP integration)", () => {
 

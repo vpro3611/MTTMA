@@ -1,11 +1,11 @@
 import { ChangeRoleServ } from
-        "../../../src/modules/organization_members/controllers/services/change_role_serv.js";
+        "../../../backend/src/modules/organization_members/controllers/services/change_role_serv.js";
 
 import { ChangeRoleWithAuditUseCase } from
-        "../../../src/modules/organization_members/application/services/change_role_with_audit_use_case.js";
+        "../../../backend/src/modules/organization_members/application/services/change_role_with_audit_use_case.js";
 
 jest.mock(
-    "../../../src/modules/organization_members/application/services/change_role_with_audit_use_case.js",
+    "../../../backend/src/modules/organization_members/application/services/change_role_with_audit_use_case.js",
     () => ({
         ChangeRoleWithAuditUseCase: jest.fn(),
     })

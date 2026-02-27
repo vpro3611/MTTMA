@@ -1,7 +1,7 @@
 import { Pool } from "pg";
-import { AuditEventsRepositoryPg } from "../../../src/modules/audit_events/repozitory_realization/audit_events_repository_pg.js";
-import { AuditEvent } from "../../../src/modules/audit_events/domain/audit_event_domain.js";
-import { AuditEventActions } from "../../../src/modules/audit_events/domain/audit_event_actions.js";
+import { AuditEventsRepositoryPg } from "../../../backend/src/modules/audit_events/repozitory_realization/audit_events_repository_pg.js";
+import { AuditEvent } from "../../../backend/src/modules/audit_events/domain/audit_event_domain.js";
+import { AuditEventActions } from "../../../backend/src/modules/audit_events/domain/audit_event_actions.js";
 
 describe("AuditEventsRepositoryPg (integration)", () => {
     let repo: AuditEventsRepositoryPg;

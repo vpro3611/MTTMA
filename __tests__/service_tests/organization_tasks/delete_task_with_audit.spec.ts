@@ -1,14 +1,14 @@
 import { DeleteTaskWithAudit } from
-        "../../../src/modules/organization_task/application/service/delete_task_with_audit.js";
+        "../../../backend/src/modules/organization_task/application/service/delete_task_with_audit.js";
 
 import { DeleteTaskUseCase } from
-        "../../../src/modules/organization_task/application/delete_task_use_case.js";
+        "../../../backend/src/modules/organization_task/application/delete_task_use_case.js";
 
 import { AppendLogAuditEvents } from
-        "../../../src/modules/audit_events/application/append_log_audit_events.js";
+        "../../../backend/src/modules/audit_events/application/append_log_audit_events.js";
 
 import { AuditEventActions } from
-        "../../../src/modules/audit_events/domain/audit_event_actions.js";
+        "../../../backend/src/modules/audit_events/domain/audit_event_actions.js";
 
 describe("DeleteTaskWithAudit (transactional)", () => {
 

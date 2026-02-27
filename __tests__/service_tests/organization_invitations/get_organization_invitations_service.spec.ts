@@ -1,5 +1,5 @@
-import { GetOrganizationInvitationsService } from "../../../src/modules/invitations/application/services/get_organization_invitations_service.js";
-import {InvitationStatus} from "../../../src/modules/invitations/domain/invitation_status.js";
+import { GetOrganizationInvitationsService } from "../../../backend/src/modules/invitations/application/services/get_organization_invitations_service.js";
+import {InvitationStatus} from "../../../backend/src/modules/invitations/domain/invitation_status.js";
 
 describe("GetOrganizationInvitationsService", () => {
 

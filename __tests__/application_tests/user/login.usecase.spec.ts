@@ -1,8 +1,8 @@
 
 
-import { LoginUseCase } from "../../../src/modules/user/application/login_use_case.js";
-import { UserNotFound } from "../../../src/modules/user/errors/user_repository_errors.js";
-import { InvalidCredentialsError } from "../../../src/modules/user/errors/login_errors.js";
+import { LoginUseCase } from "../../../backend/src/modules/user/application/login_use_case.js";
+import { UserNotFound } from "../../../backend/src/modules/user/errors/user_repository_errors.js";
+import { InvalidCredentialsError } from "../../../backend/src/modules/user/errors/login_errors.js";
 
 describe("LoginUseCase", () => {
 

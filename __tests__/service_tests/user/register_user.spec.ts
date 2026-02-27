@@ -1,8 +1,8 @@
 import { RegisterService } from
-        "../../../src/modules/user/application/service/register.js";
+        "../../../backend/src/modules/user/application/service/register.js";
 
 import { RegisterUseCase } from
-        "../../../src/modules/user/application/register_use_case.js";
+        "../../../backend/src/modules/user/application/register_use_case.js";
 
 describe("RegisterService (transactional)", () => {
 

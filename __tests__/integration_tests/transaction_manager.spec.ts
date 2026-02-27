@@ -1,6 +1,6 @@
 import { Pool } from "pg";
 import { randomUUID } from "crypto";
-import { TransactionManagerPg } from "../../src/modules/transaction_manager/transaction_manager_pg.js";
+import { TransactionManagerPg } from "../../backend/src/modules/transaction_manager/transaction_manager_pg.js";
 
 describe("TransactionManagerPg (integration)", () => {
 

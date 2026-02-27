@@ -1,8 +1,8 @@
-import { CreateInvitationUseCase } from "../../../src/modules/invitations/application/create_invitation_use_case.js";
-import { OrgMemsRole } from "../../../src/modules/organization_members/domain/org_members_role.js";
-import { ActorNotAMemberError } from "../../../src/modules/organization_members/errors/organization_members_domain_error.js";
-import { InvalidRoleInInvitation, UserAlreadyMember } from "../../../src/modules/invitations/errors/application_errors.js";
-import { UserDoesNotExistError } from "../../../src/modules/organization_task/errors/repository_errors.js";
+import { CreateInvitationUseCase } from "../../../backend/src/modules/invitations/application/create_invitation_use_case.js";
+import { OrgMemsRole } from "../../../backend/src/modules/organization_members/domain/org_members_role.js";
+import { ActorNotAMemberError } from "../../../backend/src/modules/organization_members/errors/organization_members_domain_error.js";
+import { InvalidRoleInInvitation, UserAlreadyMember } from "../../../backend/src/modules/invitations/errors/application_errors.js";
+import { UserDoesNotExistError } from "../../../backend/src/modules/organization_task/errors/repository_errors.js";
 
 describe("CreateInvitationUseCase", () => {
 

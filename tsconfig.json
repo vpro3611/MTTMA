@@ -13,5 +13,7 @@
       //"@/*": ["./src/*"]
     },
   },
-  "include": ["src"]
+  "include": [
+    "backend/src"
+  ]
 }

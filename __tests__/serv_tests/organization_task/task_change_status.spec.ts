@@ -1,8 +1,8 @@
-import { ChangeStatusServ } from "../../../src/modules/organization_task/controller/services/change_status_serv.js";
-import { ChangeTaskStatusWithAudit } from "../../../src/modules/organization_task/application/service/change_status_with_audit.js";
+import { ChangeStatusServ } from "../../../backend/src/modules/organization_task/controller/services/change_status_serv.js";
+import { ChangeTaskStatusWithAudit } from "../../../backend/src/modules/organization_task/application/service/change_status_with_audit.js";
 
 jest.mock(
-    "../../../src/modules/organization_task/application/service/change_status_with_audit.js",
+    "../../../backend/src/modules/organization_task/application/service/change_status_with_audit.js",
     () => ({
         ChangeTaskStatusWithAudit: jest.fn(),
     })

@@ -1,36 +1,36 @@
 import { DeleteOrganizationUseCase } from
-        "../../../src/modules/organization/application/delete_organization_use_case.js";
+        "../../../backend/src/modules/organization/application/delete_organization_use_case.js";
 
 import { OrganizationRepositoryPG } from
-        "../../../src/modules/organization/repository_realization/organization_repository.js";
+        "../../../backend/src/modules/organization/repository_realization/organization_repository.js";
 
 import { OrganizationMembersRepository } from
-        "../../../src/modules/organization_members/domain/ports/organization_memebers_repo_interface.js";
+        "../../../backend/src/modules/organization_members/domain/ports/organization_memebers_repo_interface.js";
 
 import { OrganizationMember } from
-        "../../../src/modules/organization_members/domain/organization_member_domain.js";
+        "../../../backend/src/modules/organization_members/domain/organization_member_domain.js";
 
 import { Organization } from
-        "../../../src/modules/organization/domain/organiztion_domain.js";
+        "../../../backend/src/modules/organization/domain/organiztion_domain.js";
 
 import { Name } from
-        "../../../src/modules/organization/domain/name.js";
+        "../../../backend/src/modules/organization/domain/name.js";
 
 import {
     ActorNotAMemberError,
     OrganizationMemberInsufficientPermissionsError
 } from
-        "../../../src/modules/organization_members/errors/organization_members_domain_error.js";
+        "../../../backend/src/modules/organization_members/errors/organization_members_domain_error.js";
 
 import {
     OrganizationNotFoundError
 } from
-        "../../../src/modules/organization/errors/organization_repository_errors.js";
+        "../../../backend/src/modules/organization/errors/organization_repository_errors.js";
 
 import {
     CannotDeleteOrganizationError
 } from
-        "../../../src/modules/organization/errors/application_errors.js";
+        "../../../backend/src/modules/organization/errors/application_errors.js";
 
 describe("DeleteOrganizationUseCase", () => {
 

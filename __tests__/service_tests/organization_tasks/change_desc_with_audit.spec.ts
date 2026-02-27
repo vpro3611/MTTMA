@@ -1,10 +1,10 @@
 
 
-import { ChangeDescWithAudit } from "../../../src/modules/organization_task/application/service/change_desc_with_audit.js";
-import { ChangeOrgTaskDescriptionUseCase } from "../../../src/modules/organization_task/application/change_org_task_description_use_case.js";
-import { AppendLogAuditEvents } from "../../../src/modules/audit_events/application/append_log_audit_events.js";
-import { AuditEventActions } from "../../../src/modules/audit_events/domain/audit_event_actions.js";
-import {ChangeDescDTO} from "../../../src/modules/organization_task/DTO/change_desc_dto.js";
+import { ChangeDescWithAudit } from "../../../backend/src/modules/organization_task/application/service/change_desc_with_audit.js";
+import { ChangeOrgTaskDescriptionUseCase } from "../../../backend/src/modules/organization_task/application/change_org_task_description_use_case.js";
+import { AppendLogAuditEvents } from "../../../backend/src/modules/audit_events/application/append_log_audit_events.js";
+import { AuditEventActions } from "../../../backend/src/modules/audit_events/domain/audit_event_actions.js";
+import {ChangeDescDTO} from "../../../backend/src/modules/organization_task/DTO/change_desc_dto.js";
 
 describe("ChangeDescWithAudit (transactional)", () => {
 

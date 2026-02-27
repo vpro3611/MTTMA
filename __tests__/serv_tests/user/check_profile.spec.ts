@@ -1,4 +1,4 @@
-import {CheckProfileServ} from "../../../src/modules/user/controller/services/check_profile_serv.js";
+import {CheckProfileServ} from "../../../backend/src/modules/user/controller/services/check_profile_serv.js";
 
 describe("CheckProfileServ", () => {
 

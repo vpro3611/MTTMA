@@ -1,7 +1,7 @@
 import express from "express";
 import request from "supertest";
-import { GetAuditByOrgIdController } from "../../../src/modules/audit_events/controllers/get_audit_by_org_id_controller.js";
-import { errorMiddleware } from "../../../src/middlewares/error_middleware.js";
+import { GetAuditByOrgIdController } from "../../../backend/src/modules/audit_events/controllers/get_audit_by_org_id_controller.js";
+import { errorMiddleware } from "../../../backend/src/middlewares/error_middleware.js";
 
 describe("GetAuditByOrgIdController (HTTP integration)", () => {
 

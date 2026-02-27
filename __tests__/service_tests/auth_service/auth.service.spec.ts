@@ -1,8 +1,8 @@
-import { AuthService } from "../../../src/Auth/auth_service/auth_service.js";
-import { InvalidRefreshTokenError } from "../../../src/http_errors/token_errors.js";
-import { RefreshTokensRepository } from "../../../src/Auth/refresh_tokens/refresh_tokens_repository.js";
+import { AuthService } from "../../../backend/src/Auth/auth_service/auth_service.js";
+import { InvalidRefreshTokenError } from "../../../backend/src/http_errors/token_errors.js";
+import { RefreshTokensRepository } from "../../../backend/src/Auth/refresh_tokens/refresh_tokens_repository.js";
 
-jest.mock("../../../src/Auth/refresh_tokens/refresh_tokens_repository.js");
+jest.mock("../../../backend/src/Auth/refresh_tokens/refresh_tokens_repository.js");
 
 describe("AuthService", () => {
 

@@ -1,20 +1,20 @@
 import { CreateOrganizationUseCase } from
-        "../../../src/modules/organization/application/create_organization_use_case.js";
+        "../../../backend/src/modules/organization/application/create_organization_use_case.js";
 
 import { OrganizationRepository } from
-        "../../../src/modules/organization/domain/ports/organization_repo_interface.js";
+        "../../../backend/src/modules/organization/domain/ports/organization_repo_interface.js";
 
 import { UserRepository } from
-        "../../../src/modules/user/domain/ports/user_repo_interface.js";
+        "../../../backend/src/modules/user/domain/ports/user_repo_interface.js";
 
 import { OrganizationPersistenceError } from
-        "../../../src/modules/organization/errors/organization_repository_errors.js";
+        "../../../backend/src/modules/organization/errors/organization_repository_errors.js";
 
 import { UserNotFound } from
-        "../../../src/modules/user/errors/user_repository_errors.js";
+        "../../../backend/src/modules/user/errors/user_repository_errors.js";
 
 import { User } from
-        "../../../src/modules/user/domain/user_domain.js";
+        "../../../backend/src/modules/user/domain/user_domain.js";
 
 describe('CreateOrganizationUseCase', () => {
 

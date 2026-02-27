@@ -1,8 +1,8 @@
 
 import express from "express";
 import request from "supertest";
-import { GetAllMembersController } from "../../../src/modules/organization_members/controllers/get_all_members_controller.js";
-import { errorMiddleware } from "../../../src/middlewares/error_middleware.js";
+import { GetAllMembersController } from "../../../backend/src/modules/organization_members/controllers/get_all_members_controller.js";
+import { errorMiddleware } from "../../../backend/src/middlewares/error_middleware.js";
 
 describe("GetAllMembersController (HTTP)", () => {
 

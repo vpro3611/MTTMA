@@ -1,16 +1,16 @@
 import { GetOrganizationAuditUseCase } from
-        "../../../src/modules/audit_events/application/get_org_audit_use_case.js";
+        "../../../backend/src/modules/audit_events/application/get_org_audit_use_case.js";
 
 import {
     ActorNotAMemberError,
     OrganizationMemberInsufficientPermissionsError
-} from "../../../src/modules/organization_members/errors/organization_members_domain_error.js";
+} from "../../../backend/src/modules/organization_members/errors/organization_members_domain_error.js";
 
 import { AuditEvent } from
-        "../../../src/modules/audit_events/domain/audit_event_domain.js";
+        "../../../backend/src/modules/audit_events/domain/audit_event_domain.js";
 
 import { OrgMemsRole } from
-        "../../../src/modules/organization_members/domain/org_members_role.js";
+        "../../../backend/src/modules/organization_members/domain/org_members_role.js";
 
 describe("GetOrganizationAuditUseCase (unit)", () => {
 

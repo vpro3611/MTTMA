@@ -1,5 +1,5 @@
-import { GetAllMembersWithAudit } from "../../../src/modules/organization_members/application/services/get_all_members_with_audit.js";
-import { AuditEventActions } from "../../../src/modules/audit_events/domain/audit_event_actions.js";
+import { GetAllMembersWithAudit } from "../../../backend/src/modules/organization_members/application/services/get_all_members_with_audit.js";
+import { AuditEventActions } from "../../../backend/src/modules/audit_events/domain/audit_event_actions.js";
 
 describe("GetAllMembersWithAudit", () => {
 

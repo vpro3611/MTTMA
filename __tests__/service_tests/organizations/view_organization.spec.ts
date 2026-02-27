@@ -1,11 +1,11 @@
 import { ViewOrganizationServiceWithAudit } from
-        "../../../src/modules/organization/application/service/view_organization_service_with_audit.js";
+        "../../../backend/src/modules/organization/application/service/view_organization_service_with_audit.js";
 
 import { AuditEvent } from
-        "../../../src/modules/audit_events/domain/audit_event_domain.js";
+        "../../../backend/src/modules/audit_events/domain/audit_event_domain.js";
 
 import { AuditEventActions } from
-        "../../../src/modules/audit_events/domain/audit_event_actions.js";
+        "../../../backend/src/modules/audit_events/domain/audit_event_actions.js";
 
 describe("ViewOrganizationServiceWithAudit", () => {
 

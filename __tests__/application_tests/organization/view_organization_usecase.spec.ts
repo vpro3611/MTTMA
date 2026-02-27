@@ -1,9 +1,9 @@
 import { ViewOrganizationUseCase } from
-        "../../../src/modules/organization/application/view_organization_use_case.js";
+        "../../../backend/src/modules/organization/application/view_organization_use_case.js";
 
 import { UserDoesNotExistError } from
-        "../../../src/modules/organization_task/errors/repository_errors.js";
-import {OrganizationNotFoundError} from "../../../src/modules/organization/errors/organization_repository_errors.js";
+        "../../../backend/src/modules/organization_task/errors/repository_errors.js";
+import {OrganizationNotFoundError} from "../../../backend/src/modules/organization/errors/organization_repository_errors.js";
 
 describe("ViewOrganizationUseCase", () => {
 

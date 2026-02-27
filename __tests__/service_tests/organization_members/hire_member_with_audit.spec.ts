@@ -1,11 +1,11 @@
 
 import { HireMemberWithAuditUseCase } from
-        "../../../src/modules/organization_members/application/services/hire_member_with_audit_use_case.js";
+        "../../../backend/src/modules/organization_members/application/services/hire_member_with_audit_use_case.js";
 
 import { AuditEventActions } from
-        "../../../src/modules/audit_events/domain/audit_event_actions.js";
+        "../../../backend/src/modules/audit_events/domain/audit_event_actions.js";
 
-import { OrgMemsRole} from "../../../src/modules/organization_members/domain/org_members_role.js";
+import { OrgMemsRole} from "../../../backend/src/modules/organization_members/domain/org_members_role.js";
 
 describe("HireMemberWithAuditUseCase (unit)", () => {
 

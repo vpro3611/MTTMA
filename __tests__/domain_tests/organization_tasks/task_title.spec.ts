@@ -1,8 +1,8 @@
-import { TaskTitle } from "../../../src/modules/organization_task/domain/task_title.js";
+import { TaskTitle } from "../../../backend/src/modules/organization_task/domain/task_title.js";
 import {
     TaskTitleTooShortError,
     TaskTitleTooLongError,
-} from "../../../src/modules/organization_task/errors/task_title_errors.js";
+} from "../../../backend/src/modules/organization_task/errors/task_title_errors.js";
 
 describe("TaskTitle (domain)", () => {
 

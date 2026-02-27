@@ -1,12 +1,12 @@
 import { CreateOrganizationTaskUseCase } from
-        "../../../src/modules/organization_task/application/create_org_task_use_case.js";
+        "../../../backend/src/modules/organization_task/application/create_org_task_use_case.js";
 
 import {
     ActorNotAMemberError,
     OrganizationMemberInsufficientPermissionsError,
     TargetNotAMemberError
 } from
-        "../../../src/modules/organization_members/errors/organization_members_domain_error.js";
+        "../../../backend/src/modules/organization_members/errors/organization_members_domain_error.js";
 
 describe("CreateOrganizationTaskUseCase (application)", () => {
 

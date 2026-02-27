@@ -1,15 +1,15 @@
 import { DeleteTaskUseCase } from
-        "../../../src/modules/organization_task/application/delete_task_use_case.js";
+        "../../../backend/src/modules/organization_task/application/delete_task_use_case.js";
 
 import {
     ActorNotAMemberError,
     OrganizationMemberInsufficientPermissionsError,
     TargetNotAMemberError
 } from
-        "../../../src/modules/organization_members/errors/organization_members_domain_error.js";
+        "../../../backend/src/modules/organization_members/errors/organization_members_domain_error.js";
 
 import { TaskNotFoundError } from
-        "../../../src/modules/organization_task/errors/application_errors.js";
+        "../../../backend/src/modules/organization_task/errors/application_errors.js";
 
 
 describe("DeleteTaskUseCase (application)", () => {

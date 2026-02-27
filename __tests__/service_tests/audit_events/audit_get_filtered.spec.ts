@@ -1,10 +1,10 @@
 
 
 import { GetFilterAuditWithAudit } from
-        "../../../src/modules/audit_events/application/service/get_filter_audit_with_audit.js";
+        "../../../backend/src/modules/audit_events/application/service/get_filter_audit_with_audit.js";
 
 import { AuditEventActions } from
-        "../../../src/modules/audit_events/domain/audit_event_actions.js";
+        "../../../backend/src/modules/audit_events/domain/audit_event_actions.js";
 
 describe("GetFilterAuditWithAudit (unit)", () => {
 

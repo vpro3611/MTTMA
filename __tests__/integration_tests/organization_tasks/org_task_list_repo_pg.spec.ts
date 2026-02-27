@@ -1,7 +1,7 @@
 import { Pool } from "pg";
 import crypto from "crypto";
-import { OrgTaskRepoReader } from "../../../src/modules/organization_task/organization_tasks_repository/org_task_repo_reader.js";
-import { TaskStatus } from "../../../src/modules/organization_task/domain/task_status.js";
+import { OrgTaskRepoReader } from "../../../backend/src/modules/organization_task/organization_tasks_repository/org_task_repo_reader.js";
+import { TaskStatus } from "../../../backend/src/modules/organization_task/domain/task_status.js";
 
 describe("OrgTaskRepoReader (integration)", () => {
 

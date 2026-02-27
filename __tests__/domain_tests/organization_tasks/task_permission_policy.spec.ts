@@ -1,10 +1,10 @@
 import { TaskPermissionPolicy } from
-        "../../../src/modules/organization_task/domain/policies/task_permission_policy.js";
+        "../../../backend/src/modules/organization_task/domain/policies/task_permission_policy.js";
 
 import {
     OrganizationMemberInsufficientPermissionsError
 } from
-        "../../../src/modules/organization_members/errors/organization_members_domain_error.js";
+        "../../../backend/src/modules/organization_members/errors/organization_members_domain_error.js";
 
 describe("TaskPermissionPolicy", () => {
 

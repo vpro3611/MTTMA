@@ -1,5 +1,5 @@
-import { SearchOrganizationUseCase } from "../../../src/modules/organization/application/search_organization_use_case.js";
-import { UserNotFound } from "../../../src/modules/user/errors/user_repository_errors.js";
+import { SearchOrganizationUseCase } from "../../../backend/src/modules/organization/application/search_organization_use_case.js";
+import { UserNotFound } from "../../../backend/src/modules/user/errors/user_repository_errors.js";
 
 describe("SearchOrganizationUseCase", () => {
 

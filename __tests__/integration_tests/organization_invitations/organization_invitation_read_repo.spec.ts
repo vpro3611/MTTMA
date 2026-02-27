@@ -1,5 +1,5 @@
 import { Pool } from "pg";
-import { InvitationReadRepositoryPG } from "../../../src/modules/invitations/repository_realization/invitation_read_repo_pg.js";
+import { InvitationReadRepositoryPG } from "../../../backend/src/modules/invitations/repository_realization/invitation_read_repo_pg.js";
 
 describe("InvitationReadRepositoryPG (integration)", () => {
 

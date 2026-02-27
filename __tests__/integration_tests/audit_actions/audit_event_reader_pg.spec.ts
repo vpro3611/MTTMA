@@ -1,9 +1,9 @@
 import { Pool } from "pg";
-import { AuditEventReaderPG } from "../../../src/modules/audit_events/repozitory_realization/audit_event_reader.js";
-import { AuditEventsRepositoryPg } from "../../../src/modules/audit_events/repozitory_realization/audit_events_repository_pg.js";
-import { AuditEvent } from "../../../src/modules/audit_events/domain/audit_event_domain.js";
-import { AuditEventActions } from "../../../src/modules/audit_events/domain/audit_event_actions.js";
-import { AuditPersistenceError } from "../../../src/modules/audit_events/errors/audit_repo_errors.js";
+import { AuditEventReaderPG } from "../../../backend/src/modules/audit_events/repozitory_realization/audit_event_reader.js";
+import { AuditEventsRepositoryPg } from "../../../backend/src/modules/audit_events/repozitory_realization/audit_events_repository_pg.js";
+import { AuditEvent } from "../../../backend/src/modules/audit_events/domain/audit_event_domain.js";
+import { AuditEventActions } from "../../../backend/src/modules/audit_events/domain/audit_event_actions.js";
+import { AuditPersistenceError } from "../../../backend/src/modules/audit_events/errors/audit_repo_errors.js";
 
 describe("AuditEventReaderPG (integration)", () => {
     let poolT: Pool;

@@ -1,7 +1,7 @@
 import { Pool } from "pg";
-import { InvitationRepositoryPG } from "../../../src/modules/invitations/repository_realization/invitation_repository_pg.js";
-import { Invitation } from "../../../src/modules/invitations/domain/invitation_domain.js";
-import { InvitationStatus } from "../../../src/modules/invitations/domain/invitation_status.js";
+import { InvitationRepositoryPG } from "../../../backend/src/modules/invitations/repository_realization/invitation_repository_pg.js";
+import { Invitation } from "../../../backend/src/modules/invitations/domain/invitation_domain.js";
+import { InvitationStatus } from "../../../backend/src/modules/invitations/domain/invitation_status.js";
 
 describe("InvitationRepositoryPG (integration)", () => {
 

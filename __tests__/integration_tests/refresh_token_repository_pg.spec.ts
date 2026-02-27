@@ -1,6 +1,6 @@
 import { Pool } from "pg";
 import crypto from "crypto";
-import { RefreshTokensRepository } from "../../src/Auth/refresh_tokens/refresh_tokens_repository.js";
+import { RefreshTokensRepository } from "../../backend/src/Auth/refresh_tokens/refresh_tokens_repository.js";
 
 describe("RefreshTokensRepository (integration)", () => {
 

@@ -1,13 +1,13 @@
 
 
 import { FireMemberServ } from
-        "../../../src/modules/organization_members/controllers/services/fire_member_serv.js";
+        "../../../backend/src/modules/organization_members/controllers/services/fire_member_serv.js";
 
 import { FireMemberWithAuditUseCase } from
-        "../../../src/modules/organization_members/application/services/fire_member_with_audit_use_case.js";
+        "../../../backend/src/modules/organization_members/application/services/fire_member_with_audit_use_case.js";
 
 jest.mock(
-    "../../../src/modules/organization_members/application/services/fire_member_with_audit_use_case.js",
+    "../../../backend/src/modules/organization_members/application/services/fire_member_with_audit_use_case.js",
     () => ({
         FireMemberWithAuditUseCase: jest.fn(),
     })

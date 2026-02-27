@@ -1,9 +1,9 @@
-import { Name } from "../../../src/modules/organization/domain/name.js";
+import { Name } from "../../../backend/src/modules/organization/domain/name.js";
 import {
     NameTooShortError,
     NameTooLongError,
     NameContainsForbiddenSymbols
-} from "../../../src/modules/organization/errors/name_domain_errors.js";
+} from "../../../backend/src/modules/organization/errors/name_domain_errors.js";
 
 describe('Name (domain)', () => {
 

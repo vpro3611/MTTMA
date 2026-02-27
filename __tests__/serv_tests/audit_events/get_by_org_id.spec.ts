@@ -1,11 +1,11 @@
 import { GetAuditByIdServ } from
-        "../../../src/modules/audit_events/controllers/services/get_audit_by_id_serv.js";
+        "../../../backend/src/modules/audit_events/controllers/services/get_audit_by_id_serv.js";
 
 import { GetAllAuditWithAudit } from
-        "../../../src/modules/audit_events/application/service/get_audit_byId_with_audit.js";
+        "../../../backend/src/modules/audit_events/application/service/get_audit_byId_with_audit.js";
 
 jest.mock(
-    "../../../src/modules/audit_events/application/service/get_audit_byId_with_audit.js",
+    "../../../backend/src/modules/audit_events/application/service/get_audit_byId_with_audit.js",
     () => ({
         GetAllAuditWithAudit: jest.fn(),
     })

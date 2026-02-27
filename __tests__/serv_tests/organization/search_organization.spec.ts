@@ -1,5 +1,5 @@
-import { SearchOrganizationServ } from "../../../src/modules/organization/controllers/services/search_organization_serv.js";
-import { SearchOrganization } from "../../../src/modules/organization/application/service/search_organization.js";
+import { SearchOrganizationServ } from "../../../backend/src/modules/organization/controllers/services/search_organization_serv.js";
+import { SearchOrganization } from "../../../backend/src/modules/organization/application/service/search_organization.js";
 
 describe("SearchOrganizationServ", () => {
 

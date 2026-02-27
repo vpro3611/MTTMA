@@ -1,6 +1,6 @@
 import express from "express";
 import request from "supertest";
-import { errorMiddleware } from "../../src/middlewares/error_middleware.js";
+import { errorMiddleware } from "../../backend/src/middlewares/error_middleware.js";
 
 import {
     TestValidationError,
@@ -9,7 +9,7 @@ import {
     TestNotFoundError,
     TestConflictError,
     TestInfrastructureError
-} from "../../src/test_errors.js";
+} from "../../backend/src/test_errors.js";
 
 describe("errorMiddleware (HTTP integration)", () => {
 

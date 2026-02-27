@@ -1,10 +1,10 @@
 import express from "express";
 import request from "supertest";
-import { CheckProfileController } from "../../../src/modules/user/controller/check_profile_controller.js";
-import { errorMiddleware } from "../../../src/middlewares/error_middleware.js";
-import { UserIdError } from "../../../src/http_errors/user_id_error.js";
-import { validate_params } from "../../../src/middlewares/validate_params.js";
-import { CheckProfileParamsSchema } from "../../../src/modules/user/controller/check_profile_controller.js";
+import { CheckProfileController } from "../../../backend/src/modules/user/controller/check_profile_controller.js";
+import { errorMiddleware } from "../../../backend/src/middlewares/error_middleware.js";
+import { UserIdError } from "../../../backend/src/http_errors/user_id_error.js";
+import { validate_params } from "../../../backend/src/middlewares/validate_params.js";
+import { CheckProfileParamsSchema } from "../../../backend/src/modules/user/controller/check_profile_controller.js";
 
 describe("CheckProfileController (HTTP integration)", () => {
 

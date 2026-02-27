@@ -1,4 +1,4 @@
-import { JWTTokenService } from "../../../src/Auth/jwt_token_service/token_service.js";
+import { JWTTokenService } from "../../../backend/src/Auth/jwt_token_service/token_service.js";
 
 describe("JWTTokenService", () => {
 

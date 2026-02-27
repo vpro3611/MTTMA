@@ -1,8 +1,8 @@
-import { CreateTaskServ } from "../../../src/modules/organization_task/controller/services/create_task_serv.js";
-import { CreateTaskWithAudit } from "../../../src/modules/organization_task/application/service/create_task_with_audit.js";
+import { CreateTaskServ } from "../../../backend/src/modules/organization_task/controller/services/create_task_serv.js";
+import { CreateTaskWithAudit } from "../../../backend/src/modules/organization_task/application/service/create_task_with_audit.js";
 
 jest.mock(
-    "../../../src/modules/organization_task/application/service/create_task_with_audit.js",
+    "../../../backend/src/modules/organization_task/application/service/create_task_with_audit.js",
     () => ({
         CreateTaskWithAudit: jest.fn(),
     })

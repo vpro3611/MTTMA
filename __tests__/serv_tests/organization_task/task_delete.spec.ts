@@ -1,8 +1,8 @@
-import { DeleteTaskServ } from "../../../src/modules/organization_task/controller/services/delete_task_serv.js";
-import { DeleteTaskWithAudit } from "../../../src/modules/organization_task/application/service/delete_task_with_audit.js";
+import { DeleteTaskServ } from "../../../backend/src/modules/organization_task/controller/services/delete_task_serv.js";
+import { DeleteTaskWithAudit } from "../../../backend/src/modules/organization_task/application/service/delete_task_with_audit.js";
 
 jest.mock(
-    "../../../src/modules/organization_task/application/service/delete_task_with_audit.js",
+    "../../../backend/src/modules/organization_task/application/service/delete_task_with_audit.js",
     () => ({
         DeleteTaskWithAudit: jest.fn(),
     })

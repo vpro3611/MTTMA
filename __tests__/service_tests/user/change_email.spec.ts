@@ -1,8 +1,8 @@
 import { ChangeEmailService } from
-    "../../../src/modules/user/application/service/change_email.js";
+        "../../../backend/src/modules/user/application/service/change_email.js";
 
 import { ChangeUserEmailUseCase } from
-        "../../../src/modules/user/application/change_user_email_use_case.js";
+        "../../../backend/src/modules/user/application/change_user_email_use_case.js";
 
 describe("ChangeEmailService (transactional)", () => {
 

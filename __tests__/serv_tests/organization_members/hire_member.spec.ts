@@ -1,12 +1,12 @@
 import { HireMemberServ } from
-        "../../../src/modules/organization_members/controllers/services/hire_member_serv.js";
+        "../../../backend/src/modules/organization_members/controllers/services/hire_member_serv.js";
 
 import { HireMemberWithAuditUseCase } from
-        "../../../src/modules/organization_members/application/services/hire_member_with_audit_use_case.js";
-import {OrgMemsRole} from "../../../src/modules/organization_members/domain/org_members_role.js";
+        "../../../backend/src/modules/organization_members/application/services/hire_member_with_audit_use_case.js";
+import {OrgMemsRole} from "../../../backend/src/modules/organization_members/domain/org_members_role.js";
 
 jest.mock(
-    "../../../src/modules/organization_members/application/services/hire_member_with_audit_use_case.js",
+    "../../../backend/src/modules/organization_members/application/services/hire_member_with_audit_use_case.js",
     () => ({
         HireMemberWithAuditUseCase: jest.fn(),
     })

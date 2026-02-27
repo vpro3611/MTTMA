@@ -1,11 +1,11 @@
 import { DeleteOrganizationServ } from
-        "../../../src/modules/organization/controllers/services/delete_organization_serv.js";
+        "../../../backend/src/modules/organization/controllers/services/delete_organization_serv.js";
 
 import { DeleteOrganization } from
-        "../../../src/modules/organization/application/service/delete_organization.js";
+        "../../../backend/src/modules/organization/application/service/delete_organization.js";
 
 jest.mock(
-    "../../../src/modules/organization/application/service/delete_organization.js",
+    "../../../backend/src/modules/organization/application/service/delete_organization.js",
     () => ({
         DeleteOrganization: jest.fn(),
     })

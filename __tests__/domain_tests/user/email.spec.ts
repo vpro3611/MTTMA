@@ -1,5 +1,5 @@
-import { Email } from "../../../src/modules/user/domain/email.js";
-import {InvalidEmailError, TooLongEmail, TooShortEmail} from "../../../src/modules/user/errors/email_domain_errors.js";
+import { Email } from "../../../backend/src/modules/user/domain/email.js";
+import {InvalidEmailError, TooLongEmail, TooShortEmail} from "../../../backend/src/modules/user/errors/email_domain_errors.js";
 
 describe('Email (domain)', () => {
 

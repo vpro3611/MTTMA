@@ -1,14 +1,14 @@
 import { CreateTaskWithAudit } from
-        "../../../src/modules/organization_task/application/service/create_task_with_audit.js";
+        "../../../backend/src/modules/organization_task/application/service/create_task_with_audit.js";
 
 import { CreateOrganizationTaskUseCase } from
-        "../../../src/modules/organization_task/application/create_org_task_use_case.js";
+        "../../../backend/src/modules/organization_task/application/create_org_task_use_case.js";
 
 import { AppendLogAuditEvents } from
-        "../../../src/modules/audit_events/application/append_log_audit_events.js";
+        "../../../backend/src/modules/audit_events/application/append_log_audit_events.js";
 
 import { AuditEventActions } from
-        "../../../src/modules/audit_events/domain/audit_event_actions.js";
+        "../../../backend/src/modules/audit_events/domain/audit_event_actions.js";
 
 describe("CreateTaskWithAudit (transactional)", () => {
 

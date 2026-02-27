@@ -1,8 +1,8 @@
-import { RejectInvitationUseCase } from "../../../src/modules/invitations/application/reject_invitation_use_case.js";
-import { Invitation } from "../../../src/modules/invitations/domain/invitation_domain.js";
-import { InvitationStatus } from "../../../src/modules/invitations/domain/invitation_status.js";
-import { InvitationNotFound, InvitationOfDiffUser, UserAlreadyMember } from "../../../src/modules/invitations/errors/application_errors.js";
-import { UserNotFound } from "../../../src/modules/user/errors/user_repository_errors.js";
+import { RejectInvitationUseCase } from "../../../backend/src/modules/invitations/application/reject_invitation_use_case.js";
+import { Invitation } from "../../../backend/src/modules/invitations/domain/invitation_domain.js";
+import { InvitationStatus } from "../../../backend/src/modules/invitations/domain/invitation_status.js";
+import { InvitationNotFound, InvitationOfDiffUser, UserAlreadyMember } from "../../../backend/src/modules/invitations/errors/application_errors.js";
+import { UserNotFound } from "../../../backend/src/modules/user/errors/user_repository_errors.js";
 
 describe("RejectInvitationUseCase", () => {
 

@@ -1,14 +1,14 @@
 import { GetFilteredAuditServ } from
-        "../../../src/modules/audit_events/controllers/services/get_filtered_audit_serv.js";
+        "../../../backend/src/modules/audit_events/controllers/services/get_filtered_audit_serv.js";
 
 import { GetFilterAuditWithAudit } from
-        "../../../src/modules/audit_events/application/service/get_filter_audit_with_audit.js";
-import {GetAuditEventQuery} from "../../../src/modules/audit_events/DTO/get_audit_event_query.js";
+        "../../../backend/src/modules/audit_events/application/service/get_filter_audit_with_audit.js";
+import {GetAuditEventQuery} from "../../../backend/src/modules/audit_events/DTO/get_audit_event_query.js";
 
-import {AuditEventActions} from "../../../src/modules/audit_events/domain/audit_event_actions.js";
+import {AuditEventActions} from "../../../backend/src/modules/audit_events/domain/audit_event_actions.js";
 
 jest.mock(
-    "../../../src/modules/audit_events/application/service/get_filter_audit_with_audit.js",
+    "../../../backend/src/modules/audit_events/application/service/get_filter_audit_with_audit.js",
     () => ({
         GetFilterAuditWithAudit: jest.fn(),
     })

@@ -1,8 +1,8 @@
-import { ChangeTitleServ } from "../../../src/modules/organization_task/controller/services/change_title_serv.js";
-import { ChangeTitleWithAudit } from "../../../src/modules/organization_task/application/service/change_title_with_audit.js";
+import { ChangeTitleServ } from "../../../backend/src/modules/organization_task/controller/services/change_title_serv.js";
+import { ChangeTitleWithAudit } from "../../../backend/src/modules/organization_task/application/service/change_title_with_audit.js";
 
 jest.mock(
-    "../../../src/modules/organization_task/application/service/change_title_with_audit.js",
+    "../../../backend/src/modules/organization_task/application/service/change_title_with_audit.js",
     () => ({
         ChangeTitleWithAudit: jest.fn(),
     })

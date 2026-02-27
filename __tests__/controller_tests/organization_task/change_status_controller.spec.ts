@@ -5,16 +5,16 @@ import {
     ChangeStatusController,
     ChangeStatusParamsSchema,
     ChangeStatusBodySchema
-} from "../../../src/modules/organization_task/controller/change_status_controller.js";
+} from "../../../backend/src/modules/organization_task/controller/change_status_controller.js";
 
 import { validate_params } from
-        "../../../src/middlewares/validate_params.js";
+        "../../../backend/src/middlewares/validate_params.js";
 
 import { validateZodMiddleware } from
-        "../../../src/middlewares/validate_zod_middleware.js";
+        "../../../backend/src/middlewares/validate_zod_middleware.js";
 
 import { errorMiddleware } from
-        "../../../src/middlewares/error_middleware.js";
+        "../../../backend/src/middlewares/error_middleware.js";
 
 describe("ChangeStatusController (HTTP integration)", () => {
 

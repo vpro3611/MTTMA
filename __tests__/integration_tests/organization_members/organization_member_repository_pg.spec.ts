@@ -1,11 +1,11 @@
 import { Pool } from "pg";
-import { OrganizationMemberRepositoryPG } from "../../../src/modules/organization_members/organization_members_repository_realization/organization_member_repository.js";
-import { OrganizationMember } from "../../../src/modules/organization_members/domain/organization_member_domain.js";
+import { OrganizationMemberRepositoryPG } from "../../../backend/src/modules/organization_members/organization_members_repository_realization/organization_member_repository.js";
+import { OrganizationMember } from "../../../backend/src/modules/organization_members/domain/organization_member_domain.js";
 import {
     OrganizationMemberAlreadyExistsError,
     OrganizationMemberNotFoundError,
     OrganizationMemberPersistenceError,
-} from "../../../src/modules/organization_members/errors/organization_members_repo_errors.js";
+} from "../../../backend/src/modules/organization_members/errors/organization_members_repo_errors.js";
 
 describe('OrganizationMemberRepositoryPG (integration)', () => {
 

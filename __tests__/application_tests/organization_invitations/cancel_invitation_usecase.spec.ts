@@ -1,8 +1,8 @@
-import { CancelInvitationUseCase } from "../../../src/modules/invitations/application/cancel_invitation_use_case.js";
-import { Invitation } from "../../../src/modules/invitations/domain/invitation_domain.js";
-import { InvitationStatus } from "../../../src/modules/invitations/domain/invitation_status.js";
-import { InvitationNotFound } from "../../../src/modules/invitations/errors/application_errors.js";
-import { ActorNotAMemberError } from "../../../src/modules/organization_members/errors/organization_members_domain_error.js";
+import { CancelInvitationUseCase } from "../../../backend/src/modules/invitations/application/cancel_invitation_use_case.js";
+import { Invitation } from "../../../backend/src/modules/invitations/domain/invitation_domain.js";
+import { InvitationStatus } from "../../../backend/src/modules/invitations/domain/invitation_status.js";
+import { InvitationNotFound } from "../../../backend/src/modules/invitations/errors/application_errors.js";
+import { ActorNotAMemberError } from "../../../backend/src/modules/organization_members/errors/organization_members_domain_error.js";
 
 describe("CancelInvitationUseCase", () => {
 

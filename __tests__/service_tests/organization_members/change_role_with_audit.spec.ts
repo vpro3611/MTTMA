@@ -1,6 +1,6 @@
 import {
     ChangeRoleWithAuditUseCase
-} from "../../../src/modules/organization_members/application/services/change_role_with_audit_use_case.js";
+} from "../../../backend/src/modules/organization_members/application/services/change_role_with_audit_use_case.js";
 
 describe("ChangeRoleWithAuditUseCase (unit)", () => {
 
