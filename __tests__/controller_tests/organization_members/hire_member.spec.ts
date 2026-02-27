@@ -49,7 +49,7 @@ describe("HireMemberController (HTTP integration)", () => {
         }
 
         app.post(
-            "/organizations/:orgId/members",
+            "/organizations/:orgId/members/:targetUserId",
             validate_params(HireMemberParamsSchema),
             validateZodMiddleware(HireMemberBodySchema),
             controller.hireMemberCont
@@ -66,9 +66,8 @@ describe("HireMemberController (HTTP integration)", () => {
         setupApp(true);
 
         const res = await request(app)
-            .post(`/organizations/${validOrgId}/members`)
+            .post(`/organizations/${validOrgId}/members/${validTargetId}`)
             .send({
-                targetUserId: validTargetId,
                 role: OrgMemsRole.ADMIN
             });
 
@@ -90,10 +89,8 @@ describe("HireMemberController (HTTP integration)", () => {
         setupApp(true);
 
         const res = await request(app)
-            .post(`/organizations/${validOrgId}/members`)
-            .send({
-                targetUserId: validTargetId
-            });
+            .post(`/organizations/${validOrgId}/members/${validTargetId}`)
+            .send({});
 
         expect(res.status).toBe(201);
 
@@ -113,9 +110,9 @@ describe("HireMemberController (HTTP integration)", () => {
         setupApp(true);
 
         const res = await request(app)
-            .post(`/organizations/${validOrgId}/members`)
+            .post(`/organizations/${validOrgId}/members/bad-id`)
             .send({
-                targetUserId: "bad-id"
+                role: OrgMemsRole.ADMIN
             });
 
         expect(res.status).toBe(400);
@@ -131,9 +128,8 @@ describe("HireMemberController (HTTP integration)", () => {
         setupApp(true);
 
         const res = await request(app)
-            .post(`/organizations/${validOrgId}/members`)
+            .post(`/organizations/${validOrgId}/members/${validTargetId}`)
             .send({
-                targetUserId: validTargetId,
                 role: "SUPER_ADMIN"
             });
 
@@ -150,10 +146,8 @@ describe("HireMemberController (HTTP integration)", () => {
         setupApp(true);
 
         const res = await request(app)
-            .post(`/organizations/bad-id/members`)
-            .send({
-                targetUserId: validTargetId
-            });
+            .post(`/organizations/bad-id/members/${validTargetId}`)
+            .send({});
 
         expect(res.status).toBe(400);
 
@@ -168,10 +162,8 @@ describe("HireMemberController (HTTP integration)", () => {
         setupApp(false);
 
         const res = await request(app)
-            .post(`/organizations/${validOrgId}/members`)
-            .send({
-                targetUserId: validTargetId
-            });
+            .post(`/organizations/${validOrgId}/members/${validTargetId}`)
+            .send({});
 
         expect(res.status).toBe(500);
 

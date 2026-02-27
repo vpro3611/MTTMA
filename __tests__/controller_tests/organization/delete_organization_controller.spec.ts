@@ -60,7 +60,7 @@ describe("DeleteOrganizationController (HTTP integration)", () => {
         expect(res.status).toBe(204);
 
         expect(mockService.deleteOrgS)
-            .toHaveBeenCalledWith(validOrgId, validUserId);
+            .toHaveBeenCalledWith(validUserId, validOrgId);
     });
 
     /**

@@ -8,6 +8,9 @@ import {
 } from
         "../../../src/modules/organization_members/errors/organization_members_domain_error.js";
 
+import { OrganizationNotFoundError } from
+        "../../../src/modules/organization/errors/organization_repository_errors.js";
+
 describe("CreateOrganizationTaskUseCase (application)", () => {
 
     const ORG_ID = "org-1";
@@ -39,6 +42,13 @@ describe("CreateOrganizationTaskUseCase (application)", () => {
             save: jest.fn(),
         };
 
+        orgRepo = {
+            findById: jest.fn(),
+        };
+
+        // по умолчанию организация существует
+        orgRepo.findById.mockResolvedValue({ id: ORG_ID });
+
         useCase = new CreateOrganizationTaskUseCase(
             taskRepo,
             orgMemberRepo,
@@ -69,8 +79,8 @@ describe("CreateOrganizationTaskUseCase (application)", () => {
     it("should allow OWNER to create task for MEMBER", async () => {
 
         orgMemberRepo.findById
-            .mockResolvedValueOnce(mockMember("OWNER"))  // creator
-            .mockResolvedValueOnce(mockMember("MEMBER")); // assignee
+            .mockResolvedValueOnce(mockMember("OWNER"))
+            .mockResolvedValueOnce(mockMember("MEMBER"));
 
         const result = await useCase.execute(baseDto);
 
@@ -109,6 +119,14 @@ describe("CreateOrganizationTaskUseCase (application)", () => {
     });
 
     /* ===================== CONTEXT ERRORS ===================== */
+
+    it("should throw if organization does not exist", async () => {
+
+        orgRepo.findById.mockResolvedValue(null);
+
+        await expect(useCase.execute(baseDto))
+            .rejects.toBeInstanceOf(OrganizationNotFoundError);
+    });
 
     it("should throw if creator is not a member", async () => {
 

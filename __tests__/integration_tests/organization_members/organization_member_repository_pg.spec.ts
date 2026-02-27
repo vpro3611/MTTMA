@@ -2,9 +2,9 @@ import { Pool } from "pg";
 import { OrganizationMemberRepositoryPG } from "../../../src/modules/organization_members/organization_members_repository_realization/organization_member_repository.js";
 import { OrganizationMember } from "../../../src/modules/organization_members/domain/organization_member_domain.js";
 import {
-    OrganizationMemberAlreadyExistsError,
     OrganizationMemberNotFoundError,
     OrganizationMemberPersistenceError,
+    UserNotFoundError
 } from "../../../src/modules/organization_members/errors/organization_members_repo_errors.js";
 
 describe('OrganizationMemberRepositoryPG (integration)', () => {
@@ -33,7 +33,6 @@ describe('OrganizationMemberRepositoryPG (integration)', () => {
         orgId = crypto.randomUUID();
         userId = crypto.randomUUID();
 
-        // prerequisites внутри транзакции
         await poolT.query(
             `INSERT INTO organizations (id, name, created_at)
              VALUES ($1, $2, NOW())`,
@@ -78,7 +77,7 @@ describe('OrganizationMemberRepositoryPG (integration)', () => {
         expect(found!.getRole()).toBe('MEMBER');
     });
 
-    it('should throw error on duplicate member', async () => {
+    it('should update role on duplicate save (ON CONFLICT DO UPDATE)', async () => {
         const member = OrganizationMember.hire(
             orgId,
             userId,
@@ -87,11 +86,18 @@ describe('OrganizationMemberRepositoryPG (integration)', () => {
 
         await repo.save(member);
 
-        await expect(
-            repo.save(member)
-        ).rejects.toBeInstanceOf(
-            OrganizationMemberAlreadyExistsError
+        const updatedMember = OrganizationMember.hire(
+            orgId,
+            userId,
+            'ADMIN'
         );
+
+        await repo.save(updatedMember);
+
+        const found = await repo.findById(userId, orgId);
+
+        expect(found).not.toBeNull();
+        expect(found!.getRole()).toBe('ADMIN');
     });
 
     it('should throw OrganizationMemberPersistenceError if org does not exist', async () => {
@@ -108,7 +114,7 @@ describe('OrganizationMemberRepositoryPG (integration)', () => {
         );
     });
 
-    it('should throw OrganizationMemberPersistenceError if user does not exist', async () => {
+    it('should throw UserNotFoundError if user does not exist', async () => {
         const member = OrganizationMember.hire(
             orgId,
             crypto.randomUUID(),
@@ -183,6 +189,7 @@ describe('OrganizationMemberRepositoryPG (integration)', () => {
             OrganizationMemberNotFoundError
         );
     });
+
     /**
      * getAllMembers
      */
@@ -191,10 +198,9 @@ describe('OrganizationMemberRepositoryPG (integration)', () => {
 
         const userId2 = crypto.randomUUID();
 
-        // создаём второго пользователя
         await poolT.query(
             `INSERT INTO users (id, email, password_hash, status, created_at)
-         VALUES ($1, $2, $3, $4, NOW())`,
+             VALUES ($1, $2, $3, $4, NOW())`,
             [
                 userId2,
                 'member2@test.com',
@@ -228,13 +234,9 @@ describe('OrganizationMemberRepositoryPG (integration)', () => {
         expect(roles).toContain('ADMIN');
     });
 
-
     it('should return empty array if organization has no members', async () => {
-
         const members = await repo.getAllMembers(orgId);
-
         expect(members).toEqual([]);
     });
-
 
 });
